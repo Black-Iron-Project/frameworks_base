@@ -260,6 +260,7 @@ public class SecureSettings {
         Settings.Secure.EVEN_DIMMER_MIN_NITS,
         Settings.Secure.DOZE_ON_CHARGE,
         Settings.Secure.TETHERING_ALLOW_VPN_UPSTREAMS,
-        Settings.Secure.STATUS_BAR_CLOCK
+        Settings.Secure.STATUS_BAR_CLOCK,
+        Settings.Secure.QUICK_SETTINGS_TILES_VIBRATE
     };
 }

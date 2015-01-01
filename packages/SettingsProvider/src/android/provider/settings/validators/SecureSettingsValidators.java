@@ -417,5 +417,6 @@ public class SecureSettingsValidators {
         VALIDATORS.put(Secure.POWER_MENU_ACTIONS, ANY_STRING_VALIDATOR);
         VALIDATORS.put(Secure.STATUS_BAR_CLOCK, new InclusiveIntegerRangeValidator(0, 2));
         VALIDATORS.put(Secure.KEYBOARD_NO_NAVIGATION_BAR, BOOLEAN_VALIDATOR);
+        VALIDATORS.put(Secure.QUICK_SETTINGS_TILES_VIBRATE, BOOLEAN_VALIDATOR);
     }
 }
