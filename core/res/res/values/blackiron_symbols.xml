@@ -117,4 +117,7 @@
     <java-symbol type="dimen" name="config_buttonBrightnessSettingDefaultFloat" />
     <java-symbol type="dimen" name="config_keyboardBrightnessSettingDefaultFloat" />
 
+    <!-- Camera key type -->
+    <java-symbol type="bool" name="config_singleStageCameraKey" />
+
 </resources>
