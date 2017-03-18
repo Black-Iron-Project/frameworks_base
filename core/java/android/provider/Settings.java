@@ -6145,6 +6145,12 @@ public final class Settings {
          */
         public static final String KEY_BACK_LONG_PRESS_ACTION = "key_back_long_press_action";
 
+	/**
+         * Enable/disable Bluetooth Battery bar
+         * @hide
+         */
+        public static final String BLUETOOTH_SHOW_BATTERY = "bluetooth_show_battery";
+
         /**
          * Action to perform when the menu key is pressed. (Default is 1)
          * @hide
