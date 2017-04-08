@@ -49,4 +49,9 @@
 
     <!-- Lock gesture -->
      <java-symbol type="string" name="gesture_locked_warning" />
+
+    <!-- Whether device supports sensor based doze customizations -->
+     <java-symbol type="bool" name="config_dozePulseTilt" />
+     <java-symbol type="bool" name="config_dozePulseProximity" />
+     <java-symbol type="bool" name="config_deviceHaveWakeUpProximity" />
 </resources>
