@@ -219,6 +219,10 @@ android_library {
     ],
     kotlincflags: ["-Xjvm-default=all"],
 
+    libs: [
+        "ims-common",
+    ],
+
     plugins: [
         "androidx.room_room-compiler-plugin",
         "dagger2-compiler",
@@ -368,6 +372,7 @@ android_library {
         "android.test.base",
         "android.test.mock",
         "keepanno-annotations",
+        "ims-common",
     ],
     kotlincflags: ["-Xjvm-default=all"],
     aaptflags: [
@@ -505,6 +510,10 @@ android_app {
     system_ext_specific: true,
     certificate: "platform",
     privileged: true,
+
+    libs: [
+        "ims-common",
+    ],
 
     kotlincflags: ["-Xjvm-default=all"],
 
