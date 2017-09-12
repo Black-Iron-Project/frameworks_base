@@ -101,6 +101,7 @@ import static com.android.internal.util.blackiron.hwkeys.DeviceKeysConstants.*;
 
 import android.accessibilityservice.AccessibilityService;
 import android.annotation.NonNull;
+import android.Manifest;
 import android.annotation.Nullable;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -227,6 +228,7 @@ import com.android.internal.policy.KeyInterceptionInfo;
 import com.android.internal.policy.LogDecelerateInterpolator;
 import com.android.internal.policy.PhoneWindow;
 import com.android.internal.policy.TransitionAnimation;
+import com.android.internal.util.blackiron.BlackironUtils;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.ScreenshotHelper;
 import com.android.internal.util.blackiron.ActionUtils;
@@ -7386,6 +7388,18 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     @Override
     public boolean hasNavigationBar() {
         return mDefaultDisplayPolicy.hasNavigationBar();
+    }
+
+    @Override
+    public void sendCustomAction(Intent intent) {
+        String action = intent.getAction();
+        if (action != null) {
+            if (BlackironUtils.INTENT_SCREENSHOT.equals(action)) {
+                mContext.enforceCallingOrSelfPermission(Manifest.permission.ACCESS_SURFACE_FLINGER,
+                        TAG + "sendCustomAction permission denied");
+                interceptScreenshotChord(SCREENSHOT_KEY_OTHER, 0 /*pressDelay*/);
+            }
+        }
     }
 
     @Override
