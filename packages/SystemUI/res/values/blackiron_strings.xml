@@ -38,6 +38,9 @@
     <string name="accessibility_quick_settings_reading_mode_on">Reading mode on.</string>
     <string name="accessibility_quick_settings_reading_mode_off">Reading mode off.</string>
 
+    <!-- Status bar tuner -->
+    <string name="status_bar_vpn">VPN</string>
+
     <!-- Sync QS tile -->
     <string name="quick_settings_sync_label">Sync</string>
     <string name="accessibility_quick_settings_sync_off">Sync off.</string>
