@@ -105,6 +105,9 @@
     <!-- Name of the nfc status bar icon. -->
     <string name="status_bar_nfc">NFC</string>
 
+    <!-- Name of the vpn status bar icon. -->
+   <string name="status_bar_vpn">VPN</string>
+
     <!-- Text to use when the number in a notification info is too large -->
     <string name="status_bar_notification_info_overflow" translatable="false">\u221E</string>
 </resources>
