@@ -1582,6 +1582,16 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
                             clampedState.getMinBrightness(), clampedState.getMaxBrightness()));
         }
 
+        // If low power mode is enabled and Smart Pixels Service is stopped,
+        // scale brightness by screenLowPowerBrightnessFactor
+        // as long as it is above the minimum threshold
+        final int mSmartPixelsEnable = Settings.System.getIntForUser(
+                mContext.getContentResolver(), Settings.System.SMART_PIXELS_ENABLE,
+                0, UserHandle.USER_CURRENT);
+        final int mSmartPixelsOnPowerSave = Settings.System.getIntForUser(
+                mContext.getContentResolver(), Settings.System.SMART_PIXELS_ON_POWER_SAVE,
+                0, UserHandle.USER_CURRENT);
+
         // The current brightness to use has been calculated at this point, and HbmController should
         // be notified so that it can accurately calculate HDR or HBM levels. We specifically do it
         // here instead of having HbmController listen to the brightness setting because certain
