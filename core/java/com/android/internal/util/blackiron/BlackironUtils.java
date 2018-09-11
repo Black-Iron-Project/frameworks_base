@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
 import android.hardware.fingerprint.FingerprintManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,6 +33,8 @@ import android.os.ServiceManager;
 import com.android.internal.statusbar.IStatusBarService;
 
 import com.android.internal.R;
+
+import java.util.Locale;
 
 /**
  * Some custom utilities
@@ -156,5 +159,11 @@ public class BlackironUtils {
     // Check to see if device supports A/B (seamless) system updates
     public static boolean isABdevice(Context context) {
         return SystemProperties.getBoolean("ro.build.ab_update", false);
+    }
+
+    // Check for Chinese language
+    public static boolean isChineseLanguage() {
+       return Resources.getSystem().getConfiguration().locale.getLanguage().startsWith(
+               Locale.CHINESE.getLanguage());
     }
 }
