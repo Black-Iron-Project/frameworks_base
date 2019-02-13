@@ -22,4 +22,7 @@
 
     <!-- A11 QS style -->
     <dimen name="custom_qs_panel_padding_top">0dp</dimen>
+
+    <!-- AoD battery bar -->
+    <dimen name="battery_bar_view_height">6dp</dimen>
 </resources>
