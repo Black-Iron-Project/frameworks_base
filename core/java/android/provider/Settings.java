@@ -6003,6 +6003,15 @@ public final class Settings {
         public static final String QS_FOOTER_DATA_USAGE = "qs_footer_data_usage";
 
         /**
+         * Whether allowing pocket service to register sensors and dispatch informations.
+         *   0 = disabled
+         *   1 = enabled
+         * @author Carlo Savignano
+         * @hide
+         */
+        public static final String POCKET_JUDGE = "pocket_judge";
+
+        /**
          * IMPORTANT: If you add a new public settings you also have to add it to
          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate
@@ -6166,64 +6175,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DISPLAY_COLOR_MODE);
             PRIVATE_SETTINGS.add(DISPLAY_COLOR_MODE_VENDOR_HINT);
             PRIVATE_SETTINGS.add(DESKTOP_MODE);
-            PRIVATE_SETTINGS.add(BUTTON_BACKLIGHT_ONLY_WHEN_PRESSED);
-            PRIVATE_SETTINGS.add(NAVIGATION_BAR_SHOW);
-            PRIVATE_SETTINGS.add(NAVIGATION_BAR_MODE_OVERLAY);
-            PRIVATE_SETTINGS.add(KEY_HOME_LONG_PRESS_ACTION);
-            PRIVATE_SETTINGS.add(KEY_HOME_DOUBLE_TAP_ACTION);
-            PRIVATE_SETTINGS.add(KEY_BACK_LONG_PRESS_ACTION);
-            PRIVATE_SETTINGS.add(KEY_MENU_ACTION);
-            PRIVATE_SETTINGS.add(KEY_MENU_LONG_PRESS_ACTION);
-            PRIVATE_SETTINGS.add(KEY_ASSIST_ACTION);
-            PRIVATE_SETTINGS.add(KEY_ASSIST_LONG_PRESS_ACTION);
-            PRIVATE_SETTINGS.add(KEY_APP_SWITCH_ACTION);
-            PRIVATE_SETTINGS.add(KEY_APP_SWITCH_LONG_PRESS_ACTION);
-            PRIVATE_SETTINGS.add(HOME_WAKE_SCREEN);
-            PRIVATE_SETTINGS.add(BACK_WAKE_SCREEN);
-            PRIVATE_SETTINGS.add(MENU_WAKE_SCREEN);
-            PRIVATE_SETTINGS.add(ASSIST_WAKE_SCREEN);
-            PRIVATE_SETTINGS.add(APP_SWITCH_WAKE_SCREEN);
-            PRIVATE_SETTINGS.add(CAMERA_WAKE_SCREEN);
-            PRIVATE_SETTINGS.add(CAMERA_SLEEP_ON_RELEASE);
-            PRIVATE_SETTINGS.add(CAMERA_LAUNCH);
-            PRIVATE_SETTINGS.add(TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK);
-            PRIVATE_SETTINGS.add(HIGH_TOUCH_SENSITIVITY_ENABLE);
-            PRIVATE_SETTINGS.add(HIGH_TOUCH_POLLING_RATE_ENABLE);
-            PRIVATE_SETTINGS.add(NAV_BAR_COMPACT_LAYOUT);
-            PRIVATE_SETTINGS.add(VOLUME_WAKE_SCREEN);
-            PRIVATE_SETTINGS.add(VOLBTN_MUSIC_CONTROLS);
-            PRIVATE_SETTINGS.add(TORCH_LONG_PRESS_POWER_GESTURE);
-            PRIVATE_SETTINGS.add(TORCH_LONG_PRESS_POWER_TIMEOUT);
-            PRIVATE_SETTINGS.add(VOLUME_ANSWER_CALL);
-            PRIVATE_SETTINGS.add(LOCKSCREEN_PIN_SCRAMBLE_LAYOUT);
-            PRIVATE_SETTINGS.add(CLICK_PARTIAL_SCREENSHOT);
-            PRIVATE_SETTINGS.add(STATUS_BAR_CLOCK);
-            PRIVATE_SETTINGS.add(STATUS_BAR_AM_PM);
-            PRIVATE_SETTINGS.add(STATUS_BAR_BATTERY_STYLE);
-            PRIVATE_SETTINGS.add(STATUS_BAR_SHOW_BATTERY_PERCENT);
-            PRIVATE_SETTINGS.add(KEY_EDGE_LONG_SWIPE_ACTION);
-            PRIVATE_SETTINGS.add(SWAP_VOLUME_KEYS_ON_ROTATION);
-            PRIVATE_SETTINGS.add(INCREASING_RING);
-            PRIVATE_SETTINGS.add(INCREASING_RING_START_VOLUME);
-            PRIVATE_SETTINGS.add(INCREASING_RING_RAMP_UP_TIME);
-            PRIVATE_SETTINGS.add(INCALL_FEEDBACK_VIBRATE);
-            PRIVATE_SETTINGS.add(AUTO_BRIGHTNESS_ONE_SHOT);
-            PRIVATE_SETTINGS.add(DISPLAY_TEMPERATURE_DAY);
-            PRIVATE_SETTINGS.add(DISPLAY_TEMPERATURE_NIGHT);
-            PRIVATE_SETTINGS.add(DISPLAY_TEMPERATURE_MODE);
-            PRIVATE_SETTINGS.add(DISPLAY_AUTO_OUTDOOR_MODE);
-            PRIVATE_SETTINGS.add(DISPLAY_ANTI_FLICKER);
-            PRIVATE_SETTINGS.add(DISPLAY_READING_MODE);
-            PRIVATE_SETTINGS.add(DISPLAY_CABC);
-            PRIVATE_SETTINGS.add(DISPLAY_COLOR_ENHANCE);
-            PRIVATE_SETTINGS.add(DISPLAY_AUTO_CONTRAST);
-            PRIVATE_SETTINGS.add(DISPLAY_COLOR_ADJUSTMENT);
-            PRIVATE_SETTINGS.add(DISPLAY_PICTURE_ADJUSTMENT);
-            PRIVATE_SETTINGS.add(LIVE_DISPLAY_HINTED);
-            PRIVATE_SETTINGS.add(DISPLAY_CUTOUT_HIDDEN);
-            PRIVATE_SETTINGS.add(SWIPE_TO_SCREENSHOT);
-            PRIVATE_SETTINGS.add(ADAPTIVE_PLAYBACK_ENABLED);
-            PRIVATE_SETTINGS.add(ADAPTIVE_PLAYBACK_TIMEOUT);
+            PRIVATE_SETTINGS.add(POCKET_JUDGE);
         }
         /**
          * These entries are considered common between the personal and the managed profile,
