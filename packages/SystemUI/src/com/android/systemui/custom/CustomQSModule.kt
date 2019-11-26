@@ -1,6 +1,7 @@
 package com.android.systemui.custom
 
 import com.android.systemui.qs.tileimpl.QSTileImpl
+import com.android.systemui.qs.tiles.DataSwitchTile
 import com.android.systemui.qs.tiles.PowerShareTile
 import com.android.systemui.qs.tiles.CellularTile
 import com.android.systemui.qs.tiles.WifiTile
@@ -12,6 +13,7 @@ import com.android.systemui.qs.tiles.UsbTetherTile
 import com.android.systemui.qs.tiles.VpnTile
 import com.android.systemui.qs.tiles.LiveDisplayTile
 import com.android.systemui.qs.tiles.ReadingModeTile
+import com.android.systemui.qs.tiles.RefreshRateTile
 import com.android.systemui.qs.tiles.AntiFlickerTile
 
 import dagger.Binds
@@ -98,4 +100,10 @@ interface CustomQSModule {
     @IntoMap
     @StringKey(RefreshRateTile.TILE_SPEC)
     fun bindRefreshRateTile(refreshRateTile: RefreshRateTile): QSTileImpl<*>
+
+    /** Inject DataSwitchTile into tileMap in QSModule */
+    @Binds
+    @IntoMap
+    @StringKey(DataSwitchTile.TILE_SPEC)
+    fun bindDataSwitchTile(dataSwitchTile: DataSwitchTile): QSTileImpl<*>
 }
