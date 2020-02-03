@@ -278,5 +278,6 @@ public class SystemSettingsValidators {
         VALIDATORS.put(System.CAMERA_SLEEP_ON_RELEASE, BOOLEAN_VALIDATOR);
         VALIDATORS.put(System.CAMERA_LAUNCH, BOOLEAN_VALIDATOR);
         VALIDATORS.put(System.ACCELEROMETER_ROTATION_ANGLES, NON_NEGATIVE_INTEGER_VALIDATOR);
+        VALIDATORS.put(System.RINGTONE_VIBRATION_PATTERN, new InclusiveIntegerRangeValidator(0, 4));
     }
 }
