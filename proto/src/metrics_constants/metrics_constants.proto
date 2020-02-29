@@ -7441,5 +7441,8 @@ message MetricsEvent {
 
     // BlackIron Metrics
     BLKI_SETTINGS = 420;
+
+    // Panel for Mobile Data
+    PANEL_MOBILE_DATA = 4001;
   }
 }
