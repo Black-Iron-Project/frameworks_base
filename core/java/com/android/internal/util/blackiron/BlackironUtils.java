@@ -37,6 +37,8 @@ import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemProperties;
 import android.os.SystemClock;
 import android.text.format.Time;
@@ -47,6 +49,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.util.DisplayMetrics;
 
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.R;
 
 import java.util.Arrays;
@@ -202,6 +205,10 @@ public class BlackironUtils {
         }
     }
 
+    public static void killForegroundApp() {
+        FireActions.killForegroundApp();
+    }
+
     public static void sendKeycode(int keycode) {
         long when = SystemClock.uptimeMillis();
         final KeyEvent evDown = new KeyEvent(when, when, KeyEvent.ACTION_DOWN, keycode, 0,
@@ -227,6 +234,31 @@ public class BlackironUtils {
         }, 20);
     }
 
+    private static final class FireActions {
+        private static IStatusBarService mStatusBarService = null;
+        private static IStatusBarService getStatusBarService() {
+            synchronized (FireActions.class) {
+                if (mStatusBarService == null) {
+                    mStatusBarService = IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService("statusbar"));
+                }
+                return mStatusBarService;
+            }
+        }
+
+        public static void killForegroundApp() {
+            IStatusBarService service = getStatusBarService();
+            if (service != null) {
+                try {
+                    service.killForegroundApp();
+                } catch (RemoteException e) {
+                    // do nothing.
+                }
+            }
+        }
+
+    }
+
     // Check if device has a notch
     public static boolean hasNotch(Context context) {
         String displayCutout = context.getResources().getString(R.string.config_mainBuiltInDisplayCutout);
@@ -234,7 +266,6 @@ public class BlackironUtils {
         boolean displayCutoutExists = (!TextUtils.isEmpty(displayCutout) && !maskDisplayCutout);
         return displayCutoutExists;
     }
-
 
     public static void restartSystemUi(Context context) {
         new RestartSystemUiTask(context).execute();
