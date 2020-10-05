@@ -6934,6 +6934,9 @@ public final class Settings {
         @Readable
         public static final String SENSOR_BLOCK = "sensor_block";
 
+        /** @hide */
+        public static final String BACK_GESTURE_HAPTIC = "back_gesture_haptic";
+
         /**
          * Sensor blocked packages
          * @hide
@@ -7477,6 +7480,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(STATUSBAR_TOP_PADDING);
             PRIVATE_SETTINGS.add(AMBIENT_TEXT_COLOR);
             PRIVATE_SETTINGS.add(AMBIENT_TEXT_TYPE_COLOR);
+            PRIVATE_SETTINGS.add(BACK_GESTURE_HAPTIC);
         }
 
         /**
