@@ -485,4 +485,10 @@ public interface CentralSurfaces extends Dumpable, LifecycleOwner {
     void setBlockedGesturalNavigation(boolean blocked);
 
     GameSpaceManager getGameSpaceManager();
+
+    View getDismissAllButton();
+
+    void updateDismissAllVisibility(boolean visible);
+
+    void updateDismissAllButton();
 }
