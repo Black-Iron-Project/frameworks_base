@@ -305,6 +305,8 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
 
     private static final String DOUBLE_TAP_SLEEP_GESTURE =
             "customsystem:" + Settings.System.DOUBLE_TAP_SLEEP_GESTURE;
+    private static final String NOTIFICATION_MATERIAL_DISMISS =
+            "system:" + Settings.System.NOTIFICATION_MATERIAL_DISMISS;
 
     private static final Rect M_DUMMY_DIRTY_RECT = new Rect(0, 0, 1, 1);
     private static final Rect EMPTY_RECT = new Rect();
@@ -671,6 +673,8 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
     private BoostFramework mPerf = null;
 
     private boolean mBlockedGesturalNavigation = false;
+
+    private boolean mShowDimissButton;
 
     private final Runnable mFlingCollapseRunnable = () -> fling(0, false /* expand */,
             mNextCollapseSpeedUpFactor, false /* expandBecauseOfFalsing */);
@@ -3177,7 +3181,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
     }
 
     private boolean isPanelVisibleBecauseOfHeadsUp() {
-        return (mHeadsUpManager.hasPinnedHeadsUp() || mHeadsUpAnimatingAway)
+        return mHeadsUpManager != null && (mHeadsUpManager.hasPinnedHeadsUp() || mHeadsUpAnimatingAway)
                 && mBarState == StatusBarState.SHADE;
     }
 
@@ -4084,7 +4088,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         return mExpandedHeight;
     }
 
-    float getExpandedFraction() {
+    public float getExpandedFraction() {
         return mExpandedFraction;
     }
 
@@ -4794,6 +4798,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
             mStatusBarStateListener.onStateChanged(mStatusBarStateController.getState());
             mConfigurationController.addCallback(mConfigurationListener);
             mTunerService.addTunable(this, DOUBLE_TAP_SLEEP_GESTURE);
+            mTunerService.addTunable(this, NOTIFICATION_MATERIAL_DISMISS);
             // Theme might have changed between inflating this view and attaching it to the
             // window, so
             // force a call to onThemeChanged
@@ -4816,8 +4821,18 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
 
         @Override
         public void onTuningChanged(String key, String newValue) {
-            if (DOUBLE_TAP_SLEEP_GESTURE.equals(key)) {
-                mDoubleTapToSleepEnabled = TunerService.parseIntegerSwitch(newValue, true);
+            switch (key) {
+                case DOUBLE_TAP_SLEEP_GESTURE:
+                    mDoubleTapToSleepEnabled =
+                            TunerService.parseIntegerSwitch(newValue, true);
+                    break;
+                case NOTIFICATION_MATERIAL_DISMISS:
+                    mShowDimissButton =
+                            TunerService.parseIntegerSwitch(newValue, false);
+                    updateDismissAllVisibility();
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -5438,6 +5453,17 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         @Override
         public void clearNotificationEffects() {
             mCentralSurfaces.clearNotificationEffects();
+        }
+    }
+
+    public void updateDismissAllVisibility() {
+        if (mCentralSurfaces == null) return;
+
+        if (mShowDimissButton && mBarState != StatusBarState.KEYGUARD && !isFullyCollapsed()
+                && !isPanelVisibleBecauseOfHeadsUp()) {
+            mCentralSurfaces.updateDismissAllVisibility(true);
+        } else {
+            mCentralSurfaces.updateDismissAllVisibility(false);
         }
     }
 
