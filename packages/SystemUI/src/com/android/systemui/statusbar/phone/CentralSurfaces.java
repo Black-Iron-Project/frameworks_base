@@ -333,4 +333,10 @@ public interface CentralSurfaces extends Dumpable, LifecycleOwner {
             ExpandableNotificationRow associatedView);
 
     void setBlockedGesturalNavigation(boolean blocked);
+
+    View getDismissAllButton();
+
+    void updateDismissAllVisibility(boolean visible);
+
+    void updateDismissAllButton();
 }
