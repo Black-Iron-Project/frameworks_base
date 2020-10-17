@@ -3286,7 +3286,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                 if (activeNotif && pulseReasonNotification) {
                     // show the bars if we have to
                     if (pulseLights) {
-                        mPulseLightsView.animateNotification(true);
+                        mPulseLightsView.animateNotification();
                         mPulseLightsView.setVisibility(View.VISIBLE);
                     } else {
                         // bars can still be visible as leftover
