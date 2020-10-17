@@ -94,4 +94,6 @@ interface ShadeSurface : ShadeViewController {
 
     /** Updates all field values drawn from Resources. */
     fun updateResources()
+    
+    fun stopNotificationPulse()
 }

@@ -399,4 +399,7 @@
 
     <!-- Mock Oplus LinearmotorVibratorService -->
     <bool name="config_mockOplusLinearmotorVibratorService">false</bool>
+
+    <!-- Default value for Ambient Pulse light color -->
+    <integer name="config_ambientNotificationDefaultColor">0xFF3980FF</integer>
 </resources>
