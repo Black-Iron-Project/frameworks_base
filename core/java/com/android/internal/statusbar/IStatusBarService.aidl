@@ -238,4 +238,6 @@ interface IStatusBarService
 
     /** Black Iron additions. */
     void toggleCameraFlash();
+
+    void screenPinningStateChanged(boolean enabled);
 }
