@@ -346,4 +346,7 @@ oneway interface IStatusBar
      * @param packageName of the session for which the output switcher is shown.
      */
     void showMediaOutputSwitcher(String packageName);
+
+    /** Black Iron additions. */
+    void toggleCameraFlash();
 }
