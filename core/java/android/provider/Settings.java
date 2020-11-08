@@ -6595,6 +6595,14 @@ public final class Settings {
          * the setting value. See an example above.
          */
 
+        /** Whether to show ambient or lockscreen if AoD is disabled
+         * and we do a wake gesture like lift to wake or double tap
+         *
+         * @hide
+         */
+        @Readable
+        public static final String AMBIENT_WAKE_GESTURES = "ambient_wake_gestures";
+
         /**
          * @hide
          */
@@ -7235,6 +7243,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(OMNI_KEYGUARD_SHOW_BATTERY_BAR_ALWAYS);
             PRIVATE_SETTINGS.add(SENSOR_BLOCK);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
+            PRIVATE_SETTINGS.add(AMBIENT_WAKE_GESTURES);
         }
 
         /**
