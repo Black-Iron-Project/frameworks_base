@@ -6890,6 +6890,9 @@ public final class Settings {
          */
         public static final String GESTURE_NAVBAR_LENGTH_MODE = "gesture_navbar_length_mode";
 
+        /** @hide */
+        public static final String BACK_GESTURE_HEIGHT = "back_gesture_height";
+
         /**
          * Three Finger Gesture from Oppo
          * @hide
