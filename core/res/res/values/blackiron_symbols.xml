@@ -170,4 +170,11 @@
 
     <!-- Lock gesture -->
     <java-symbol type="string" name="gesture_locked_warning" />
+
+    <!-- Device model (Build.MODEL) to spoof for netflix, if not empty -->
+    <java-symbol type="string" name="config_netflixSpoofModel" />
+
+    <!-- AttestationHooks -->
+    <java-symbol type="array" name="config_certifiedBuildProperties" />
+    <java-symbol type="string" name="config_stockFingerprint" />
 </resources>
