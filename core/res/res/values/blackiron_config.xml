@@ -294,4 +294,7 @@
 
   <!-- Name of a font family to use as regular font. For theming purpose. -->
   <string name="config_regularFontFamily" translatable="false">sans-serif-regular</string>
+
+    <!-- If not zero, limits the internal screen recorder's framerate to the set value. -->
+    <integer name="config_screenRecorderMaxFramerate">0</integer>
 </resources>
