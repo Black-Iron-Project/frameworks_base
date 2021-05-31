@@ -868,6 +868,9 @@
     <!-- Pocket Mode -->
     <protected-broadcast android:name="org.blackiron.server.action.POCKET_STATE_CHANGED" />
 
+    <!-- Sleep Mode -->
+    <protected-broadcast android:name="android.intent.action.SLEEP_MODE_TURN_OFF" />
+
     <!-- ====================================================================== -->
     <!--                          RUNTIME PERMISSIONS                           -->
     <!-- ====================================================================== -->
