@@ -86,4 +86,7 @@
     <!-- Island notification -->
     <dimen name="island_icon_size">35dp</dimen>
     <dimen name="island_side_margin">12dp</dimen>
+
+     <!-- Maximum vertical offset of statusbar for burn-in protection -->
+     <dimen name="status_bar_offset_max_y">4dp</dimen>
 </resources>
