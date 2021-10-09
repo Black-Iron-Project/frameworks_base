@@ -66,4 +66,6 @@
     <dimen name="navigation_home_handle_width_short">72dp</dimen>
     <dimen name="navigation_home_handle_width_long">140dp</dimen>
 
+    <!-- Maximum vertical offset of statusbar for burn-in protection -->
+    <dimen name="status_bar_offset_max_y">4dp</dimen>
 </resources>
