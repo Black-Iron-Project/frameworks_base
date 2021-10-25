@@ -3882,6 +3882,10 @@ final class ActivityRecord extends WindowToken implements WindowManagerService.A
             return false;
         }
 
+        if (task == null){
+            return false;
+        }
+
         EventLogTags.writeWmDestroyActivity(mUserId, System.identityHashCode(this),
                 task.mTaskId, shortComponentName, reason);
 
