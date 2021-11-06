@@ -18,10 +18,8 @@ package com.android.systemui.qs;
 
 import android.os.Bundle;
 
-import com.android.internal.colorextraction.ColorExtractor;
 import com.android.systemui.R;
 import com.android.systemui.battery.BatteryMeterViewController;
-import com.android.systemui.colorextraction.SysuiColorExtractor;
 import com.android.systemui.demomode.DemoMode;
 import com.android.systemui.demomode.DemoModeController;
 import com.android.systemui.flags.FeatureFlags;
@@ -66,7 +64,6 @@ class QuickStatusBarHeaderController extends ViewController<QuickStatusBarHeader
 
     private boolean mListening;
 
-    private SysuiColorExtractor mColorExtractor;
     private ColorExtractor.OnColorsChangedListener mOnColorsChangedListener;
 
     @Inject
@@ -76,7 +73,6 @@ class QuickStatusBarHeaderController extends ViewController<QuickStatusBarHeader
             DemoModeController demoModeController,
             QuickQSPanelController quickQSPanelController,
             QSCarrierGroupController.Builder qsCarrierGroupControllerBuilder,
-            SysuiColorExtractor colorExtractor,
             QSExpansionPathInterpolator qsExpansionPathInterpolator,
             FeatureFlags featureFlags,
             VariableDateViewController.Factory variableDateViewControllerFactory,
@@ -107,7 +103,6 @@ class QuickStatusBarHeaderController extends ViewController<QuickStatusBarHeader
 
         mIconManager = tintedIconManagerFactory.create(mIconContainer, StatusBarLocation.QS);
         mDemoModeReceiver = new ClockDemoModeReceiver(mClockView);
-        mColorExtractor = colorExtractor;
         mOnColorsChangedListener = (extractor, which) -> {
             final boolean lightTheme = mColorExtractor.getNeutralColors().supportsDarkText();
             mClockView.onColorsChanged(lightTheme);
