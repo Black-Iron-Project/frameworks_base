@@ -238,4 +238,7 @@ interface IStatusBarService
 
     /** Blackiron additions. */
     void toggleCameraFlash();
+
+    /** Used to block or unblock usage of gestural navigation. */
+    void setBlockedGesturalNavigation(boolean blocked);
 }
