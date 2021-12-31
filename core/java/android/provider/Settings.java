@@ -6795,6 +6795,14 @@ public final class Settings {
          */
         public static final String STATUS_BAR_LOGO_POSITION = "status_bar_logo_position";
 
+	/**
+         * Arcane Idle Manager
+         * @hide
+         */
+        @Readable
+        public static final String ARCANE_IDLE_MANAGER = "arcane_idle_manager";
+
+
         /**
          * Statusbar logo custom style
          * @hide
