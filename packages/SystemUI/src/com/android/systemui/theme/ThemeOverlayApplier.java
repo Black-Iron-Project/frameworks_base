@@ -155,7 +155,9 @@ public class ThemeOverlayApplier implements Dumpable {
             OVERLAY_CATEGORY_FONT,
             OVERLAY_CATEGORY_SHAPE,
             OVERLAY_CATEGORY_ICON_ANDROID,
-            OVERLAY_CATEGORY_ICON_SYSUI);
+            OVERLAY_CATEGORY_ICON_SYSUI,
+            OVERLAY_CATEGORY_ICON_SIGNAL,
+            OVERLAY_CATEGORY_ICON_WIFI);
 
     /* Allowed overlay categories for each target package. */
     private final Map<String, Set<String>> mTargetPackageToCategories = new ArrayMap<>();
@@ -184,8 +186,11 @@ public class ThemeOverlayApplier implements Dumpable {
                 OVERLAY_CATEGORY_DYNAMIC_COLOR,
                 OVERLAY_CATEGORY_FONT, OVERLAY_CATEGORY_SHAPE,
                 OVERLAY_CATEGORY_ICON_ANDROID));
-        mTargetPackageToCategories.put(SYSUI_PACKAGE,
-                Sets.newHashSet(OVERLAY_CATEGORY_ICON_SYSUI));
+        mTargetPackageToCategories.put(SYSUI_PACKAGE, Sets.newHashSet(
+                OVERLAY_CATEGORY_ICON_SYSUI,
+                OVERLAY_CATEGORY_ICON_SIGNAL,
+                OVERLAY_CATEGORY_ICON_WIFI));
+
         mTargetPackageToCategories.put(SETTINGS_PACKAGE,
                 Sets.newHashSet(OVERLAY_CATEGORY_ICON_SETTINGS));
         mCategoryToTargetPackage.put(OVERLAY_CATEGORY_ACCENT_COLOR, ANDROID_PACKAGE);
