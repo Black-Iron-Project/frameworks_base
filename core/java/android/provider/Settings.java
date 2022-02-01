@@ -6892,6 +6892,12 @@ public final class Settings {
 
         /** @hide */
         public static final String BACK_GESTURE_HEIGHT = "back_gesture_height";
+        
+        /**
+         * Size of gesture bar radius.
+         * @hide
+         */
+        public static final String GESTURE_NAVBAR_RADIUS = "gesture_navbar_radius";
 
         /**
          * Three Finger Gesture from Oppo
