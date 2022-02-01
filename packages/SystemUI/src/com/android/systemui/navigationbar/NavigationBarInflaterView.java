@@ -23,6 +23,7 @@ import static android.view.WindowManagerPolicyConstants.NAV_BAR_MODE_GESTURAL_OV
 
 import android.annotation.Nullable;
 import android.app.ActivityManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.om.IOverlayManager;
 import android.content.om.OverlayInfo;
@@ -100,6 +101,8 @@ public class NavigationBarInflaterView extends FrameLayout implements TunerServi
             "system:" + Settings.System.NAVIGATION_BAR_IME_SPACE;
     private static final String GESTURE_NAVBAR_LENGTH_MODE =
             "system:" + Settings.System.GESTURE_NAVBAR_LENGTH_MODE;
+    private static final String GESTURE_NAVBAR_RADIUS =
+            "system:" + Settings.System.GESTURE_NAVBAR_RADIUS;
 
     private static class Listener implements NavigationModeController.ModeChangedListener {
         private final WeakReference<NavigationBarInflaterView> mSelf;
@@ -205,6 +208,7 @@ public class NavigationBarInflaterView extends FrameLayout implements TunerServi
         Dependency.get(TunerService.class).addTunable(this, KEY_NAVIGATION_SPACE);
         mIsAttachedToWindow = true;
         Dependency.get(TunerService.class).addTunable(this, GESTURE_NAVBAR_LENGTH_MODE);
+        Dependency.get(TunerService.class).addTunable(this, GESTURE_NAVBAR_RADIUS);
     }
 
     @Override
@@ -248,6 +252,8 @@ public class NavigationBarInflaterView extends FrameLayout implements TunerServi
             }
         } else if (GESTURE_NAVBAR_LENGTH_MODE.equals(key)) {
             mHomeHandleWidthMode = TunerService.parseInteger(newValue, 1);
+            onLikelyDefaultLayoutChange();
+        } else if (GESTURE_NAVBAR_RADIUS.equals(key)) {
             onLikelyDefaultLayoutChange();
         }
     }
