@@ -63,7 +63,8 @@ public class NavigationBarInflaterView extends FrameLayout implements TunerServi
     public static final String NAV_BAR_LEFT = "sysui_nav_bar_left";
     public static final String NAV_BAR_RIGHT = "sysui_nav_bar_right";
     public static final String NAV_BAR_INVERSE = "sysui_nav_bar_inverse";
-    private static final String GESTURE_NAVBAR_LENGTH_MODE = "customsystem:" + Settings.System.GESTURE_NAVBAR_LENGTH_MODE;
+    private static final String GESTURE_NAVBAR_RADIUS = "system:" + Settings.System.GESTURE_NAVBAR_RADIUS;
+    private static final String GESTURE_NAVBAR_LENGTH_MODE = "system:" + Settings.System.GESTURE_NAVBAR_LENGTH_MODE;
 
     public static final String MENU_IME_ROTATE = "menu_ime";
     public static final String BACK = "back";
@@ -209,6 +210,7 @@ public class NavigationBarInflaterView extends FrameLayout implements TunerServi
         Dependency.get(TunerService.class).addTunable(this, KEY_NAVIGATION_HINT);
         Dependency.get(TunerService.class).addTunable(this, KEY_KEYBOARD_NO_NAVIGATION);
         Dependency.get(TunerService.class).addTunable(this, GESTURE_NAVBAR_LENGTH_MODE);
+        Dependency.get(TunerService.class).addTunable(this, GESTURE_NAVBAR_RADIUS);
     }
 
     @Override
@@ -232,6 +234,8 @@ public class NavigationBarInflaterView extends FrameLayout implements TunerServi
             updateLayoutInversion();
         } else if (GESTURE_NAVBAR_LENGTH_MODE.equals(key)) {
             mHomeHandleWidthMode = TunerService.parseInteger(newValue, 1);
+            onLikelyDefaultLayoutChange();
+        } else if (GESTURE_NAVBAR_RADIUS.equals(key)) {
             onLikelyDefaultLayoutChange();
         }
     }
