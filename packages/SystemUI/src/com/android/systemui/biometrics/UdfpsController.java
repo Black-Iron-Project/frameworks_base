@@ -82,6 +82,7 @@ import com.android.systemui.biometrics.udfps.TouchProcessor;
 import com.android.systemui.biometrics.udfps.TouchProcessorResult;
 import com.android.systemui.bouncer.domain.interactor.AlternateBouncerInteractor;
 import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerInteractor;
+import com.android.systemui.biometrics.UdfpsDisplayModeProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.doze.DozeReceiver;
@@ -852,6 +853,7 @@ public class UdfpsController implements DozeReceiver, Dumpable {
             @NonNull VibratorHelper vibrator,
             @NonNull UdfpsHapticsSimulator udfpsHapticsSimulator,
             @NonNull UdfpsShell udfpsShell,
+            @NonNull UdfpsDisplayModeProvider udfpsDisplayMode,
             @NonNull KeyguardStateController keyguardStateController,
             @NonNull DisplayManager displayManager,
             @Main Handler mainHandler,
@@ -896,6 +898,7 @@ public class UdfpsController implements DozeReceiver, Dumpable {
         mPowerManager = powerManager;
         mAccessibilityManager = accessibilityManager;
         mLockscreenShadeTransitionController = lockscreenShadeTransitionController;
+        mUdfpsDisplayMode = udfpsDisplayMode;
         screenLifecycle.addObserver(mScreenObserver);
         mScreenOn = screenLifecycle.getScreenState() == ScreenLifecycle.SCREEN_ON;
         mConfigurationController = configurationController;
