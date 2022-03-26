@@ -69,4 +69,7 @@
 
     <!-- DataSwitch Tile -->
     <string name="qs_data_switch_label">Switch data card</string>
+
+    <!-- Data Saver Statusbar Icon -->
+    <string name="status_bar_data_saver">Data saver</string>
 </resources>
