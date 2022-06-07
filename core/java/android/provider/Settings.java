@@ -6738,6 +6738,14 @@ public final class Settings {
                 "lockscreen_quick_unlock_control";
 
         /**
+         * Gesture navbar IME space.
+         * Supported modes: 0 for normal length, 1 for narrow and 2 for hidden.
+         * Default 0.
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_IME_SPACE = "navigation_bar_ime_space";
+
+        /**
          * Keys we no longer back up under the current schema, but want to continue to
          * process when restoring historical backup datasets.
          *
@@ -6884,6 +6892,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(VIBRATE_ON_CALLWAITING);
             PRIVATE_SETTINGS.add(VIBRATE_ON_DISCONNECT);
             PRIVATE_SETTINGS.add(LOCK_HIDE_STATUS_BAR);
+            PRIVATE_SETTINGS.add(NAVIGATION_BAR_IME_SPACE);
         }
 
         /**
