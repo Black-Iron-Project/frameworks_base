@@ -418,8 +418,14 @@ public class CropView extends View {
                     return new Range<>(0f, 1f - (mCrop.bottom - mCrop.top));
                 }
                 lower = 0f;
-                upper = mCrop.bottom - pixelDistanceToFraction(mCropTouchMargin,
-                        CropBoundary.BOTTOM);
+                if (mCurrentDraggingBoundary == CropBoundary.MIDDLE) {
+                    // When the current dragging boundary is the middle, do not let the user move
+                    // the selection past the bottom edge.
+                    upper = 1f - (mCrop.bottom - mCrop.top);
+                } else {
+                    upper = mCrop.bottom - pixelDistanceToFraction(mCropTouchMargin,
+                            CropBoundary.BOTTOM);
+                }
                 break;
             case BOTTOM:
                 lower = mCrop.top + pixelDistanceToFraction(mCropTouchMargin, CropBoundary.TOP);
@@ -432,7 +438,14 @@ public class CropView extends View {
                     return new Range<>(0f, 1f - (mCrop.right - mCrop.left));
                 }
                 lower = 0f;
-                upper = mCrop.right - pixelDistanceToFraction(mCropTouchMargin, CropBoundary.RIGHT);
+                if (mCurrentDraggingBoundary == CropBoundary.MIDDLE) {
+                    // When the current dragging boundary is the middle, do not let the user move
+                    // the selection past the right edge.
+                    upper = 1f - (mCrop.right - mCrop.left);
+                } else {
+                    upper = mCrop.right - pixelDistanceToFraction(mCropTouchMargin,
+                            CropBoundary.RIGHT);
+                }
                 break;
             case RIGHT:
                 lower = mCrop.left + pixelDistanceToFraction(mCropTouchMargin, CropBoundary.LEFT);
