@@ -30,4 +30,7 @@
     <dimen name="pocket_view_cancel_margin_horizontal">24dp</dimen>
     <dimen name="pocket_view_top_tag_size">13sp</dimen>
     <dimen name="pocket_view_top_tag_margin_top">8dp</dimen>
+
+    <!-- Whether to cancel fingerprint operation if not idle -->
+    <bool name="config_fpCancelIfNotIdle">false</bool>
 </resources>
