@@ -64,4 +64,7 @@
 
     <!-- Whether device supports an alt. ambient display -->
     <bool name="config_alt_ambient_display">false</bool>
+
+    <!-- Whether to handle audio direction changes between major call states -->
+    <bool name="config_handleAudioDirectionChangesBetweenCallStateChanges">true</bool>
 </resources>
