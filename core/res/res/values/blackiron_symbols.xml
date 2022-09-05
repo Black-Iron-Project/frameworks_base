@@ -178,4 +178,7 @@
 
     <!-- Whether device has Google Tensor SoC -->
     <java-symbol type="bool" name="config_hasTensorSoC" />
+
+    <!-- Location indicator -->
+    <java-symbol type="drawable" name="stat_sys_location" />
 </resources>
