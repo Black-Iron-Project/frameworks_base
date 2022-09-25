@@ -265,6 +265,8 @@ import com.android.internal.os.IBinaryTransparencyService;
 import com.android.internal.os.IDropBoxManagerService;
 import com.android.internal.policy.PhoneLayoutInflater;
 import com.android.internal.util.Preconditions;
+import com.oplus.os.ILinearmotorVibratorService;
+import com.oplus.os.LinearmotorVibrator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -1644,6 +1646,15 @@ public final class SystemServiceRegistry {
                         }
                     });
         }
+        registerService(Context.LINEARMOTOR_VIBRATOR_SERVICE, LinearmotorVibrator.class,
+                new CachedServiceFetcher<LinearmotorVibrator>() {
+            @Override
+            public LinearmotorVibrator createService(ContextImpl ctx) {
+                IBinder binder = ServiceManager.getService(Context.LINEARMOTOR_VIBRATOR_SERVICE);
+                ILinearmotorVibratorService service = ILinearmotorVibratorService.Stub.asInterface(binder);
+                return new LinearmotorVibrator(ctx.getOuterContext(), service);
+            }});
+
         sInitializing = true;
         try {
             // Note: the following functions need to be @SystemApis, once they become mainline
