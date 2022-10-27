@@ -51,6 +51,7 @@ import com.android.systemui.qs.QSHost;
 import com.android.systemui.qs.QsEventLogger;
 import com.android.systemui.qs.logging.QSLogger;
 import com.android.systemui.qs.tileimpl.QSTileImpl;
+import com.android.systemui.qs.tiles.dialog.BluetoothDialogFactory;
 import com.android.systemui.qs.tiles.dialog.bluetooth.BluetoothTileDialogViewModel;
 import com.android.systemui.res.R;
 import com.android.systemui.statusbar.policy.BluetoothController;
@@ -70,7 +71,9 @@ public class BluetoothTile extends SecureQSTile<BooleanState> {
 
     private static final String TAG = BluetoothTile.class.getSimpleName();
 
+    private final Handler mHandler;
     private final BluetoothController mController;
+    private final BluetoothDialogFactory mBluetoothDialogFactory;
 
     private CachedBluetoothDevice mMetadataRegisteredDevice = null;
 
@@ -94,11 +97,14 @@ public class BluetoothTile extends SecureQSTile<BooleanState> {
             BluetoothController bluetoothController,
             FeatureFlags featureFlags,
             BluetoothTileDialogViewModel dialogViewModel
+            BluetoothDialogFactory bluetoothDialogFactory,
             KeyguardStateController keyguardStateController
     ) {
         super(host, uiEventLogger, backgroundLooper, mainHandler, falsingManager, metricsLogger,
                 statusBarStateController, activityStarter, qsLogger, keyguardStateController);
+        mHandler = mainHandler;
         mController = bluetoothController;
+        mBluetoothDialogFactory = bluetoothDialogFactory;
         mController.observe(getLifecycle(), mCallback);
         mExecutor = new HandlerExecutor(mainHandler);
         mFeatureFlags = featureFlags;
@@ -107,7 +113,9 @@ public class BluetoothTile extends SecureQSTile<BooleanState> {
 
     @Override
     public BooleanState newTileState() {
-        return new BooleanState();
+        BooleanState s = new BooleanState();
+        s.forceExpandIcon = true;
+        return s;
     }
 
     @Override
@@ -119,11 +127,7 @@ public class BluetoothTile extends SecureQSTile<BooleanState> {
         if (mFeatureFlags.isEnabled(Flags.BLUETOOTH_QS_TILE_DIALOG)) {
             mDialogViewModel.showDialog(mContext, view);
         } else {
-            // Secondary clicks are header clicks, just toggle.
-            final boolean isEnabled = mState.value;
-            // Immediately enter transient enabling state when turning bluetooth on.
-            refreshState(isEnabled ? null : ARG_SHOW_TRANSIENT_ENABLING);
-            mController.setBluetoothEnabled(!isEnabled);
+        mHandler.post(() -> mBluetoothDialogFactory.create(true, view));
         }
     }
 
