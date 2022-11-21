@@ -969,9 +969,7 @@ public class ThemeOverlayController implements CoreStartable, Dumpable, TunerSer
             categoryToPackage.put(OVERLAY_CATEGORY_DYNAMIC_COLOR, mDynamicOverlay.getIdentifier());
         }
 
-        boolean isBlackMode = (Settings.Secure.getIntForUser(
-                mContext.getContentResolver(), Settings.Secure.BERRY_BLACK_THEME,
-                0, currentUser) == 1) && isNightMode();
+        boolean isBlackMode = isBlackThemeEnabled() && isNightMode();
         if (categoryToPackage.containsKey(OVERLAY_CATEGORY_SYSTEM_PALETTE) && isBlackMode) {
             OverlayIdentifier blackTheme = new OverlayIdentifier(OVERLAY_BERRY_BLACK_THEME);
             categoryToPackage.put(OVERLAY_CATEGORY_SYSTEM_PALETTE, blackTheme);
@@ -1026,6 +1024,11 @@ public class ThemeOverlayController implements CoreStartable, Dumpable, TunerSer
             }
         }
         return style;
+    }
+
+    private boolean isBlackThemeEnabled() {
+        return Settings.Secure.getIntForUser(
+            mContext.getContentResolver(), Settings.Secure.BERRY_BLACK_THEME, 0, mUserTracker.getUserId()) == 1;
     }
 
     @Override
