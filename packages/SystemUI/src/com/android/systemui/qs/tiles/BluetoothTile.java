@@ -96,7 +96,7 @@ public class BluetoothTile extends SecureQSTile<BooleanState> {
             QSLogger qsLogger,
             BluetoothController bluetoothController,
             FeatureFlags featureFlags,
-            BluetoothTileDialogViewModel dialogViewModel
+            BluetoothTileDialogViewModel dialogViewModel,
             BluetoothDialogFactory bluetoothDialogFactory,
             KeyguardStateController keyguardStateController
     ) {
@@ -127,13 +127,22 @@ public class BluetoothTile extends SecureQSTile<BooleanState> {
         if (mFeatureFlags.isEnabled(Flags.BLUETOOTH_QS_TILE_DIALOG)) {
             mDialogViewModel.showDialog(mContext, view);
         } else {
+        // Secondary clicks are header clicks, just toggle.
+        final boolean isEnabled = mState.value;
+        // Immediately enter transient enabling state when turning bluetooth on.
+        refreshState(isEnabled ? null : ARG_SHOW_TRANSIENT_ENABLING);
+        mController.setBluetoothEnabled(!isEnabled);
+    }
+
+    @Override
+    protected void handleLongClick(@Nullable View view) {
         mHandler.post(() -> mBluetoothDialogFactory.create(true, view));
         }
     }
 
     @Override
     public Intent getLongClickIntent() {
-        return new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+        return null;
     }
 
     @Override
