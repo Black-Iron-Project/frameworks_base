@@ -74,6 +74,12 @@ public class ZygoteProcess {
     private static final int ZYGOTE_CONNECT_TIMEOUT_MS = 20000;
 
     /**
+     * If an app zygote preloads slowly, the system_server will be blocked and no new
+     * applications can be launched, so we need a timeout to handle it.
+     */
+    private static final int APPLICATION_ZYGOTE_PRELOAD_TIMEOUT_MS = 60000;
+
+    /**
      * Use a relatively short delay, because for app zygote, this is in the critical path of
      * service launch.
      */
@@ -1109,7 +1115,12 @@ public class ZygoteProcess {
 
             state.mZygoteOutputWriter.flush();
 
-            return (state.mZygoteInputStream.readInt() == 0);
+            state.mZygoteSessionSocket.setSoTimeout(APPLICATION_ZYGOTE_PRELOAD_TIMEOUT_MS);
+            try {
+                return (state.mZygoteInputStream.readInt() == 0);
+            } finally {
+                state.mZygoteSessionSocket.setSoTimeout(0);
+            }
         }
     }
 
