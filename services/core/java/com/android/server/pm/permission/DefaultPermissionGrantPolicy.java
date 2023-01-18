@@ -142,6 +142,11 @@ final class DefaultPermissionGrantPolicy {
         PHONE_PERMISSIONS.add(Manifest.permission.PROCESS_OUTGOING_CALLS);
     }
 
+    private static final Set<String> WRITE_PERMISSIONS = new ArraySet<>();
+    static {
+        WRITE_PERMISSIONS.add(Manifest.permission.WRITE_SETTINGS);
+    }
+
     private static final Set<String> CONTACTS_PERMISSIONS = new ArraySet<>();
     static {
         CONTACTS_PERMISSIONS.add(Manifest.permission.READ_CONTACTS);
@@ -932,6 +937,11 @@ final class DefaultPermissionGrantPolicy {
         String commonServiceAction = "android.adservices.AD_SERVICES_COMMON_SERVICE";
         grantPermissionsToSystemPackage(pm, getDefaultSystemHandlerServicePackage(pm,
                         commonServiceAction, userId), userId, NOTIFICATION_PERMISSIONS);
+
+        // OnePlus Camera
+        grantSystemFixedPermissionsToSystemPackage(pm,
+                getDefaultProviderAuthorityPackage("com.oneplus.camera", userId),
+                userId, WRITE_PERMISSIONS);
     }
 
     private String getDefaultSystemHandlerActivityPackageForCategory(PackageManagerWrapper pm,
