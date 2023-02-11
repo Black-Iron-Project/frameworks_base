@@ -285,10 +285,8 @@ public class EdgeEffect {
             return;
         }
         AsyncTask.execute(
-                    () -> vibrator.vibrate(VibrationEffect.createOneShot(
-                hapticDuration.toMillis(),
-                VibrationEffect.EFFECT_TEXTURE_TICK)));
-        
+                    () -> vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)));
+
     }
 
     /**
