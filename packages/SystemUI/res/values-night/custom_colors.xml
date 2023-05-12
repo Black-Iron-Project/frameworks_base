@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <color name="sfps_chevron_fill">@color/material_dynamic_secondary20</color>
+
+    <!-- reTicker -->
+    <color name="reticker_background_color">@android:color/system_neutral1_900</color>
 </resources>
