@@ -22,10 +22,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.provider.AlarmClock;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.DisplayCutout;
@@ -34,12 +36,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.internal.graphics.ColorUtils;
 import com.android.internal.policy.SystemBarUtils;
 import com.android.settingslib.Utils;
 import com.android.systemui.Dependency;
@@ -62,6 +66,9 @@ import java.util.List;
  * battery, carrier info and privacy icons) and also contains the {@link QuickQSPanel}.
  */
 public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tunable {
+
+    private static final String QS_HEADER_IMAGE =
+            "system:" + Settings.System.QS_HEADER_IMAGE;
 
     private boolean mExpanded;
     private boolean mQsDisabled;
@@ -97,6 +104,12 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
     private BatteryMeterView mBatteryRemainingIcon;
     private StatusIconContainer mIconContainer;
     private View mPrivacyChip;
+
+    // QS Header
+    private ImageView mQsHeaderImageView;
+    private View mQsHeaderLayout;
+    private boolean mHeaderImageEnabled;
+    private int mHeaderImageValue;
 
     @Nullable
     private TintedIconManager mTintedIconManager;
@@ -164,6 +177,10 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
         // Tint for the battery icons are handled in setupHost()
         mBatteryRemainingIcon = findViewById(R.id.batteryRemainingIcon);
 
+        mQsHeaderLayout = findViewById(R.id.layout_header);
+        mQsHeaderImageView = findViewById(R.id.qs_header_image_view);
+        mQsHeaderImageView.setClipToOutline(true);
+
         updateResources();
 
         Configuration config = mContext.getResources().getConfiguration();
@@ -179,7 +196,8 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
                 .build();
 
         Dependency.get(TunerService.class).addTunable(this,
-                StatusBarIconController.ICON_HIDE_LIST);
+                StatusBarIconController.ICON_HIDE_LIST,
+                QS_HEADER_IMAGE);
     }
 
     void onAttach(TintedIconManager iconManager,
@@ -218,8 +236,8 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (mDatePrivacyView.getMeasuredHeight() != mTopViewMeasureHeight) {
             mTopViewMeasureHeight = mDatePrivacyView.getMeasuredHeight();
-            updateAnimators();
         }
+        updateAnimators();
     }
 
     @Override
@@ -332,6 +350,27 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
         updateAnimators();
 
         updateClockDatePadding();
+        updateQSHeaderImage();
+    }
+
+    private void updateQSHeaderImage() {
+        boolean mIsNightMode = (mContext.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        int orientation = getResources().getConfiguration().orientation;
+        if (mHeaderImageEnabled && orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            int fadeFilter = ColorUtils.blendARGB(Color.TRANSPARENT, mIsNightMode ? Color.BLACK : Color.WHITE, 30 / 100f);
+            int resId = getResources().getIdentifier("qs_header_image_" + String.valueOf(mHeaderImageValue), "drawable", "com.android.systemui");
+            mQsHeaderImageView.setImageResource(resId);
+            mQsHeaderImageView.setColorFilter(fadeFilter, PorterDuff.Mode.SRC_ATOP);
+            mQsHeaderImageView.setVisibility(View.VISIBLE);
+        } else {
+            mQsHeaderImageView.setVisibility(View.GONE);
+        }
+
+        ViewGroup.MarginLayoutParams qsHeaderLayout = (ViewGroup.MarginLayoutParams) mQsHeaderLayout.getLayoutParams(); 
+        qsHeaderLayout.height = mHeaderImageEnabled && orientation != Configuration.ORIENTATION_LANDSCAPE ? 
+            mContext.getResources().getDimensionPixelSize(R.dimen.qs_header_height_full) : 0;
+        qsHeaderLayout.setMargins(-50, 0, -50, 0);
+        mQsHeaderLayout.setLayoutParams(qsHeaderLayout); 
     }
 
     private void updateClockDatePadding() {
@@ -609,6 +648,16 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
     public void onTuningChanged(String key, String newValue) {
         mClockView.setClockVisibleByUser(!StatusBarIconController.getIconHideList(
                 mContext, newValue).contains("clock"));
+        switch (key) {
+            case QS_HEADER_IMAGE:
+                mHeaderImageValue =
+                       TunerService.parseInteger(newValue, 0);
+                mHeaderImageEnabled = mHeaderImageValue != 0;
+                updateResources();
+                break;
+            default:
+                break;
+        }
     }
 
     private void setBatteryRemainingOnClick(boolean enable) {
