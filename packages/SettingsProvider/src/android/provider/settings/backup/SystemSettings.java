@@ -91,6 +91,11 @@ public class SystemSettings {
         Settings.System.QS_TILE_VERTICAL_LAYOUT,
         Settings.System.QS_LAYOUT,
         Settings.System.QQS_LAYOUT,
-        Settings.System.ENABLE_RIPPLE_EFFECT
+        Settings.System.ENABLE_RIPPLE_EFFECT,
+        Settings.System.EDGE_LIGHT_ENABLED,
+        Settings.System.EDGE_LIGHT_ALWAYS_TRIGGER_ON_PULSE,
+        Settings.System.EDGE_LIGHT_REPEAT_ANIMATION,
+        Settings.System.EDGE_LIGHT_COLOR_MODE,
+        Settings.System.EDGE_LIGHT_CUSTOM_COLOR,
     };
 }
