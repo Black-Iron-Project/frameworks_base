@@ -235,6 +235,7 @@ import com.android.server.wm.WindowManagerGlobalLock;
 import com.android.server.wm.WindowManagerService;
 import com.android.server.blackiron.LineageGlobalActionsService;
 import com.android.server.blackiron.display.LiveDisplayService;
+import com.android.server.blackiron.health.HealthInterfaceService;
 
 import dalvik.system.VMRuntime;
 
@@ -2655,6 +2656,10 @@ public final class SystemServer implements Dumpable {
 
             t.traceBegin("StartLiveDisplayService");
             mSystemServiceManager.startService(LiveDisplayService.class);
+            t.traceEnd();
+
+            t.traceBegin("StartHealthService");
+            mSystemServiceManager.startService(HealthInterfaceService.class);
             t.traceEnd();
         }
 
