@@ -251,6 +251,11 @@ bool SkiaOpenGLPipeline::setSurface(ANativeWindow* surface, SwapBehavior swapBeh
     if (mEglSurface != EGL_NO_SURFACE) {
         const bool preserveBuffer = (swapBehavior != SwapBehavior::kSwap_discardBuffer);
         mEglManager.setPreserveBuffer(mEglSurface, preserveBuffer);
+        
+        if (preserveBuffer != isPreserved) {
+            //ALOGE("Unable to match the desired swap behavior.");
+        }
+        
         return true;
     }
 
