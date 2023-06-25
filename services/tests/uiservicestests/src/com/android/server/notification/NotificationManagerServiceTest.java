@@ -933,7 +933,7 @@ public class NotificationManagerServiceTest extends UiServiceTestCase {
 
         answers.put("override group key", invocationOnMock -> {
             ((NotificationRecord) invocationOnMock.getArguments()[0])
-                    .setOverrideGroupKey("bananas");
+                    .setOverrideGroupKey("blackirons");
             return null;
         });
         answers.put("override people", invocationOnMock -> {
@@ -5002,9 +5002,9 @@ public class NotificationManagerServiceTest extends UiServiceTestCase {
         assertEquals(40,
                 mService.getNotificationCount(PKG, userId, 0, "tag2"));
 
-        // return all for package "a" - "banana" tag isn't used
+        // return all for package "a" - "blackiron" tag isn't used
         assertEquals(2,
-                mService.getNotificationCount("a", userId, 0, "banana"));
+                mService.getNotificationCount("a", userId, 0, "blackiron"));
 
         // exclude a known notification - it's excluded from only the posted list, not enqueued
         assertEquals(39, mService.getNotificationCount(
@@ -6451,7 +6451,7 @@ public class NotificationManagerServiceTest extends UiServiceTestCase {
     @Test
     public void testVisualDifference_summary() {
         Notification.Builder nb1 = new Notification.Builder(mContext, "")
-                .setGroup("bananas")
+                .setGroup("blackirons")
                 .setFlag(Notification.FLAG_GROUP_SUMMARY, true)
                 .setContentText("foo");
         StatusBarNotification sbn1 = new StatusBarNotification(PKG, PKG, 0, "tag", mUid, 0,
@@ -6460,7 +6460,7 @@ public class NotificationManagerServiceTest extends UiServiceTestCase {
                 new NotificationRecord(mContext, sbn1, mock(NotificationChannel.class));
 
         Notification.Builder nb2 = new Notification.Builder(mContext, "")
-                .setGroup("bananas")
+                .setGroup("blackirons")
                 .setFlag(Notification.FLAG_GROUP_SUMMARY, true)
                 .setContentText("bar");
         StatusBarNotification sbn2 = new StatusBarNotification(PKG, PKG, 0, "tag", mUid, 0,
@@ -6474,7 +6474,7 @@ public class NotificationManagerServiceTest extends UiServiceTestCase {
     @Test
     public void testVisualDifference_summaryNewNotification() {
         Notification.Builder nb2 = new Notification.Builder(mContext, "")
-                .setGroup("bananas")
+                .setGroup("blackirons")
                 .setFlag(Notification.FLAG_GROUP_SUMMARY, true)
                 .setContentText("bar");
         StatusBarNotification sbn2 = new StatusBarNotification(PKG, PKG, 0, "tag", mUid, 0,
@@ -10362,7 +10362,7 @@ public class NotificationManagerServiceTest extends UiServiceTestCase {
         int uid = 9000;
         int[] userIds = new int[] {mUserId, 1000};
         when(mUm.getProfileIds(anyInt(), anyBoolean())).thenReturn(userIds);
-        List<String> disallowedApps = ImmutableList.of("apples", "bananas", "cherries");
+        List<String> disallowedApps = ImmutableList.of("apples", "blackirons", "cherries");
         for (int userId : userIds) {
             for (String pkg : disallowedApps) {
                 when(mPackageManager.getPackageUid(pkg, 0, userId)).thenReturn(uid++);

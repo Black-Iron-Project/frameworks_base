@@ -224,7 +224,7 @@ public class ZenModeFilteringTest extends UiServiceTestCase {
     @Test
     public void testSuppressAnything_yes_ZenModeOff() {
         NotificationRecord r = getNotificationRecord();
-        when(r.getSbn().getPackageName()).thenReturn("bananas");
+        when(r.getSbn().getPackageName()).thenReturn("blackirons");
         Policy policy = new Policy(0, 0, 0, Policy.getAllSuppressedVisualEffects());
 
         assertFalse(mZenModeFiltering.shouldIntercept(ZEN_MODE_OFF, policy, r));
@@ -234,7 +234,7 @@ public class ZenModeFilteringTest extends UiServiceTestCase {
     public void testSuppressAnything_bypass_ZenModeOn() {
         NotificationRecord r = getNotificationRecord();
         r.setCriticality(CriticalNotificationExtractor.CRITICAL);
-        when(r.getSbn().getPackageName()).thenReturn("bananas");
+        when(r.getSbn().getPackageName()).thenReturn("blackirons");
         Policy policy = new Policy(0, 0, 0, Policy.getAllSuppressedVisualEffects(), 0);
 
         assertFalse(mZenModeFiltering.shouldIntercept(ZEN_MODE_NO_INTERRUPTIONS, policy, r));

@@ -330,7 +330,7 @@ public class Build {
         public static final String INCREMENTAL = getString("ro.build.version.incremental");
 
         /**
-         * The user-visible version string.  E.g., "1.0" or "3.4b5" or "bananas".
+         * The user-visible version string.  E.g., "1.0" or "3.4b5" or "blackirons".
          *
          * This field is an opaque string. Do not assume that its value
          * has any particular structure or that values of RELEASE from

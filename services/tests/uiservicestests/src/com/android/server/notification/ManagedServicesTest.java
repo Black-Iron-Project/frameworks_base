@@ -169,13 +169,13 @@ public class ManagedServicesTest extends UiServiceTestCase {
         mExpectedPrimaryPackages.put(0, "this.is.a.package.name:another.package");
         mExpectedPrimaryPackages.put(10, "this.is.another.package");
         mExpectedPrimaryPackages.put(11, "");
-        mExpectedPrimaryPackages.put(12, "bananas!");
+        mExpectedPrimaryPackages.put(12, "blackirons!");
         mExpectedPrimaryPackages.put(13, "non.user.set.package");
         mExpectedPrimaryComponentNames = new ArrayMap<>();
         mExpectedPrimaryComponentNames.put(0, "this.is.a.package.name/Ba:another.package/B1");
         mExpectedPrimaryComponentNames.put(10, "this.is.another.package/M1");
         mExpectedPrimaryComponentNames.put(11, "");
-        mExpectedPrimaryComponentNames.put(12, "bananas!/Bananas!");
+        mExpectedPrimaryComponentNames.put(12, "blackirons!/Bananas!");
         mExpectedPrimaryComponentNames.put(13, "non.user.set.package/M1");
         mExpectedPrimary.put(APPROVAL_BY_PACKAGE, mExpectedPrimaryPackages);
         mExpectedPrimary.put(APPROVAL_BY_COMPONENT, mExpectedPrimaryComponentNames);
@@ -227,7 +227,7 @@ public class ManagedServicesTest extends UiServiceTestCase {
         ArrayMap<Integer, String> backupPrimaryComponentNames = new ArrayMap<>();
         backupPrimaryComponentNames.put(0, "backup.first/whatever:a/b");
         backupPrimaryComponentNames.put(10, "again/M1");
-        backupPrimaryComponentNames.put(11, "orange/youglad:itisnot/banana");
+        backupPrimaryComponentNames.put(11, "orange/youglad:itisnot/blackiron");
         backupPrimaryComponentNames.put(12, "");
         ArrayMap<Integer, ArrayMap<Integer, String>> backupPrimary = new ArrayMap<>();
         backupPrimary.put(APPROVAL_BY_PACKAGE, backupPrimaryPackages);
@@ -696,7 +696,7 @@ public class ManagedServicesTest extends UiServiceTestCase {
 
             verifyExpectedApprovedEntries(service);
             assertFalse(service.isPackageOrComponentAllowed("this.is.a.package.name", 0));
-            assertFalse(service.isPackageOrComponentAllowed("bananas!", 12));
+            assertFalse(service.isPackageOrComponentAllowed("blackirons!", 12));
             assertFalse(service.isPackageOrComponentAllowed("package/component2", 10));
         }
     }
@@ -1314,7 +1314,7 @@ public class ManagedServicesTest extends UiServiceTestCase {
         expected0.add(ComponentName.unflattenFromString("another.package/B1"));
         expected.put(0, expected0);
         ArraySet<ComponentName> expected12 = new ArraySet<>();
-        expected12.add(ComponentName.unflattenFromString("bananas!/Bananas!"));
+        expected12.add(ComponentName.unflattenFromString("blackirons!/Bananas!"));
         expected.put(12, expected12);
         expected.put(11, new ArraySet<>());
         ArraySet<ComponentName> expected13 = new ArraySet<>();
