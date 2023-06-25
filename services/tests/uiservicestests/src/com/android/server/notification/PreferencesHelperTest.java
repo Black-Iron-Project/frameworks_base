@@ -1711,10 +1711,10 @@ public class PreferencesHelperTest extends UiServiceTestCase {
     @Test
     public void testDeletesDefaultChannelAfterChannelIsCreated() throws Exception {
         mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_LOW), true, false,
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_LOW), true, false,
                 UID_N_MR1, false);
         ByteArrayOutputStream baos = writeXmlAndPurge(PKG_N_MR1, UID_N_MR1, false,
-                UserHandle.USER_ALL, NotificationChannel.DEFAULT_CHANNEL_ID, "bananas");
+                UserHandle.USER_ALL, NotificationChannel.DEFAULT_CHANNEL_ID, "blackirons");
 
         // Load package at higher sdk.
         final ApplicationInfo upgraded = new ApplicationInfo();
@@ -1732,21 +1732,20 @@ public class PreferencesHelperTest extends UiServiceTestCase {
         ByteArrayOutputStream baos = writeXmlAndPurge(PKG_N_MR1, UID_N_MR1, false,
                 UserHandle.USER_ALL, NotificationChannel.DEFAULT_CHANNEL_ID, "bananas");
         mXmlHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_LOW), true, false,
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_LOW), true, false,
                 UID_N_MR1, false);
 
         loadStreamXml(baos, false, UserHandle.USER_ALL);
 
         // Should still have the newly created channel that wasn't in the xml.
-        assertTrue(mXmlHelper.getNotificationChannel(
-                PKG_N_MR1, UID_N_MR1, "bananas", false) != null);
+        assertTrue(mHelper.getNotificationChannel(PKG_N_MR1, UID_N_MR1, "blackirons", false) != null);
     }
 
     @Test
     public void testCreateChannel_badImportance() throws Exception {
         try {
             mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                    new NotificationChannel("bananas", "bananas", IMPORTANCE_NONE - 1),
+                    new NotificationChannel("blackirons", "blackirons", IMPORTANCE_NONE - 1),
                     true, false, UID_N_MR1, false);
             fail("Was allowed to create a channel with invalid importance");
         } catch (IllegalArgumentException e) {
@@ -1754,7 +1753,7 @@ public class PreferencesHelperTest extends UiServiceTestCase {
         }
         try {
             mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                    new NotificationChannel("bananas", "bananas", IMPORTANCE_UNSPECIFIED),
+                    new NotificationChannel("blackirons", "blackirons", IMPORTANCE_UNSPECIFIED),
                     true, false, UID_N_MR1, false);
             fail("Was allowed to create a channel with invalid importance");
         } catch (IllegalArgumentException e) {
@@ -1762,61 +1761,61 @@ public class PreferencesHelperTest extends UiServiceTestCase {
         }
         try {
             mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                    new NotificationChannel("bananas", "bananas", IMPORTANCE_MAX + 1),
+                    new NotificationChannel("blackirons", "blackirons", IMPORTANCE_MAX + 1),
                     true, false, UID_N_MR1, false);
             fail("Was allowed to create a channel with invalid importance");
         } catch (IllegalArgumentException e) {
             // yay
         }
         assertTrue(mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_NONE), true, false,
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_NONE), true, false,
                 UID_N_MR1, false));
         assertFalse(mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_MAX), true, false,
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_MAX), true, false,
                 UID_N_MR1, false));
     }
 
     @Test
     public void testUpdateChannel_downgradeImportance() {
         mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_DEFAULT),
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_DEFAULT),
                 true, false, UID_N_MR1, false);
 
         assertTrue(mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_LOW), true, false,
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_LOW), true, false,
                 UID_N_MR1, false));
     }
 
     @Test
     public void testUpdateChannel_upgradeImportance_ignored() {
         mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_DEFAULT),
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_DEFAULT),
                 true, false, UID_N_MR1, false);
 
         assertFalse(mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_MAX), true, false,
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_MAX), true, false,
                 UID_N_MR1, false));
     }
 
     @Test
     public void testUpdateChannel_badImportance() {
         mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                new NotificationChannel("bananas", "bananas", IMPORTANCE_DEFAULT),
+                new NotificationChannel("blackirons", "blackirons", IMPORTANCE_DEFAULT),
                 true, false, UID_N_MR1, false);
 
         assertThrows(IllegalArgumentException.class,
                 () -> mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                        new NotificationChannel("bananas", "bananas", IMPORTANCE_NONE - 1), true,
+                        new NotificationChannel("blackirons", "blackirons", IMPORTANCE_NONE - 1), true,
                         false, UID_N_MR1, false));
 
         assertThrows(IllegalArgumentException.class,
                 () -> mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                        new NotificationChannel("bananas", "bananas", IMPORTANCE_UNSPECIFIED), true,
+                        new NotificationChannel("blackirons", "blackirons", IMPORTANCE_UNSPECIFIED), true,
                         false, UID_N_MR1, false));
 
         assertThrows(IllegalArgumentException.class,
                 () -> mHelper.createNotificationChannel(PKG_N_MR1, UID_N_MR1,
-                        new NotificationChannel("bananas", "bananas", IMPORTANCE_MAX + 1), true,
+                        new NotificationChannel("blackirons", "blackirons", IMPORTANCE_MAX + 1), true,
                         false, UID_N_MR1, false));
     }
 
@@ -2804,7 +2803,7 @@ public class PreferencesHelperTest extends UiServiceTestCase {
         NotificationChannel convo =
                 new NotificationChannel("convo", "belongs to notDeleted", IMPORTANCE_DEFAULT);
         convo.setGroup("not");
-        convo.setConversationId("not deleted", "banana");
+        convo.setConversationId("not deleted", "blackiron");
 
         mHelper.createNotificationChannelGroup(PKG_N_MR1, UID_N_MR1, notDeleted, true,
                 UID_N_MR1, false);
@@ -3522,7 +3521,7 @@ public class PreferencesHelperTest extends UiServiceTestCase {
 
     @Test
     public void testOnLocaleChanged_updatesDefaultChannels() throws Exception {
-        String newLabel = "bananas!";
+        String newLabel = "blackirons!";
         final NotificationChannel defaultChannel = mHelper.getNotificationChannel(PKG_N_MR1,
                 UID_N_MR1,
                 NotificationChannel.DEFAULT_CHANNEL_ID, false);
@@ -3811,7 +3810,7 @@ public class PreferencesHelperTest extends UiServiceTestCase {
         mHelper.setNotificationDelegate(PKG_O, UID_O, "other", 53);
         mHelper.revokeNotificationDelegate(PKG_O, UID_O);
 
-        assertFalse(mHelper.isDelegateAllowed(PKG_O, UID_O, "banana", 27));
+        assertFalse(mHelper.isDelegateAllowed(PKG_O, UID_O, "blackiron", 27));
     }
 
     @Test
