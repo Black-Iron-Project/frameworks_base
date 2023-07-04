@@ -61,8 +61,10 @@ import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.hardware.power.Boost;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManagerInternal;
 import android.os.Trace;
 import android.os.UserManager;
 import android.os.VibrationEffect;
@@ -110,6 +112,7 @@ import com.android.keyguard.dagger.KeyguardQsUserSwitchComponent;
 import com.android.keyguard.dagger.KeyguardStatusBarViewComponent;
 import com.android.keyguard.dagger.KeyguardStatusViewComponent;
 import com.android.keyguard.dagger.KeyguardUserSwitcherComponent;
+import com.android.server.LocalServices;
 import com.android.systemui.DejankUtils;
 import com.android.systemui.Dumpable;
 import com.android.systemui.Gefingerpoken;
@@ -630,6 +633,9 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
     private int mLockscreenToDreamingTransitionTranslationY;
     private int mGoneToDreamingTransitionTranslationY;
     private SplitShadeStateController mSplitShadeStateController;
+
+    private final PowerManagerInternal mLocalPowerManager;
+
     private final Runnable mFlingCollapseRunnable = () -> fling(0, false /* expand */,
             mNextCollapseSpeedUpFactor, false /* expandBecauseOfFalsing */);
     private final Runnable mAnimateKeyguardBottomAreaInvisibleEndRunnable =
@@ -1019,6 +1025,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                 });
         mAlternateBouncerInteractor = alternateBouncerInteractor;
         dumpManager.registerDumpable(this);
+        mLocalPowerManager = LocalServices.getService(PowerManagerInternal.class);
     }
 
     private void unlockAnimationFinished() {
@@ -2168,6 +2175,10 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                 }
             });
         }
+        if (mLocalPowerManager != null) {
+            mLocalPowerManager.setPowerBoost(Boost.DISPLAY_UPDATE_IMMINENT, 200);
+        }
+
         animator.addListener(new AnimatorListenerAdapter() {
             private boolean mCancelled;
 
