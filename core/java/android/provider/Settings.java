@@ -12822,6 +12822,11 @@ public final class Settings {
         public static final String BACK_GESTURE_ARROW = "back_gesture_arrow";
 
         /**
+         * @hide
+         */
+        public static final String PREF_KG_USER_SWITCHER = "pref_kg_user_switcher";
+
+        /**
          * Keys we no longer back up under the current schema, but want to continue to
          * process when restoring historical backup datasets.
          *
