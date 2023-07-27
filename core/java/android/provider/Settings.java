@@ -11924,6 +11924,12 @@ public final class Settings {
         public static final String KG_SMALL_CLOCK_TEXT_SIZE = "kg_small_clock_text_size";
 
         /**
+         * Boolean value whether to link ringtone and notification volume
+         * @hide
+         */
+        public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
+
+        /**
          * Keys we no longer back up under the current schema, but want to continue to
          * process when restoring historical backup datasets.
          *
