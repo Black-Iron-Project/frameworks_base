@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Helper functions for uploading to StagBin (https://stagbin.tk).
+ * Helper functions for uploading to StagBin (https://stagb.in).
  */
 public final class StagBinUtils {
 
@@ -47,7 +47,7 @@ public final class StagBinUtils {
     public static void upload(String data, UploadResultCallback callback) {
         getHandler().post(() -> {
             try {
-                URL url = new URL("https://api.stagbin.tk/dev/content");
+                URL url = new URL("https://api.stagb.in/dev/content");
                 HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setRequestProperty("Content-Type", "application/json");
                 urlConnection.setRequestProperty("Accept-Charset", "UTF-8");
@@ -68,7 +68,7 @@ public final class StagBinUtils {
 
                 String id = new JSONObject(responseBody).getString("id");
                 if (!id.isEmpty()) {
-                    callback.onSuccess(String.format("https://stagbin.tk/%s", id));
+                    callback.onSuccess(String.format("https://stagb.in/%s", id));
                 } else {
                     String msg = "Failed to upload to StagBin: No id retrieved";
                     callback.onFail(msg, new Exception(msg));
