@@ -227,4 +227,8 @@
     <java-symbol type="dimen" name="status_bar_padding_start" />
     <java-symbol type="dimen" name="status_bar_padding_end" />
     <java-symbol type="dimen" name="status_bar_padding_top" />
+
+    <!-- Define device configs on boot -->
+    <java-symbol type="array" name="global_device_configs_override" />
+    <java-symbol type="array" name="device_configs_override" />
 </resources>
