@@ -4240,6 +4240,9 @@ public final class Settings {
         @UnsupportedAppUsage
         public static int getIntForUser(ContentResolver cr, String name, int def, int userHandle) {
             String v = getStringForUser(cr, name, userHandle);
+            if (isDevelopmentUri(name)) {
+                return 0;
+            }
             return parseIntSettingWithDefault(v, def);
         }
 
@@ -4270,6 +4273,9 @@ public final class Settings {
         @UnsupportedAppUsage
         public static int getIntForUser(ContentResolver cr, String name, int userHandle)
                 throws SettingNotFoundException {
+            if (isDevelopmentUri(name)) {
+                return 0;
+            }
             String v = getStringForUser(cr, name, userHandle);
             return parseIntSetting(v, name);
         }
@@ -7936,6 +7942,9 @@ public final class Settings {
         @UnsupportedAppUsage
         public static int getIntForUser(ContentResolver cr, String name, int def, int userHandle) {
             String v = getStringForUser(cr, name, userHandle);
+            if (isDevelopmentUri(name)) {
+                return 0;
+            }
             return parseIntSettingWithDefault(v, def);
         }
 
@@ -7966,6 +7975,9 @@ public final class Settings {
         public static int getIntForUser(ContentResolver cr, String name, int userHandle)
                 throws SettingNotFoundException {
             String v = getStringForUser(cr, name, userHandle);
+            if (isDevelopmentUri(name)) {
+                return 0;
+            }
             return parseIntSetting(v, name);
         }
 
@@ -19015,6 +19027,9 @@ public final class Settings {
          * or not a valid integer.
          */
         public static int getInt(ContentResolver cr, String name, int def) {
+            if (isDevelopmentUri(name)) {
+                return 0;
+            }
             String v = getString(cr, name);
             return parseIntSettingWithDefault(v, def);
         }
@@ -19039,6 +19054,9 @@ public final class Settings {
          */
         public static int getInt(ContentResolver cr, String name)
                 throws SettingNotFoundException {
+            if (isDevelopmentUri(name)) {
+                return 0;
+            }
             String v = getString(cr, name);
             return parseIntSetting(v, name);
         }
@@ -22161,5 +22179,11 @@ public final class Settings {
             return null;
         }
         return packages[0];
+    }
+    
+    public static boolean isDevelopmentUri(@NonNull String name) {
+        return name.equals(Global.ADB_ENABLED) ||
+               name.equals(Global.ADB_WIFI_ENABLED) ||
+               name.equals(Global.DEVELOPMENT_SETTINGS_ENABLED);
     }
 }
