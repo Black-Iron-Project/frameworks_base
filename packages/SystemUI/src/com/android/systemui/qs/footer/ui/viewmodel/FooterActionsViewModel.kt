@@ -17,12 +17,15 @@
 package com.android.systemui.qs.footer.ui.viewmodel
 
 import android.content.Context
+import android.os.UserHandle
+import android.provider.Settings
 import android.util.Log
 import android.view.ContextThemeWrapper
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.android.settingslib.Utils
+import com.android.systemui.Dependency
 import com.android.systemui.animation.Expandable
 import com.android.systemui.common.shared.model.ContentDescription
 import com.android.systemui.common.shared.model.Icon
@@ -33,6 +36,7 @@ import com.android.systemui.plugins.FalsingManager
 import com.android.systemui.qs.dagger.QSFlagsModule.PM_LITE_ENABLED
 import com.android.systemui.qs.footer.data.model.UserSwitcherStatusModel
 import com.android.systemui.qs.footer.domain.interactor.FooterActionsInteractor
+import com.android.systemui.statusbar.policy.KeyguardStateController
 import com.android.systemui.qs.footer.domain.model.SecurityButtonConfig
 import com.android.systemui.res.R
 import com.android.systemui.util.icuMessageFormat
@@ -189,6 +193,12 @@ fun FooterActionsViewModel(
     }
 
     fun onPowerButtonClicked(expandable: Expandable) {
+        val mKeyguard = Dependency.get(KeyguardStateController::class.java)
+        if (mKeyguard.isShowing() && mKeyguard.isMethodSecure() 
+                && Settings.System.getIntForUser(context.getContentResolver(),
+                Settings.System.LOCKSCREEN_ENABLE_POWER_MENU, 1, UserHandle.USER_CURRENT) == 0) {
+            return
+        }
         if (falsingManager.isFalseTap(FalsingManager.LOW_PENALTY)) {
             return
         }
