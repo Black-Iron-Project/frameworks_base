@@ -177,7 +177,11 @@ public class Transitions implements RemoteCallable<Transitions>,
     /** Transition to resize PiP task. */
     public static final int TRANSIT_RESIZE_PIP = TRANSIT_FIRST_CUSTOM + 16;
 
+    /** Transition type for exiting freeform via the Shell */
+    public static final int TRANSIT_EXIT_FREEFORM = WindowManager.TRANSIT_FIRST_CUSTOM + 16;
+
     private final ShellTaskOrganizer mOrganizer;
+
     private final Context mContext;
     private final ShellExecutor mMainExecutor;
     private final ShellExecutor mAnimExecutor;
