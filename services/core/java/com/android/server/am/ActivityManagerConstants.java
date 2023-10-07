@@ -1415,11 +1415,9 @@ final class ActivityManagerConstants extends ContentObserver {
         CUR_MAX_CACHED_PROCESSES = Integer.min(mCustomizedMaxCachedProcesses, MAX_CACHED_PROCESSES);
         CUR_MAX_EMPTY_PROCESSES = computeEmptyProcessLimit(CUR_MAX_CACHED_PROCESSES);
 
-        final int rawMaxEmptyProcesses = computeEmptyProcessLimit(
-                Integer.min(CUR_MAX_CACHED_PROCESSES, MAX_CACHED_PROCESSES));
+        final int rawMaxEmptyProcesses = computeEmptyProcessLimit(CUR_MAX_CACHED_PROCESSES);
         CUR_TRIM_EMPTY_PROCESSES = rawMaxEmptyProcesses / 2;
-        CUR_TRIM_CACHED_PROCESSES = (Integer.min(CUR_MAX_CACHED_PROCESSES, MAX_CACHED_PROCESSES)
-                    - rawMaxEmptyProcesses) / 3;
+        CUR_TRIM_CACHED_PROCESSES = (CUR_MAX_CACHED_PROCESSES - rawMaxEmptyProcesses) / 3;
         loadNativeBootDeviceConfigConstants();
         mDefaultDisableAppProfilerPssProfiling = context.getResources().getBoolean(
                 R.bool.config_am_disablePssProfiling);
@@ -2005,11 +2003,9 @@ final class ActivityManagerConstants extends ContentObserver {
 
         CUR_MAX_EMPTY_PROCESSES = computeEmptyProcessLimit(CUR_MAX_CACHED_PROCESSES);
 
-        final int rawMaxEmptyProcesses = computeEmptyProcessLimit(
-                Integer.min(CUR_MAX_CACHED_PROCESSES, MAX_CACHED_PROCESSES));
+        final int rawMaxEmptyProcesses = computeEmptyProcessLimit(CUR_MAX_CACHED_PROCESSES);
         CUR_TRIM_EMPTY_PROCESSES = rawMaxEmptyProcesses / 2;
-        CUR_TRIM_CACHED_PROCESSES = (Integer.min(CUR_MAX_CACHED_PROCESSES, MAX_CACHED_PROCESSES)
-                    - rawMaxEmptyProcesses) / 3;
+        CUR_TRIM_CACHED_PROCESSES = (CUR_MAX_CACHED_PROCESSES - rawMaxEmptyProcesses) / 3;
     }
 
     private void updateProactiveKillsEnabled() {
