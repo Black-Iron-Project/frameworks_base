@@ -18,17 +18,23 @@ package com.android.wm.shell.freeform;
 
 import static android.app.WindowConfiguration.WINDOWING_MODE_FREEFORM;
 import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
+import static com.android.wm.shell.animation.Interpolators.ALPHA_IN;
+import static com.android.wm.shell.animation.Interpolators.ALPHA_OUT;
+import static com.android.wm.shell.animation.Interpolators.FAST_OUT_SLOW_IN;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.RectEvaluator;
 import android.animation.ValueAnimator;
 import android.app.ActivityManager;
 import android.app.WindowConfiguration;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.IBinder;
 import android.util.ArrayMap;
 import android.view.SurfaceControl;
+import android.view.SurfaceSession;
 import android.view.WindowManager;
 import android.window.TransitionInfo;
 import android.window.TransitionRequestInfo;
@@ -39,8 +45,10 @@ import androidx.annotation.Nullable;
 
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.ShellExecutor;
+import com.android.wm.shell.common.SurfaceUtils;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.transition.Transitions;
+import com.android.wm.shell.windowdecor.ResizeVeil;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 
 import java.util.ArrayList;
@@ -52,6 +60,9 @@ import java.util.List;
  */
 public class FreeformTaskTransitionHandler
         implements Transitions.TransitionHandler, FreeformTaskTransitionStarter {
+    private static final int FULLSCREEN_ANIMATION_DURATION = 300;
+    private static final int FREEFORM_ANIMATION_DURATION = 300;
+    private static final int ALPHA_ANIMATION_DURATION = 100;
     private static final int CLOSE_ANIM_DURATION = 400;
     private final Context mContext;
     private final Transitions mTransitions;
@@ -63,6 +74,7 @@ public class FreeformTaskTransitionHandler
     private final List<IBinder> mPendingTransitionTokens = new ArrayList<>();
 
     private final ArrayMap<IBinder, ArrayList<Animator>> mAnimations = new ArrayMap<>();
+    private final SurfaceSession mSurfaceSession = new SurfaceSession();
 
     public FreeformTaskTransitionHandler(
             ShellInit shellInit,
@@ -157,15 +169,18 @@ public class FreeformTaskTransitionHandler
 
             switch (change.getMode()) {
                 case WindowManager.TRANSIT_CHANGE:
-                    transitionHandled |= startChangeTransition(
-                            transition, info.getType(), change);
+                    transitionHandled |= startChangeTransition(transition, info.getType(), change,
+                            startT, animations, onAnimFinish);
                     break;
                 case WindowManager.TRANSIT_TO_BACK:
-                    transitionHandled |= startToBackTransition(transition, info.getType(), change);
+                    transitionHandled |= startToBackTransition(transition, info.getType(), change,
+                            animations, onAnimFinish);
                     break;
                 case WindowManager.TRANSIT_OPEN:
+                case WindowManager.TRANSIT_TO_FRONT:
                     if (change.getTaskInfo().getWindowingMode() == WINDOWING_MODE_FREEFORM) {
-                        transitionHandled |= startOpenTransition(transition);
+                        transitionHandled |= startOpenTransition(transition, change, animations,
+                                onAnimFinish);
                     }
                     break;
                 case WindowManager.TRANSIT_CLOSE:
@@ -210,7 +225,10 @@ public class FreeformTaskTransitionHandler
     private boolean startChangeTransition(
             IBinder transition,
             int type,
-            TransitionInfo.Change change) {
+            TransitionInfo.Change change,
+            SurfaceControl.Transaction startT,
+            ArrayList<Animator> animations,
+            Runnable onAnimFinish) {
         if (!mPendingTransitionTokens.contains(transition)) {
             return false;
         }
@@ -219,37 +237,135 @@ public class FreeformTaskTransitionHandler
         final ActivityManager.RunningTaskInfo taskInfo = change.getTaskInfo();
         if (type == Transitions.TRANSIT_MAXIMIZE
                 && taskInfo.getWindowingMode() == WINDOWING_MODE_FULLSCREEN) {
-            // TODO: Add maximize animations
-            handled = true;
+            handled = handleToFullscreenTransition(change, startT, animations, onAnimFinish);
         }
 
         if (type == Transitions.TRANSIT_RESTORE_FROM_MAXIMIZE
                 && taskInfo.getWindowingMode() == WINDOWING_MODE_FREEFORM) {
-            // TODO: Add restore animations
-            handled = true;
+            handled = handleToFreeformTransition(change, startT, animations, onAnimFinish);
         }
 
         return handled;
     }
 
+    private boolean handleToFreeformTransition(
+            TransitionInfo.Change change,
+            SurfaceControl.Transaction startT,
+            ArrayList<Animator> animations,
+            Runnable onAnimFinish) {
+        final SurfaceControl leash = change.getLeash();
+        final Rect startBounds = change.getStartAbsBounds();
+        final Rect endBounds = change.getEndAbsBounds();
+        // Hide the first (freeform) frame because the animation will start from the fullscreen
+        // size.
+        startT.hide(leash)
+                .setWindowCrop(leash, endBounds.width(), endBounds.height());
+        // Set up veil layer.
+        final int veilColorId = ResizeVeil.getBackgroundColorId(mContext);
+        final int veilColor = mContext.getColor(veilColorId);
+        final SurfaceControl veilLayer = SurfaceUtils.makeColorLayer(
+                leash,
+                leash + "_veil_layer",
+                mSurfaceSession);
+        startT.setLayer(veilLayer, Integer.MAX_VALUE)
+                .setColor(veilLayer, new float[]{
+                        Color.red(veilColor) / 255f,
+                        Color.green(veilColor) / 255f,
+                        Color.blue(veilColor) / 255f
+                });
+        final ValueAnimator animator =
+                ValueAnimator.ofObject(new RectEvaluator(), startBounds, endBounds)
+                        .setDuration(FREEFORM_ANIMATION_DURATION);
+        animator.setInterpolator(FAST_OUT_SLOW_IN);
+        final SurfaceControl.Transaction t = new SurfaceControl.Transaction();
+        animator.addUpdateListener(animation -> {
+            // Show veil while resizing.
+            t.show(veilLayer);
+            final Rect animatedValue = (Rect) animator.getAnimatedValue();
+            t.setPosition(leash, animatedValue.left, animatedValue.top)
+                    .setWindowCrop(leash, animatedValue.width(), animatedValue.height())
+                    .show(leash)
+                    .apply();
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                t.setPosition(leash, endBounds.left, endBounds.top)
+                        .setWindowCrop(leash, endBounds.width(), endBounds.height())
+                        .hide(veilLayer)
+                        .remove(veilLayer)
+                        .apply();
+                t.close();
+                animations.remove(animator);
+                onAnimFinish.run();
+            }
+        });
+        animations.add(animator);
+        return true;
+    }
+
+    private boolean handleToFullscreenTransition(
+            TransitionInfo.Change change,
+            SurfaceControl.Transaction startT,
+            ArrayList<Animator> animations,
+            Runnable onAnimFinish) {
+        final SurfaceControl leash = change.getLeash();
+        final Rect startBounds = change.getStartAbsBounds();
+        final Rect endBounds = change.getEndAbsBounds();
+        // Hide the first (fullscreen) frame because the animation will start from the freeform
+        // size.
+        startT.hide(leash)
+                .setWindowCrop(leash, endBounds.width(), endBounds.height());
+        final ValueAnimator animator =
+                ValueAnimator.ofObject(new RectEvaluator(), startBounds, endBounds)
+                        .setDuration(FULLSCREEN_ANIMATION_DURATION);
+        animator.setInterpolator(FAST_OUT_SLOW_IN);
+        final SurfaceControl.Transaction t = new SurfaceControl.Transaction();
+        animator.addUpdateListener(animation -> {
+            final Rect animationValue = (Rect) animator.getAnimatedValue();
+            t.setPosition(leash, animationValue.left, animationValue.top)
+                    .setWindowCrop(leash, animationValue.width(), animationValue.height())
+                    .show(leash)
+                    .apply();
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                t.setPosition(leash, endBounds.left, endBounds.top)
+                        .setWindowCrop(leash, endBounds.width(), endBounds.height())
+                        .apply();
+                t.close();
+                animations.remove(animator);
+                onAnimFinish.run();
+            }
+        });
+        animations.add(animator);
+        return true;
+    }
+
     private boolean startToBackTransition(
             IBinder transition,
             int type,
-            TransitionInfo.Change change) {
+            TransitionInfo.Change change,
+            List<Animator> animations,
+            Runnable onAnimFinish) {
         if (!mPendingTransitionTokens.contains(transition)) {
             return false;
         }
         boolean handled = false;
         if (type == Transitions.TRANSIT_EXIT_FREEFORM) {
-            handled = handleExitTransition();
+            handled = handleExitTransition(change, animations, onAnimFinish);
         } else if (change.getTaskInfo().getWindowingMode() == WINDOWING_MODE_FREEFORM) {
             handled = handleMinimizeTransition();
         }
         return handled;
     }
 
-    private boolean handleExitTransition() {
-        // TODO animation
+    private boolean handleExitTransition(
+            TransitionInfo.Change change,
+            List<Animator> animations,
+            Runnable onAnimFinish) {
+        startFadeAnimation(change.getLeash(), animations, onAnimFinish, false /* show */);
         return true;
     }
 
@@ -258,9 +374,43 @@ public class FreeformTaskTransitionHandler
         return true;
     }
 
-    private boolean startOpenTransition(IBinder transition) {
-        // TODO animation
-        return mPendingTransitionTokens.contains(transition);
+    private boolean startOpenTransition(
+            IBinder transition,
+            TransitionInfo.Change change,
+            List<Animator> animations,
+            Runnable onAnimFinish) {
+        if (!mPendingTransitionTokens.contains(transition)) {
+            return false;
+        }
+        startFadeAnimation(change.getLeash(), animations, onAnimFinish, true /* show */);
+        return true;
+    }
+
+    private void startFadeAnimation(
+            SurfaceControl leash,
+            List<Animator> animations,
+            Runnable onAnimFinish,
+            boolean show) {
+        final float end = show ? 1.f : 0.f;
+        final float start = 1.f - end;
+        final SurfaceControl.Transaction t = new SurfaceControl.Transaction();
+        final ValueAnimator animator = ValueAnimator.ofFloat(start, end)
+                .setDuration(ALPHA_ANIMATION_DURATION);
+        animator.setInterpolator(show ? ALPHA_IN : ALPHA_OUT);
+        animator.addUpdateListener(animation -> {
+            float fraction = animation.getAnimatedFraction();
+            t.setAlpha(leash, start * (1.f - fraction) + end * fraction).apply();
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                t.setAlpha(leash, end).apply();
+                t.close();
+                animations.remove(animator);
+                onAnimFinish.run();
+            }
+        });
+        animations.add(animator);
     }
 
     private boolean startCloseTransition(IBinder transition, TransitionInfo.Change change,
