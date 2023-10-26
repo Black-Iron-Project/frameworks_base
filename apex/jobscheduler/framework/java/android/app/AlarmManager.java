@@ -1055,6 +1055,7 @@ public class AlarmManager {
             if (windowMillis == WINDOW_EXACT && !canScheduleExactAlarms()) {
                 windowMillis = WINDOW_HEURISTIC;
             }
+        }
 
         if (GmsCompat.isEnabled()) {
             if (windowMillis == WINDOW_EXACT && !canScheduleExactAlarms()) {
