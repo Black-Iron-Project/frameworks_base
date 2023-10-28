@@ -1368,6 +1368,10 @@ public class UdfpsController implements DozeReceiver, Dumpable {
         cancelAodSendFingerUpAction();
     }
 
+    public boolean isAnimationEnabled() {
+        return mUdfpsAnimation != null && mUdfpsAnimation.isAnimationEnabled();
+    }
+
     /**
      * Callback for fingerUp and fingerDown events.
      */
