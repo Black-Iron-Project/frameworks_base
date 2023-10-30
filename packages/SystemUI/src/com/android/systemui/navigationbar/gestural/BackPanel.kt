@@ -42,6 +42,9 @@ class BackPanel(
     // True if the panel is currently on the left of the screen
     var isLeftPanel = false
 
+    // True if we want to show background of arrow
+    var showArrowBackground = false
+
     /**
      * Used to track back arrow latency from [android.view.MotionEvent.ACTION_DOWN] to [onDraw]
      */
@@ -466,19 +469,21 @@ class BackPanel(
 
         canvas.scale(scale.pos, scale.pos, scalePivotX, 0f)
 
-        val arrowBackground = arrowBackgroundRect.apply {
-            left = 0f
-            top = -halfHeight
-            right = backgroundWidth
-            bottom = halfHeight
-        }.toPathWithRoundCorners(
-                topLeft = edgeCorner,
-                bottomLeft = edgeCorner,
-                topRight = farCorner,
-                bottomRight = farCorner
-        )
-        canvas.drawPath(arrowBackground,
-                arrowBackgroundPaint.apply { alpha = (255 * backgroundAlpha.pos).toInt() })
+        if(showArrowBackground){
+            val arrowBackground = arrowBackgroundRect.apply {
+                left = 0f
+                top = -halfHeight
+                right = backgroundWidth
+                bottom = halfHeight
+            }.toPathWithRoundCorners(
+                    topLeft = edgeCorner,
+                    bottomLeft = edgeCorner,
+                    topRight = farCorner,
+                    bottomRight = farCorner
+            )
+            canvas.drawPath(arrowBackground,
+                    arrowBackgroundPaint.apply { alpha = (255 * backgroundAlpha.pos).toInt() })
+	}
 
         val dx = arrowLength.pos
         val dy = arrowHeight.pos
