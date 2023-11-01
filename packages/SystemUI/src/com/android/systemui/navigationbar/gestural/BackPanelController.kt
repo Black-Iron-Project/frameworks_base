@@ -193,6 +193,8 @@ internal constructor(
     private var isLongSwipeEnabled = false
     private var backArrowVisibility = false
 
+    private var edgeHapticEnabled = false
+
     internal enum class GestureState {
         /* Arrow is off the screen and invisible */
         GONE,
@@ -710,6 +712,10 @@ internal constructor(
 
     override fun setBackArrowVisibility(enabled: Boolean) {
         backArrowVisibility = enabled
+    }
+
+    override fun setEdgeHapticEnabled(enabled: Boolean) {
+        edgeHapticEnabled = enabled
     }
 
     private fun isFlungAwayFromEdge(endX: Float, startX: Float = touchDeltaStartX): Boolean {
