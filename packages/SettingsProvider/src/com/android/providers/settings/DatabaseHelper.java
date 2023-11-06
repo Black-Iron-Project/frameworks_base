@@ -2263,6 +2263,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
             loadBooleanSetting(stmt, Settings.System.TEXT_SHOW_PASSWORD,
                     R.bool.def_text_show_password);
 
+            loadIntegerSetting(stmt, Settings.System.FORCE_SHOW_NAVBAR,
+                    R.integer.def_force_show_navbar);
+
             /*
              * IMPORTANT: Do not add any more upgrade steps here as the global,
              * secure, and system settings are no longer stored in a database
@@ -2380,6 +2383,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
             loadIntegerSetting(stmt, Settings.Secure.SLEEP_TIMEOUT,
                     R.integer.def_sleep_timeout);
+
+            loadBooleanSetting(stmt, Settings.Secure.VOLUME_PANEL_ON_LEFT,
+                    R.bool.def_volume_panel_on_left);
 
             /*
              * IMPORTANT: Do not add any more upgrade steps here as the global,
