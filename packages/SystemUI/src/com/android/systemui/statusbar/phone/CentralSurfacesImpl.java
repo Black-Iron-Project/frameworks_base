@@ -970,7 +970,8 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
         mFingerprintManager = fingerprintManager;
         mTunerService = tunerService;
         mActivityStarter = activityStarter;
-        mPulseController = new PulseControllerImpl(mContext, this, mCommandQueue, mUiBgExecutor);
+        mPulseController = new PulseControllerImpl(mContext, this,
+                mCommandQueue, mUiBgExecutor, mConfigurationController);
 
         mLockscreenShadeTransitionController = lockscreenShadeTransitionController;
         mStartingSurfaceOptional = startingSurfaceOptional;
