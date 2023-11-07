@@ -9787,7 +9787,7 @@ public class AudioService extends IAudioService.Stub
             mContentResolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.MASTER_MONO), false, this);
             mContentResolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.MASTER_BALANCE), false, this);
+                    Settings.System.MASTER_BALANCE), false, this, UserHandle.USER_ALL);
             mContentResolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.MAX_CALL_VOLUME), false, this);
             mContentResolver.registerContentObserver(Settings.System.getUriFor(
