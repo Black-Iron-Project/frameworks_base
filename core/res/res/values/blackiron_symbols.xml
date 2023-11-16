@@ -166,4 +166,10 @@
     <java-symbol type="string" name="charging_control_notification_content_limit_reached" />
     <java-symbol type="string" name="charging_control_notification_content_target" />
     <java-symbol type="string" name="charging_control_notification_content_target_reached" />
+
+    <!-- Device model (Build.MODEL) to spoof for netflix, if not empty -->
+    <java-symbol type="string" name="config_netflixSpoofModel" />
+
+    <!-- AttestationHooks -->
+    <java-symbol type="string" name="config_stockFingerprint" />
 </resources>
