@@ -41,6 +41,7 @@
     <!-- Status bar tuner -->
     <string name="status_bar_vpn">VPN</string>
     <string name="status_bar_data_saver">Data saver</string>
+    <string name="status_bar_ims">VoLTE/VoWiFi</string>
 
     <!-- Sync QS tile -->
     <string name="quick_settings_sync_label">Sync</string>
