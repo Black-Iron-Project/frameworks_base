@@ -6,6 +6,7 @@
 package com.android.systemui.blackiron
 
 import com.android.systemui.qs.tileimpl.QSTileImpl
+import com.android.systemui.qs.tiles.CPUInfoTile
 import com.android.systemui.qs.tiles.AmbientDisplayTile
 import com.android.systemui.qs.tiles.AODTile
 import com.android.systemui.qs.tiles.CaffeineTile
@@ -44,6 +45,12 @@ interface BlackironModule {
     @IntoMap
     @StringKey(CaffeineTile.TILE_SPEC)
     fun bindCaffeineTile(caffeineTile: CaffeineTile): QSTileImpl<*>
+
+    /** Inject CPUInfoTile into tileMap in QSModule */
+    @Binds
+    @IntoMap
+    @StringKey(CPUInfoTile.TILE_SPEC)
+    fun CPUInfoTile(cpuInfoTile: CPUInfoTile): QSTileImpl<*>
 
     /** Inject CellularTile into tileMap in QSModule */
     @Binds
