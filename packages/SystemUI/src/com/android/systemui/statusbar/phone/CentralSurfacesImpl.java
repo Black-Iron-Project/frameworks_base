@@ -284,8 +284,8 @@ import javax.inject.Provider;
 @SysUISingleton
 public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, TunerService.Tunable {
 
-    private static final String NAVIGATION_BAR_SHOW =
-            "system:" + Settings.System.NAVIGATION_BAR_SHOW;
+    private static final String QS_TRANSPARENCY =
+            "customsystem:" + Settings.System.QS_TRANSPARENCY;
 
     private static final String STATUS_BAR_BRIGHTNESS_CONTROL =
             "system:" + Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL;
@@ -918,6 +918,7 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
         mDisplayManager = mContext.getSystemService(DisplayManager.class);
 
         mTunerService.addTunable(this, NAVIGATION_BAR_SHOW);
+        mTunerService.addTunable(this, QS_TRANSPARENCY);
 
         mTunerService.addTunable(this, STATUS_BAR_BRIGHTNESS_CONTROL);
 
@@ -3166,6 +3167,10 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
                         TunerService.parseIntegerSwitch(newValue, false);
                 if (mPhoneStatusBarViewController != null)
                     mPhoneStatusBarViewController.setBrightnessControlEnabled(mBrightnessControl);
+                break;
+            case QS_TRANSPARENCY:
+                mScrimController.setCustomScrimAlpha(
+                        TunerService.parseInteger(newValue, 85));
                 break;
             default:
                 break;
