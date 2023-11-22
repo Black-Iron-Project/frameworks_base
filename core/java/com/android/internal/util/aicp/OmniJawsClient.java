@@ -544,7 +544,7 @@ public class OmniJawsClient {
             filter.addAction(WEATHER_UPDATE);
             filter.addAction(WEATHER_ERROR);
             if (DEBUG) Log.d(TAG, "registerReceiver");
-            mContext.registerReceiver(mReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            mContext.registerReceiver(mReceiver, filter, Context.RECEIVER_EXPORTED);
         }
         mObserver.add(observer);
     }
