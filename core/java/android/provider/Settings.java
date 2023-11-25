@@ -5951,23 +5951,6 @@ public final class Settings {
         public static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_COLOR =
                 "notification_light_pulse_default_color";
 
-         /**
-          * @hide
-          */
-         public static final String OMNIJAWS_WEATHER_ICON_PACK = "omnijaws_weather_icon_pack";
-
-	/**
-        * @hide
-        */
-        public static final String OMNI_LOCKSCREEN_WEATHER_ENABLED = "lockscreen_weather_enabled";
-
-	/**
-        * 0: OmniJaws Style
-        * 1: KeyguardSlice Style
-        * @hide
-        */
-        public static final String AICP_LOCKSCREEN_WEATHER_STYLE = "lockscreen_weather_style";
-
         /**
          * How long to flash the notification LED by default
          * @hide
@@ -6924,10 +6907,6 @@ public final class Settings {
             PRIVATE_SETTINGS.add(VIBRATE_ON_DISCONNECT);
             PRIVATE_SETTINGS.add(LOCK_HIDE_STATUS_BAR);
             PRIVATE_SETTINGS.add(NAVIGATION_BAR_IME_SPACE);
-            PRIVATE_SETTINGS.add(OMNIJAWS_WEATHER_ICON_PACK);
-            PRIVATE_SETTINGS.add(OMNI_LOCKSCREEN_WEATHER_ENABLED);
-            PRIVATE_SETTINGS.add(AICP_LOCKSCREEN_WEATHER_STYLE);
-
         }
 
         /**
