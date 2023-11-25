@@ -241,6 +241,7 @@ java_library_static {
         "powerstats_flags_lib",
         "locksettings_flags_lib",
         "vendor.aac.hardware.richtap.vibrator",
+        "vendor.aospa.biometrics.face",
     ],
     javac_shard_size: 50,
     javacflags: [
