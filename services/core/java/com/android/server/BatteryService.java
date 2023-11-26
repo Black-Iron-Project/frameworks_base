@@ -573,7 +573,7 @@ public final class BatteryService extends SystemService {
             mBatteryStats.setBatteryState(
                     mHealthInfo.batteryStatus,
                     mHealthInfo.batteryHealth,
-                    maybeTranslatePlugType(mPlugType),
+                    mPlugType,
                     mHealthInfo.batteryLevel,
                     mHealthInfo.batteryTemperatureTenthsCelsius,
                     mHealthInfo.batteryVoltageMillivolts,
@@ -605,7 +605,6 @@ public final class BatteryService extends SystemService {
                         || mBatteryModProps.modStatus != mLastModStatus
                         || mBatteryModProps.modFlag != mLastModFlag
                         || mBatteryModProps.modType != mLastModType
-                        || mBatteryModProps.modPowerSource != mLastModPowerSource
                         || mHealthInfo.chargingState != mLastCharingState
                         || mOemFastCharging != mLastOemFastCharging)) {
 
@@ -816,7 +815,7 @@ public final class BatteryService extends SystemService {
         intent.putExtra(BatteryManager.EXTRA_BATTERY_LOW, mSentLowBatteryBroadcast);
         intent.putExtra(BatteryManager.EXTRA_SCALE, BATTERY_SCALE);
         intent.putExtra(BatteryManager.EXTRA_ICON_SMALL, icon);
-        intent.putExtra(BatteryManager.EXTRA_PLUGGED, maybeTranslatePlugType(mPlugType));
+        intent.putExtra(BatteryManager.EXTRA_PLUGGED, mPlugType);
         intent.putExtra(BatteryManager.EXTRA_VOLTAGE, mHealthInfo.batteryVoltageMillivolts);
         intent.putExtra(
                 BatteryManager.EXTRA_TEMPERATURE, mHealthInfo.batteryTemperatureTenthsCelsius);
@@ -1016,9 +1015,9 @@ public final class BatteryService extends SystemService {
             return plugType;
         }
         if (this.mHealthInfo.batteryStatus == BatteryManager.BATTERY_STATUS_CHARGING) {
-            return BatteryManager.BATTERY_PLUGGED_AC;
+            return 1;
         }
-        return BATTERY_PLUGGED_NONE;
+        return 0;
     }
 
     private boolean supplementalOrEmergencyModOnline() {
