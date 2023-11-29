@@ -2175,10 +2175,11 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                 }
             });
         }
-        if (mLocalPowerManager != null) {
+
+            if (mLocalPowerManager != null 
+                && !mView.getContext().getResources().getBoolean(com.android.internal.R.bool.config_supportsBoostFramework)) {
             mLocalPowerManager.setPowerBoost(Boost.DISPLAY_UPDATE_IMMINENT, 200);
         }
-
         animator.addListener(new AnimatorListenerAdapter() {
             private boolean mCancelled;
 
