@@ -113,7 +113,6 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     private final KeyguardStateController mKeyguardStateController;
     private final ShadeViewController mShadeViewController;
     private LinearLayout mEndSideContent;
-    private View mClockView;
     private View mOngoingCallChip;
     private View mNotificationIconAreaInner;
     // Visibilities come in from external system callers via disable flags, but we also sometimes
@@ -518,7 +517,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
             boolean isRightClock = clockView.getId() == R.id.clock_right;
             // Hide everything
             return new StatusBarVisibilityModel(
-                    /* showClock= */ !isRightClock,
+                    /* showClock= */ isRightClock,
                     /* showNotificationIcons= */ false,
                     /* showOngoingCallChip= */ false,
                     /* showSystemInfo= */ false);

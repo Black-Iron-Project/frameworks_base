@@ -35,9 +35,9 @@ public class ClockController implements TunerService.Tunable {
 
     private static final String CLOCK_POSITION = Settings.Secure.STATUS_BAR_CLOCK;
 
-    private static final int CLOCK_POSITION_RIGHT = 0;
+    private static final int CLOCK_POSITION_LEFT = 0;
     private static final int CLOCK_POSITION_CENTER = 1;
-    private static final int CLOCK_POSITION_LEFT = 2;
+    private static final int CLOCK_POSITION_RIGHT = 2;
 
     private Context mContext;
     private Clock mActiveClock, mCenterClock, mLeftClock, mRightClock;
@@ -60,13 +60,13 @@ public class ClockController implements TunerService.Tunable {
 
     public Clock getClock() {
         switch (mClockPosition) {
-            case CLOCK_POSITION_RIGHT:
-                return mRightClock;
+            default:
+            case CLOCK_POSITION_LEFT:
+                return mLeftClock;
             case CLOCK_POSITION_CENTER:
                 return mCenterClock;
-            case CLOCK_POSITION_LEFT:
-            default:
-                return mLeftClock;
+            case CLOCK_POSITION_RIGHT:
+                return mRightClock;
         }
     }
 

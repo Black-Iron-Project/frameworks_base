@@ -80,6 +80,7 @@ public class HeadsUpAppearanceControllerTest extends SysuiTestCase {
     private KeyguardStateController mKeyguardStateController;
     private CommandQueue mCommandQueue;
     private NotificationRoundnessManager mNotificationRoundnessManager;
+    private PhoneStatusBarView mPhoneStatusBarView = mock(PhoneStatusBarView.class);
 
     @Before
     public void setUp() throws Exception {
@@ -116,6 +117,7 @@ public class HeadsUpAppearanceControllerTest extends SysuiTestCase {
                 mHeadsUpStatusBarView,
                 new Clock(mContext, null),
                 Optional.of(mOperatorNameView),
+                mPhoneStatusBarView,
                 new View(mContext));
         mHeadsUpAppearanceController.setAppearFraction(0.0f, 0.0f);
     }
@@ -200,6 +202,7 @@ public class HeadsUpAppearanceControllerTest extends SysuiTestCase {
                 mHeadsUpStatusBarView,
                 new Clock(mContext, null),
                 Optional.empty(),
+                mPhoneStatusBarView,
                 new View(mContext));
 
         assertEquals(expandedHeight, newController.mExpandedHeight, 0.0f);
