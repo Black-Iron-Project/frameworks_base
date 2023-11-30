@@ -3157,4 +3157,6 @@
     <string name="copy_to_clipboard">Copy to clipboard</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="error_share">Share</string>
+    
+    <string name="face_unlock_recognizing">Recognizing face...</string>
 </resources>
