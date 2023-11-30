@@ -6388,13 +6388,6 @@ public final class Settings {
                 "display_picture_adjustment";
 
         /**
-         * Whether to hide clock when launcher is visible
-         * default: false
-         * @hide
-         */
-        public static final String STATUS_BAR_CLOCK_AUTO_HIDE = "status_bar_clock_auto_hide";
-
-        /**
          * Whether to show heads up only for dialer and sms apps
          * @hide
          */
@@ -12823,26 +12816,6 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_MENU_ACTIONS = "power_menu_actions";
-
-        /**
-         * Whether to show the clock in the right or left position or show it in the center
-         * 0: show the clock in the left position (LTR)
-         * 1: show the clock in the center
-         * 2: show the clock in the right position (LTR)
-         * default: 0
-         * @hide
-         */
-        public static final String STATUS_BAR_CLOCK = "status_bar_clock";
-
-        /**
-         * Display style of AM/PM next to clock in status bar
-         * 0: No display (Gingerbread/ICS stock)
-         * 1: Small display (Froyo stock)
-         * 2: Normal display (Eclair stock)
-         * default: 0
-         * @hide
-         */
-        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
 
         /**
          * The time in ms to keep the button backlight on after pressing a button.

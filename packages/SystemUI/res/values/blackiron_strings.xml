@@ -59,9 +59,6 @@
     <string name="vpn_credentials_password">Password</string>
     <string name="vpn_credentials_dialog_connect">Connect</string>
 
-    <!-- Name of the clock in status bar [CHAR LIMIT=30] -->
-    <string name="clock">Clock</string>
-
     <!-- Label for area where tiles can be added to the qs panel -->
     <string name="drag_or_tap_to_add_tiles">Hold &amp; drag or tap to add tiles</string>
 
