@@ -5913,12 +5913,6 @@ public final class Settings {
                 "status_bar_show_battery_percent";
 
         /**
-         * Double tap on lockscreen to sleep
-         * @hide
-         */
-        public static final String DOUBLE_TAP_SLEEP_LOCKSCREEN = "double_tap_sleep_lockscreen";
-
-        /**
          * These are all public system settings
          *
          * @hide
