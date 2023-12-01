@@ -787,6 +787,8 @@ public class AudioService extends IAudioService.Stub
 
     private final boolean mMonitorRotation;
 
+    private boolean mRotationHelperEnabled = false;
+
     private boolean mDockAudioMediaEnabled = true;
 
     /**
@@ -4428,6 +4430,20 @@ public class AudioService extends IAudioService.Stub
         }
         if (mMediaPlaybackActive.getAndSet(mediaActive) != mediaActive && mediaActive) {
             mSoundDoseHelper.scheduleMusicActiveCheck();
+        }
+
+        if (voiceActive || mediaActive) {
+            if (mMonitorRotation && !mRotationHelperEnabled) {
+                RotationHelper.enable();
+                mRotationHelperEnabled = true;
+            }
+        }
+        if (!voiceActive && !mediaActive) {
+            if (mMonitorRotation && mRotationHelperEnabled) {
+                // reduce wakeups (save current) by only listening when voice/media playback active
+                RotationHelper.disable();
+                mRotationHelperEnabled = false;
+            }
         }
 
         mLoudnessCodecHelper.updateCodecParameters(configs);
@@ -9907,15 +9923,8 @@ public class AudioService extends IAudioService.Stub
                     || action.equals(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED)) {
                 mDeviceBroker.postReceiveBtEvent(intent);
             } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
-                if (mMonitorRotation) {
-                    RotationHelper.enable();
-                }
                 AudioSystem.setParameters("screen_state=on");
             } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
-                if (mMonitorRotation) {
-                    //reduce wakeups (save current) by only listening when display is on
-                    RotationHelper.disable();
-                }
                 AudioSystem.setParameters("screen_state=off");
             } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
                 sendMsg(mAudioHandler,
