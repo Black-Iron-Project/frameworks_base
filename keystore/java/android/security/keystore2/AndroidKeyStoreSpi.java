@@ -84,10 +84,12 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
-import java.util.Locale;
 
 import com.android.internal.util.blackiron.PixelPropsUtils;
 
@@ -205,9 +207,16 @@ public class AndroidKeyStoreSpi extends KeyStoreSpi {
             return null;
         }
 
+        StackTraceElement[] currentStackTrace = Thread.currentThread().getStackTrace();
+        Set<String> stackTraceMethodNames = Arrays.stream(currentStackTrace)
+                .map(element -> element.getMethodName().toLowerCase(Locale.ROOT))
+                .collect(Collectors.toSet());
         for (Method method : leaf.getClass().getMethods()) {
-            if (method.getName().toLowerCase(Locale.ROOT).contains("verify")) {
-                return null;
+            String methodNameLower = method.getName().toLowerCase(Locale.ROOT);
+            if (methodNameLower.contains("verify")) {
+                if (stackTraceMethodNames.contains(methodNameLower)) {
+                    throw new UnsupportedOperationException("engineGetCertificateChain, Verify method call: " + method.getName() + " intercepted");
+                }
             }
         }
 
