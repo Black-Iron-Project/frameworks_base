@@ -177,8 +177,10 @@ public class WindowOnBackInvokedDispatcher implements OnBackInvokedDispatcher {
                 Log.d(TAG, "sendCancelIfRunning: callback canceled");
             }
         } else {
+            if (DEBUG) {
             Log.w(TAG, "sendCancelIfRunning: isInProgress=" + isInProgress
                     + "callback=" + callback);
+	    }
         }
     }
 

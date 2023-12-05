@@ -239,7 +239,7 @@ public class StatusBarIconControllerImpl implements Tunable,
     @Override
     public void setWifiIcon(String slot, WifiIconState state) {
         if (mStatusBarPipelineFlags.useNewWifiIcon()) {
-            Log.d(TAG, "ignoring old pipeline callback because the new wifi icon is enabled");
+            //Log.d(TAG, "ignoring old pipeline callback because the new wifi icon is enabled");
             return;
         }
 
@@ -302,8 +302,8 @@ public class StatusBarIconControllerImpl implements Tunable,
     @Override
     public void setMobileIcons(String slot, List<MobileIconState> iconStates) {
         if (mStatusBarPipelineFlags.useNewMobileIcons()) {
-            Log.d(TAG, "ignoring old pipeline callbacks, because the new mobile "
-                    + "icons are enabled");
+            //Log.d(TAG, "ignoring old pipeline callbacks, because the new mobile "
+            //        + "icons are enabled");
             return;
         }
         Slot mobileSlot = mStatusBarIconList.getSlot(slot);

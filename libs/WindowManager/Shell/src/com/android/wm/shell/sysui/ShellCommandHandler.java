@@ -63,8 +63,8 @@ public final class ShellCommandHandler {
      */
     public <T> void addDumpCallback(BiConsumer<PrintWriter, String> callback, T instance) {
         mDumpables.put(instance.getClass().getSimpleName(), callback);
-        ProtoLog.v(WM_SHELL_INIT, "Adding dump callback for %s",
-                instance.getClass().getSimpleName());
+        //ProtoLog.v(WM_SHELL_INIT, "Adding dump callback for %s",
+        //       instance.getClass().getSimpleName());
     }
 
     /**

@@ -176,8 +176,8 @@ public class ShellController implements RemoteCallable<ShellController> {
      */
     public void addExternalInterface(String extra, Supplier<ExternalInterfaceBinder> binderSupplier,
             Object callerInstance) {
-        ProtoLog.v(WM_SHELL_INIT, "Adding external interface from %s with key %s",
-                callerInstance.getClass().getSimpleName(), extra);
+        //ProtoLog.v(WM_SHELL_INIT, "Adding external interface from %s with key %s",
+        //        callerInstance.getClass().getSimpleName(), extra);
         if (mExternalInterfaceSuppliers.containsKey(extra)) {
             throw new IllegalArgumentException("Supplier with same key already exists: "
                     + extra);

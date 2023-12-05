@@ -169,7 +169,7 @@ static void endStagingAnimator(sp<BaseRenderNodeAnimator>& animator) {
 }
 
 void AnimatorManager::endAllStagingAnimators() {
-    ALOGD("endAllStagingAnimators on %p (%s)", &mParent, mParent.getName());
+    //ALOGD("endAllStagingAnimators on %p (%s)", &mParent, mParent.getName());
     // This works because this state can only happen on the UI thread,
     // which means we're already on the right thread to invoke listeners
     for_each(mNewAnimators.begin(), mNewAnimators.end(), endStagingAnimator);
