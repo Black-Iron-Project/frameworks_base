@@ -12529,14 +12529,6 @@ public final class Settings {
         public static final String ENABLE_PROJECTION_PRIVACY_INDICATOR = "enable_projection_privacy_indicator";
 
         /**
-         * Whether volume panel should appear on the left (or right).
-         * 0 = false (on the right)
-         * 1 = true (on the left)
-         * @hide
-         */
-        public static final String VOLUME_PANEL_ON_LEFT = "volume_panel_on_left";
-
-        /**
          * What happens when the user presses the Home button when the
          * phone is ringing.<br/>
          * <b>Values:</b><br/>
