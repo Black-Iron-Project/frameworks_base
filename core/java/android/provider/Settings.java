@@ -6254,7 +6254,18 @@ public final class Settings {
          * Limit to stop charging.
          * @hide
          */
+
         public static final String CHARGING_CONTROL_LIMIT = "charging_control_charging_limit";
+
+        /**
+         * @hide
+         */
+        public static final String QQS_LAYOUT_ROWS_LANDSCAPE = "qqs_layout_rows_landscape";
+
+        /**
+         * @hide
+         */
+        public static final String QQS_LAYOUT_ROWS = "qqs_layout_rows";
 
         /**
          * Whether the battery light should be enabled (if hardware supports it)
