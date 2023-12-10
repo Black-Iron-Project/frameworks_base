@@ -49,6 +49,7 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -224,6 +225,18 @@ public class BlackironUtils {
 
     public static void toggleCameraFlash() {
         FireActions.toggleCameraFlash();
+    }
+
+    public static boolean hasNavbarByDefault(Context context) {
+        boolean needsNav = context.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);
+        String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
+        if ("1".equals(navBarOverride)) {
+            needsNav = false;
+        } else if ("0".equals(navBarOverride)) {
+            needsNav = true;
+        }
+        return needsNav;
     }
 
     public static void sendKeycode(int keycode) {
