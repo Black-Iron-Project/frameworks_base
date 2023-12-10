@@ -275,6 +275,8 @@ import com.android.wm.shell.bubbles.Bubbles;
 import com.android.wm.shell.startingsurface.SplashscreenContentDrawer;
 import com.android.wm.shell.startingsurface.StartingSurface;
 
+import com.android.internal.util.blackiron.BlackironUtils;
+
 import android.provider.Settings;
 
 import dagger.Lazy;
@@ -4087,7 +4089,7 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
                 if (mDisplayId != Display.DEFAULT_DISPLAY || mWindowManagerService == null)
                     return;
                 boolean mNavbarVisible =
-                        TunerService.parseIntegerSwitch(newValue, Utils.hasNavbarByDefault(mContext));
+                        TunerService.parseIntegerSwitch(newValue, BlackironUtils.hasNavbarByDefault(mContext));
                 boolean hasNavbar = getNavigationBarView() != null;
                 if (mNavbarVisible) {
                     if (!hasNavbar) {
