@@ -63,7 +63,7 @@ import javax.inject.Provider;
  * Application class for SystemUI.
  */
 public class SystemUIApplication extends Application implements
-        SystemUIAppComponentFactoryBase.ContextInitializer {
+        SystemUIAppComponentFactory.ContextInitializer {
 
     public static final String TAG = "SystemUIService";
     private static final boolean DEBUG = false;
@@ -75,7 +75,7 @@ public class SystemUIApplication extends Application implements
      */
     private CoreStartable[] mServices;
     private boolean mServicesStarted;
-    private SystemUIAppComponentFactoryBase.ContextAvailableCallback mContextAvailableCallback;
+    private SystemUIAppComponentFactory.ContextAvailableCallback mContextAvailableCallback;
     private SysUIComponent mSysUIComponent;
     private SystemUIInitializer mInitializer;
     private ProcessWrapper mProcessWrapper;
@@ -457,7 +457,7 @@ public class SystemUIApplication extends Application implements
 
     @Override
     public void setContextAvailableCallback(
-            @NonNull SystemUIAppComponentFactoryBase.ContextAvailableCallback callback) {
+            @NonNull SystemUIAppComponentFactory.ContextAvailableCallback callback) {
         mContextAvailableCallback = callback;
     }
 
