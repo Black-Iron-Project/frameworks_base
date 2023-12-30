@@ -6997,6 +6997,12 @@ public final class Settings {
          */
         public static final String SHOW_APP_VOLUME = "show_app_volume";
 
+	/**
+         * Current status of whether gestures are locked
+         * @hide
+         */
+        public static final String LOCK_GESTURE_STATUS = "lock_gesture_status";
+
         /**
          * Whether to control brightness from status bar
          * 0 = 0ff, 1 = on
