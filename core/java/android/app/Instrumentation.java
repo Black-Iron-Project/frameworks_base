@@ -42,7 +42,6 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
-import android.os.SystemProperties;
 import android.os.TestLooperManager;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -67,9 +66,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-
-import com.android.internal.util.blackiron.PixelPropsUtils;
-import com.android.internal.util.blackiron.MeizuPropsUtils;
 
 /**
  * Base class for implementing application instrumentation code.  When running
@@ -101,8 +97,6 @@ public class Instrumentation {
     private static final long CONNECT_TIMEOUT_MILLIS = 60_000;
 
     private static final boolean VERBOSE = Log.isLoggable(TAG, Log.VERBOSE);
-
-    private static final String DISGUISE_PROPS_FOR_MUSIC_APP = "persist.sys.disguise_props_for_music_app";
 
     /**
      * @hide
@@ -1287,11 +1281,6 @@ public class Instrumentation {
         Application app = getFactory(context.getPackageName())
                 .instantiateApplication(cl, className);
         app.attach(context);
-        String packageName = context.getPackageName();
-        PixelPropsUtils.setProps(packageName);
-        if (SystemProperties.getBoolean(DISGUISE_PROPS_FOR_MUSIC_APP, false)) {
-            MeizuPropsUtils.setProps(packageName);
-        }
         return app;
     }
     
@@ -1309,11 +1298,6 @@ public class Instrumentation {
             ClassNotFoundException {
         Application app = (Application)clazz.newInstance();
         app.attach(context);
-        String packageName = context.getPackageName();
-        PixelPropsUtils.setProps(packageName);
-        if (SystemProperties.getBoolean(DISGUISE_PROPS_FOR_MUSIC_APP, false)) {
-            MeizuPropsUtils.setProps(packageName);
-        }
         return app;
     }
 
