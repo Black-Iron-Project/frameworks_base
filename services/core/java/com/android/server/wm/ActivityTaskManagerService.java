@@ -256,7 +256,7 @@ import com.android.internal.protolog.common.ProtoLog;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.FastPrintWriter;
 import com.android.internal.util.FrameworkStatsLog;
-import com.android.internal.util.banana.PixelPropsUtils;
+import com.android.internal.util.blackiron.PixelPropsUtils;
 import com.android.internal.util.function.pooled.PooledLambda;
 import com.android.server.LocalManagerRegistry;
 import com.android.server.LocalServices;
