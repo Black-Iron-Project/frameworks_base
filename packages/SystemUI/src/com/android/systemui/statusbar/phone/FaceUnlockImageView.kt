@@ -57,6 +57,8 @@ class FaceUnlockImageView @JvmOverloads constructor(
     private val successAnimation: ObjectAnimator = createSuccessRotationAnimation()
     private val failureShakeAnimation: ObjectAnimator = createShakeAnimation(10f)
     private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    
+    private var iconStateResId: Int = 0
 
     companion object {
         private lateinit var configurationController: ConfigurationController
@@ -132,12 +134,13 @@ class FaceUnlockImageView @JvmOverloads constructor(
     }
 
     private fun updateFaceIconState() {
-        setImageResource(when (currentState) {
+        iconStateResId = when (currentState) {
             State.SCANNING -> R.drawable.face_scanning
             State.NOT_VERIFIED -> R.drawable.face_not_verified
             State.SUCCESS -> R.drawable.face_success
-            State.HIDDEN -> 0
-        })
+            State.HIDDEN -> iconStateResId
+        }
+        setImageResource(iconStateResId)
     }
 
     private fun createScanningAnimation(): ObjectAnimator {
