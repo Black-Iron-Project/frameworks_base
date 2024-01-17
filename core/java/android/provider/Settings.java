@@ -6140,13 +6140,6 @@ public final class Settings {
                 "high_touch_sensitivity_enable";
 
         /**
-         * Whether Proximity on Wake is Enabled or not
-         * @hide
-         */
-        @Readable
-        public static final String PROXIMITY_ON_WAKE = "proximity_on_wake";
-
-        /**
          * Whether to wake the display when plugging or unplugging the charger
          *
          * @hide
