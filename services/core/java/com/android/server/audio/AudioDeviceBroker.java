@@ -1801,6 +1801,7 @@ public class AudioDeviceBroker {
                             initRoutingStrategyIds();
                             updateActiveCommunicationDevice();
                             mDeviceInventory.onRestoreDevices();
+                            reapplyAudioHalBluetoothState();
                             synchronized (mBluetoothAudioStateLock) {
                                 reapplyAudioHalBluetoothState();
                             }
