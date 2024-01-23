@@ -6647,14 +6647,6 @@ public final class Settings {
          */
         public static final String SECURE_LOCKSCREEN_QS_DISABLED = "secure_lockscreen_qs_disabled";
 
-        /** @hide */
-        public static final String BACK_GESTURE_HEIGHT = "back_gesture_height";
-
-        /**
-         * @hide
-         */
-        public static final String BACK_GESTURE_HAPTIC = "back_gesture_haptic";
-
         /**
          * Whether to show the kill app button in notification guts
          * @hide
@@ -7054,7 +7046,6 @@ public final class Settings {
             PRIVATE_SETTINGS.add(KEY_EDGE_LONG_SWIPE_ACTION);
             PRIVATE_SETTINGS.add(OMNI_KEYGUARD_SHOW_BATTERY_BAR);
             PRIVATE_SETTINGS.add(OMNI_KEYGUARD_SHOW_BATTERY_BAR_ALWAYS);
-            PRIVATE_SETTINGS.add(BACK_GESTURE_HAPTIC);
             PRIVATE_SETTINGS.add(SENSOR_BLOCK);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
             PRIVATE_SETTINGS.add(AMBIENT_WAKE_GESTURES);
@@ -12763,12 +12754,6 @@ public final class Settings {
          * @hide
          */
         public static final String GAME_OVERLAY = "game_overlay";
-
-        /**
-         * Whether to show or hide the arrow for back gesture
-         * @hide
-         */
-        public static final String BACK_GESTURE_ARROW = "back_gesture_arrow";
 
         /**
          * Whether to pulse ambient on new music tracks

@@ -231,8 +231,6 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
     private final Handler mHandler = new Handler();
     private final Runnable mFailsafeRunnable = this::onFailsafe;
 
-    private boolean mBackArrowVisibility;
-
     private DynamicAnimation.OnAnimationEndListener mSetGoneEndListener
             = new DynamicAnimation.OnAnimationEndListener() {
         @Override
@@ -439,11 +437,6 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
         mWindowManager.addView(this, mLayoutParams);
     }
 
-    @Override
-    public void setBackArrowVisibility(boolean backArrowVisibility) {
-        mBackArrowVisibility = backArrowVisibility;
-    }
-
     /**
      * Adjusts the sampling rect to conform to the actual visible bounding box of the arrow.
      */
@@ -490,7 +483,7 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
                 resetOnDown();
                 mStartX = event.getX();
                 mStartY = event.getY();
-                setVisibility(mBackArrowVisibility ? VISIBLE : INVISIBLE);
+                setVisibility(VISIBLE);
                 updatePosition(event.getY());
                 mRegionSamplingHelper.start(mSamplingRect);
                 mWindowManager.updateViewLayout(this, mLayoutParams);
@@ -650,6 +643,12 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
             mVelocityTracker = VelocityTracker.obtain();
         }
         mVelocityTracker.computeCurrentVelocity(1000);
+        // Only do the extra translation if we're not already flinging
+        boolean isSlow = Math.abs(mVelocityTracker.getXVelocity()) < 500;
+        if (isSlow
+                || SystemClock.uptimeMillis() - mVibrationTime >= GESTURE_DURATION_FOR_CLICK_MS) {
+            mVibratorHelper.vibrate(VibrationEffect.EFFECT_CLICK);
+        }
 
         // Let's also snap the angle a bit
         if (mAngleOffset > -4) {
@@ -744,6 +743,8 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
         // Apply a haptic on drag slop passed
         if (!mDragSlopPassed && touchTranslation > mSwipeTriggerThreshold) {
             mDragSlopPassed = true;
+            mVibratorHelper.vibrate(VibrationEffect.EFFECT_TICK);
+            mVibrationTime = SystemClock.uptimeMillis();
 
             // Let's show the arrow and animate it in!
             mDisappearAmount = 0.0f;
