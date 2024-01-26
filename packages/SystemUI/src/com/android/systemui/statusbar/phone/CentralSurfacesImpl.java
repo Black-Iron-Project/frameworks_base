@@ -167,7 +167,6 @@ import com.android.systemui.flags.Flags;
 import com.android.systemui.fragments.ExtensionFragmentListener;
 import com.android.systemui.fragments.FragmentHostManager;
 import com.android.systemui.fragments.FragmentService;
-import com.android.systemui.keyguard.KeyguardSliceProvider;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.ScreenLifecycle;
@@ -311,8 +310,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
             "customsystem:" + Settings.System.FORCE_SHOW_NAVBAR;
     private static final String QS_TRANSPARENCY =
             "customsystem:" + Settings.System.QS_TRANSPARENCY;
-    private static final String PULSE_ON_NEW_TRACKS =
-            Settings.Secure.PULSE_ON_NEW_TRACKS;
     private static final String STATUS_BAR_BRIGHTNESS_CONTROL =
             "system:" + Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL;
 
@@ -1037,7 +1034,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
 
         mTunerService.addTunable(this, FORCE_SHOW_NAVBAR);
         mTunerService.addTunable(this, QS_TRANSPARENCY);
-        mTunerService.addTunable(this, PULSE_ON_NEW_TRACKS);
         mTunerService.addTunable(this, STATUS_BAR_BRIGHTNESS_CONTROL);
 
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
