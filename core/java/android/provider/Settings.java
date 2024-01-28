@@ -6760,12 +6760,6 @@ public final class Settings {
         public static final String NOTIFICATION_MATERIAL_DISMISS = "notification_material_dismiss";
 
         /**
-         * QS Header
-         * @hide
-         */
-        public static final String QS_HEADER_IMAGE = "qs_header_image";
-
-        /**
          * Whether keyguard will rotate
          * 0 = false, 1 = true
          */
