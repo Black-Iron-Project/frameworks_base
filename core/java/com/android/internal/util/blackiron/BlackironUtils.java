@@ -222,6 +222,14 @@ public class BlackironUtils {
         }
     }
 
+    public static boolean deviceHasFlashlight(Context ctx) {
+        return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+    }
+
+    public static void toggleCameraFlash() {
+        FireActions.toggleCameraFlash();
+    }
+
     public static void killForegroundApp() {
         FireActions.killForegroundApp();
     }
@@ -281,6 +289,17 @@ public class BlackironUtils {
                             ServiceManager.getService("statusbar"));
                 }
                 return mStatusBarService;
+            }
+        }
+        
+        public static void toggleCameraFlash() {
+            IStatusBarService service = getStatusBarService();
+            if (service != null) {
+                try {
+                    service.toggleCameraFlash();
+                } catch (RemoteException e) {
+                    // do nothing.
+                }
             }
         }
 
