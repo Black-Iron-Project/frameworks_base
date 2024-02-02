@@ -196,4 +196,8 @@
 
     <!-- QS Widgets -->
     <string name="no_media_playing">Nothing Playing</string>
+
+    <!-- Island notification -->
+    <string name="now_playing_on">Now Playing on %1$s</string>
+    <string name="by_artist">%1$s by %2$s</string>
 </resources>
