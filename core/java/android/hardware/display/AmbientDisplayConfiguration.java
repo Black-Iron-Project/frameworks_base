@@ -366,4 +366,14 @@ public class AmbientDisplayConfiguration {
         return Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.AMBIENT_WAKE_GESTURES, 0, user) != 0;
     }
+    
+    /** {@hide} */
+    public boolean alwaysOnAmbientLightEnabled(int user) {
+        final boolean ambientLightsEnabled = boolSettingSystem(Settings.System.AMBIENT_NOTIFICATION_LIGHT_ENABLED, user, 0);
+        if (ambientLightsEnabled) {
+            boolean ambientLightsActivated = boolSettingSystem(Settings.System.AMBIENT_NOTIFICATION_LIGHT_ACTIVATED, user, 0);
+            return ambientLightsActivated && !accessibilityInversionEnabled(user) && alwaysOnAvailable();
+        }
+        return false;
+    }
 }
