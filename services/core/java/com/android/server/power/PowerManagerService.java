@@ -1379,6 +1379,10 @@ public final class PowerManagerService extends SystemService
     }
 
     private void systemReady() {
+
+        Settings.System.putIntForUser(mContext.getContentResolver(),
+                Settings.System.AMBIENT_NOTIFICATION_LIGHT_ACTIVATED, 0, UserHandle.USER_CURRENT);
+
         synchronized (mLock) {
             mSystemReady = true;
             // set initial value
@@ -1530,6 +1534,12 @@ public final class PowerManagerService extends SystemService
         resolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.PROXIMITY_ON_WAKE),
                 false, mSettingsObserver, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.AMBIENT_NOTIFICATION_LIGHT),
+                false, mSettingsObserver, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.AMBIENT_NOTIFICATION_LIGHT_ENABLED),
+                false, mSettingsObserver, UserHandle.USER_ALL);
 
         // Register for broadcasts from other components of the system.
         IntentFilter filter = new IntentFilter();
@@ -1648,6 +1658,20 @@ public final class PowerManagerService extends SystemService
         mDozeOnChargeEnabled = Settings.Secure.getIntForUser(resolver,
                 Settings.Secure.DOZE_ON_CHARGE, 0, UserHandle.USER_CURRENT) != 0;
 
+        boolean mAmbientLights = Settings.System.getIntForUser(
+                mContext.getContentResolver(), Settings.System.AMBIENT_NOTIFICATION_LIGHT_ENABLED,
+                0, UserHandle.USER_CURRENT) != 0;
+        if (mAmbientLights) {
+            boolean dozeOnNotification = Settings.System.getIntForUser(resolver,
+                    Settings.System.AMBIENT_NOTIFICATION_LIGHT, 0, UserHandle.USER_CURRENT) != 0;
+            Settings.System.putIntForUser(mContext.getContentResolver(),
+                    Settings.System.AMBIENT_NOTIFICATION_LIGHT_ACTIVATED, dozeOnNotification ? 1 : 0,
+                    UserHandle.USER_CURRENT);
+        } else {
+            Settings.System.putIntForUser(mContext.getContentResolver(),
+                    Settings.System.AMBIENT_NOTIFICATION_LIGHT_ACTIVATED, 0,
+                    UserHandle.USER_CURRENT);
+        }
         if (mSupportsDoubleTapWakeConfig) {
             boolean doubleTapWakeEnabled = Settings.Secure.getIntForUser(resolver,
                     Settings.Secure.DOUBLE_TAP_TO_WAKE, DEFAULT_DOUBLE_TAP_TO_WAKE,
