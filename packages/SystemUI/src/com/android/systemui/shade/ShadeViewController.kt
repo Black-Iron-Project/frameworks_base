@@ -192,9 +192,6 @@ interface ShadeViewController {
     /** Posts the given runnable to the view. */
     fun postToView(action: Runnable): Boolean
 
-    /** Sets reticker view on notification */
-    fun reTickerView(visibility: Boolean)
-
     // ******* Begin Keyguard Section *********
     /** Animate to expanded shade after a delay in ms. Used for lockscreen to shade transition. */
     fun transitionToExpandedShade(delay: Long)
