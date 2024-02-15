@@ -6584,24 +6584,6 @@ public final class Settings {
         public static final String STATUSBAR_CLOCK_CHIP = "statusbar_clock_chip";
 
         /**
-         * reTicker Status
-         * @hide
-         */
-        public static final String RETICKER_STATUS = "reticker_status";
-
-        /**
-         * reTicker Colored
-         * @hide
-         */
-        public static final String RETICKER_COLORED = "reticker_colored";
-
-        /**
-         * Only enable reTicker in landscape mode
-         * @hide
-         */
-        public static final String RETICKER_LANDSCAPE_ONLY = "reticker_landscape_only";
-
-        /**
          * Navbar style
          * @hide
          */
