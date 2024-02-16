@@ -29,6 +29,7 @@ import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.systemui.Dependency;
 import com.android.systemui.Dumpable;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.media.controls.models.player.MediaData;
@@ -41,6 +42,7 @@ import com.android.systemui.statusbar.notification.collection.NotificationEntry;
 import com.android.systemui.statusbar.notification.collection.notifcollection.DismissedByUserStats;
 import com.android.systemui.statusbar.notification.collection.notifcollection.NotifCollectionListener;
 import com.android.systemui.statusbar.notification.collection.render.NotificationVisibilityProvider;
+import com.android.systemui.util.NotificationUtils;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -58,6 +60,10 @@ public class NotificationMediaManager implements Dumpable {
     public static final boolean DEBUG_MEDIA = false;
 
     private static final String NOWPLAYING_SERVICE = "com.google.android.as";
+    private static final String ISLAND_NOTIFICATION =
+            "system:" + Settings.System.ISLAND_NOTIFICATION;
+    private static final String ISLAND_NOTIFICATION_NOW_PLAYING =
+            "system:" + Settings.System.ISLAND_NOTIFICATION_NOW_PLAYING;
 
     private static final HashSet<Integer> PAUSED_MEDIA_STATES = new HashSet<>();
     private static final HashSet<Integer> CONNECTING_MEDIA_STATES = new HashSet<>();
@@ -86,6 +92,10 @@ public class NotificationMediaManager implements Dumpable {
     private String mNowPlayingNotificationKey;
     private String mNowPlayingTrack;
 
+    private boolean mIslandEnabled;
+    private boolean mIslandNowPlayingEnabled;
+    private NotificationUtils notifUtils;
+
     private final MediaController.Callback mMediaListener = new MediaController.Callback() {
         @Override
         public void onPlaybackStateChanged(PlaybackState state) {
@@ -94,6 +104,13 @@ public class NotificationMediaManager implements Dumpable {
                 Log.v(TAG, "DEBUG_MEDIA: onPlaybackStateChanged: " + state);
             }
             if (state != null) {
+                if (mIslandEnabled && mIslandNowPlayingEnabled) {
+                    if (PlaybackState.STATE_PLAYING == getMediaControllerPlaybackState(mMediaController) && mMediaMetadata != null) {
+                        notifUtils.showNowPlayingNotification(mMediaMetadata);
+                    } else {
+                        notifUtils.cancelNowPlayingNotification();
+                    }
+                }
                 if (!isPlaybackActive(state.getState())) {
                     clearCurrentMediaNotification();
                 }
@@ -108,6 +125,10 @@ public class NotificationMediaManager implements Dumpable {
                 Log.v(TAG, "DEBUG_MEDIA: onMetadataChanged: " + metadata);
             }
             mMediaMetadata = metadata;
+            if (mIslandEnabled && mIslandNowPlayingEnabled) {
+                notifUtils.cancelNowPlayingNotification();
+                notifUtils.showNowPlayingNotification(metadata);
+            }
             dispatchUpdateMediaMetaData();
         }
     };
@@ -132,7 +153,29 @@ public class NotificationMediaManager implements Dumpable {
         setupNotifPipeline();
 
         dumpManager.registerDumpable(this);
+
+        notifUtils = new NotificationUtils(mContext);
+        TunerService tunerService = Dependency.get(TunerService.class);
+        tunerService.addTunable(mTunable, 
+            ISLAND_NOTIFICATION,
+            ISLAND_NOTIFICATION_NOW_PLAYING);
     }
+
+    private final TunerService.Tunable mTunable = new TunerService.Tunable() {
+        @Override
+        public void onTuningChanged(String key, String newValue) {
+            switch (key) {
+                case ISLAND_NOTIFICATION:
+                    mIslandEnabled = TunerService.parseIntegerSwitch(newValue, true);
+                    break;
+                case ISLAND_NOTIFICATION_NOW_PLAYING:
+                    mIslandNowPlayingEnabled = TunerService.parseIntegerSwitch(newValue, true);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     private void setupNotifPipeline() {
         mNotifPipeline.addCollectionListener(new NotifCollectionListener() {
