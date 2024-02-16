@@ -155,7 +155,7 @@ public class NotificationMediaManager implements Dumpable {
         dumpManager.registerDumpable(this);
 
         notifUtils = new NotificationUtils(mContext);
-        TunerService tunerService = Dependency.get(TunerService.class);
+        //TunerService tunerService = Dependency.get(TunerService.class);
         tunerService.addTunable(mTunable, 
             ISLAND_NOTIFICATION,
             ISLAND_NOTIFICATION_NOW_PLAYING);
