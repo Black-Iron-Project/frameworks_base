@@ -56,9 +56,12 @@ import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.StatusBarManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.ContentObserver;
@@ -72,6 +75,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.PowerManagerInternal;
+import android.os.UserHandle;
 import android.os.Trace;
 import android.os.UserManager;
 import android.os.VibrationEffect;
@@ -243,6 +247,8 @@ import com.android.systemui.util.Utils;
 import com.android.systemui.util.time.SystemClock;
 import com.android.wm.shell.animation.FlingAnimationUtils;
 
+import com.android.systemui.island.IslandView;
+
 import kotlin.Unit;
 
 import java.io.PrintWriter;
@@ -300,6 +306,8 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
             "customsystem:" + Settings.System.DOUBLE_TAP_SLEEP_GESTURE;
     private static final String NOTIFICATION_MATERIAL_DISMISS =
             "system:" + Settings.System.NOTIFICATION_MATERIAL_DISMISS;
+    private static final String ISLAND_NOTIFICATION =
+            "system:" + Settings.System.ISLAND_NOTIFICATION;
 
     private static final Rect M_DUMMY_DIRTY_RECT = new Rect(0, 0, 1, 1);
     private static final Rect EMPTY_RECT = new Rect();
@@ -663,6 +671,10 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
     private boolean mBlockedGesturalNavigation = false;
 
     private boolean mShowDimissButton;
+
+    private IslandView mNotifIsland;
+    private NotificationStackScrollLayout mNotificationStackScroller;
+    private boolean mUseIslandNotification;
 
     private final Runnable mFlingCollapseRunnable = () -> fling(0, false /* expand */,
             mNextCollapseSpeedUpFactor, false /* expandBecauseOfFalsing */);
@@ -1130,7 +1142,9 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         }
 
         mPulseLightsView = mView.findViewById(R.id.lights_container);
-
+        mNotificationStackScroller = mView.findViewById(R.id.notification_stack_scroller);
+        mNotifIsland = mView.findViewById(R.id.notification_island);
+        mNotifIsland.setScroller(mNotificationStackScroller);
         initBottomArea();
 
         mWakeUpCoordinator.setStackScroller(mNotificationStackScrollLayoutController);
@@ -1412,6 +1426,12 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
             view = stub.inflate();
         }
         return view;
+    }
+    
+    void updateIslandBackground() {
+        boolean nightMode = (mView.getContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        mNotifIsland.setIslandBackgroundColorTint(nightMode);
     }
 
     @VisibleForTesting
@@ -3083,6 +3103,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
 
     private void setHeadsUpManager(HeadsUpManagerPhone headsUpManager) {
         mHeadsUpManager = headsUpManager;
+        mNotifIsland.setHeadsupManager(headsUpManager);
         mHeadsUpManager.addListener(mOnHeadsUpChangedListener);
         mHeadsUpTouchHelper = new HeadsUpTouchHelper(headsUpManager,
                 mNotificationStackScrollLayoutController.getHeadsUpCallback(),
@@ -4679,6 +4700,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         public void onThemeChanged() {
             debugLog("onThemeChanged");
             reInflateViews();
+            updateIslandBackground();
         }
 
         @Override
@@ -4876,6 +4898,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
             mConfigurationController.addCallback(mConfigurationListener);
             mTunerService.addTunable(this, DOUBLE_TAP_SLEEP_GESTURE);
             mTunerService.addTunable(this, NOTIFICATION_MATERIAL_DISMISS);
+            mTunerService.addTunable(this, ISLAND_NOTIFICATION);
             // Theme might have changed between inflating this view and attaching it to the
             // window, so
             // force a call to onThemeChanged
@@ -4907,6 +4930,10 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                     mShowDimissButton =
                             TunerService.parseIntegerSwitch(newValue, false);
                     updateDismissAllVisibility();
+                    break;
+                case ISLAND_NOTIFICATION:
+                    mUseIslandNotification = TunerService.parseIntegerSwitch(newValue, false);
+                    mNotifIsland.setIslandEnabled(mUseIslandNotification);
                     break;
                 default:
                     break;
@@ -5635,6 +5662,16 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         PendingIntent sender = PendingIntent.getBroadcast(mView.getContext(),
                 0, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         alarmManager.cancel(sender);
+    }    
+
+    @Override
+    public void showIsland(boolean show) {
+        if (!mUseIslandNotification) return;
+        mNotifIsland.showIsland(show, getExpandedFraction());
+    }
+
+    protected void updateIslandVisibility() {
+        mNotifIsland.updateIslandVisibility(getExpandedFraction());
     }
 }
 
