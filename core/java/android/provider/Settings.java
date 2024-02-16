@@ -7015,6 +7015,24 @@ public final class Settings {
         public static final String SCREEN_OFF_ANIMATION = "screen_off_animation";
 
          /**
+         * Statusbar left padding
+         * @hide
+         */
+        public static final String STATUSBAR_LEFT_PADDING = "statusbar_left_padding";
+
+        /**
+         * Statusbar right padding
+         * @hide
+         */
+        public static final String STATUSBAR_RIGHT_PADDING = "statusbar_right_padding";
+
+        /**
+         * Statusbar top padding
+         * @hide
+         */
+        public static final String STATUSBAR_TOP_PADDING = "statusbar_top_padding";
+
+        /**
          * These are all public system settings
          *
          * @hide
@@ -7145,6 +7163,9 @@ public final class Settings {
             PRIVATE_SETTINGS.add(SENSOR_BLOCK);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
             PRIVATE_SETTINGS.add(AMBIENT_WAKE_GESTURES);
+            PRIVATE_SETTINGS.add(STATUSBAR_LEFT_PADDING);
+            PRIVATE_SETTINGS.add(STATUSBAR_RIGHT_PADDING);
+            PRIVATE_SETTINGS.add(STATUSBAR_TOP_PADDING);
         }
 
         /**
