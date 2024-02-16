@@ -207,6 +207,7 @@ android_library {
         "notification_flags_lib",
         "vendor.lineage.powershare-V1.0-java",
         "bcsmartspace-google",
+        "guava",
     ],
     libs: [
         "keepanno-annotations",
