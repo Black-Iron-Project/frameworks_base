@@ -231,8 +231,6 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
     private final Handler mHandler = new Handler();
     private final Runnable mFailsafeRunnable = this::onFailsafe;
 
-    private boolean mBackArrowVisibility;
-
     private DynamicAnimation.OnAnimationEndListener mSetGoneEndListener
             = new DynamicAnimation.OnAnimationEndListener() {
         @Override
@@ -439,11 +437,6 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
         mWindowManager.addView(this, mLayoutParams);
     }
 
-    @Override
-    public void setBackArrowVisibility(boolean backArrowVisibility) {
-        mBackArrowVisibility = backArrowVisibility;
-    }
-
     /**
      * Adjusts the sampling rect to conform to the actual visible bounding box of the arrow.
      */
@@ -490,7 +483,7 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
                 resetOnDown();
                 mStartX = event.getX();
                 mStartY = event.getY();
-                setVisibility(mBackArrowVisibility ? VISIBLE : INVISIBLE);
+                setVisibility(VISIBLE);
                 updatePosition(event.getY());
                 mRegionSamplingHelper.start(mSamplingRect);
                 mWindowManager.updateViewLayout(this, mLayoutParams);
@@ -644,7 +637,7 @@ public class NavigationBarEdgePanel extends View implements NavigationEdgeBackPl
     }
 
     private void triggerBack() {
-        mBackCallback.triggerBack(false);
+        mBackCallback.triggerBack();
 
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
