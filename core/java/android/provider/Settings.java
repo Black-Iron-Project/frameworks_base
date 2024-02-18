@@ -6391,13 +6391,6 @@ public final class Settings {
         public static final String CAMERA_LAUNCH = "camera_launch";
 
         /**
-         * Action to perform when the screen edge is long-swiped. (Default is 0)
-         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
-         * @hide
-         */
-        public static final String KEY_EDGE_LONG_SWIPE_ACTION = "key_edge_long_swipe_action";
-
-        /**
          * Force show navigation bar setting.
          * @hide
          */
@@ -6646,14 +6639,6 @@ public final class Settings {
          * @hide
          */
         public static final String SECURE_LOCKSCREEN_QS_DISABLED = "secure_lockscreen_qs_disabled";
-
-        /** @hide */
-        public static final String BACK_GESTURE_HEIGHT = "back_gesture_height";
-
-        /**
-         * @hide
-         */
-        public static final String BACK_GESTURE_HAPTIC = "back_gesture_haptic";
 
         /**
          * Whether to show the kill app button in notification guts
@@ -7051,10 +7036,8 @@ public final class Settings {
             PRIVATE_SETTINGS.add(AUTO_BRIGHTNESS_ONE_SHOT);
             PRIVATE_SETTINGS.add(CLICK_PARTIAL_SCREENSHOT);
             PRIVATE_SETTINGS.add(SWAP_VOLUME_KEYS_ON_ROTATION);
-            PRIVATE_SETTINGS.add(KEY_EDGE_LONG_SWIPE_ACTION);
             PRIVATE_SETTINGS.add(OMNI_KEYGUARD_SHOW_BATTERY_BAR);
             PRIVATE_SETTINGS.add(OMNI_KEYGUARD_SHOW_BATTERY_BAR_ALWAYS);
-            PRIVATE_SETTINGS.add(BACK_GESTURE_HAPTIC);
             PRIVATE_SETTINGS.add(SENSOR_BLOCK);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
             PRIVATE_SETTINGS.add(AMBIENT_WAKE_GESTURES);
@@ -12763,12 +12746,6 @@ public final class Settings {
          * @hide
          */
         public static final String GAME_OVERLAY = "game_overlay";
-
-        /**
-         * Whether to show or hide the arrow for back gesture
-         * @hide
-         */
-        public static final String BACK_GESTURE_ARROW = "back_gesture_arrow";
 
         /**
          * Whether to pulse ambient on new music tracks
