@@ -241,10 +241,6 @@ public class AmbientDisplayConfiguration {
         return alwaysOnEnabledSetting(user) || alwaysOnChargingEnabled(user);
     }
 
-    private boolean boolSettingSystem(String name, int user, int def) {
-        return Settings.System.getIntForUser(mContext.getContentResolver(), name, def, user) != 0;
-    }
-
     public boolean alwaysOnEnabledSetting(int user) {
         boolean alwaysOnEnabled = boolSetting(Settings.Secure.DOZE_ALWAYS_ON, user, mAlwaysOnByDefault ? 1 : 0);
         return alwaysOnEnabled && alwaysOnAvailable() && !accessibilityInversionEnabled(user);

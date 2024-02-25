@@ -64,6 +64,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.Insets;
@@ -251,6 +252,9 @@ import com.android.systemui.island.IslandView;
 
 import kotlin.Unit;
 
+import com.android.internal.util.blackiron.BlackironUtils;
+import com.android.systemui.blackiron.AmbientText;
+import com.android.systemui.blackiron.AmbientCustomImage;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -559,6 +563,10 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
     private boolean mAmbientPulseLightRunning;
     private boolean mAmbientPulseRanOnce = false; // used only for repeats
     public static final String CANCEL_NOTIFICATION_PULSE_ACTION = "cancel_notification_pulse";
+
+    // Ambient Customization
+    private AmbientText mAmbientText;
+    private AmbientCustomImage mAmbientCustomImage;
 
     /** Alpha of the views which only show on the keyguard but not in shade / shade locked. */
     private float mKeyguardOnlyContentAlpha = 1.0f;
@@ -1148,6 +1156,8 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         mNotificationStackScroller = mView.findViewById(R.id.notification_stack_scroller);
         mNotifIsland = mView.findViewById(R.id.notification_island);
         mNotifIsland.setScroller(mNotificationStackScroller);
+        mAmbientText = (AmbientText) mView.findViewById(R.id.text_container);
+        mAmbientCustomImage = (AmbientCustomImage) mView.findViewById(R.id.image_container);
         initBottomArea();
 
         mWakeUpCoordinator.setStackScroller(mNotificationStackScrollLayoutController);
@@ -3256,6 +3266,58 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
 		if (mPulseLightsView != null) {
             updatePulseLightState(dozing);
         }
+        if (mAmbientText != null) {
+            updateAmbientTextState(dozing);
+        }
+        if (mAmbientCustomImage != null) {
+            updateAmbientCustomImageState(dozing);
+        }
+    }
+
+    private void updateAmbientTextState(boolean dozing) {
+        boolean mAmbientTextEnable = Settings.System.getIntForUser(
+                mView.getContext().getContentResolver(), Settings.System.AMBIENT_TEXT,
+                0, UserHandle.USER_CURRENT) != 0;
+        boolean ambientTextAnimated = Settings.System.getIntForUser(mView.getContext().getContentResolver(),
+                Settings.System.AMBIENT_TEXT_ANIMATION, 0, UserHandle.USER_CURRENT) != 0;
+
+        if (mAmbientTextEnable) {
+            if (dozing) {
+                // TODO on screen off should we restart pulse?
+                // if that should work we need to decide at this point
+                // if the current notifications "would" turn the screen on
+                // just checking hasActiveClearableNotifications is obviusly not
+                // enough here - so for now dont even try to do it
+                mAmbientText.animateText(ambientTextAnimated);
+                mAmbientText.update();
+                mAmbientText.setVisibility(View.VISIBLE);
+            } else {
+                // screen on!
+                mAmbientText.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void updateAmbientCustomImageState(boolean dozing) {
+        boolean mAmbientCustomImageEnable = Settings.System.getIntForUser(
+                mView.getContext().getContentResolver(), Settings.System.AMBIENT_IMAGE,
+                0, UserHandle.USER_CURRENT) != 0;
+
+        if (mAmbientCustomImageEnable) {
+            if (dozing) {
+                // TODO on screen off should we restart pulse?
+                // if that should work we need to decide at this point
+                // if the current notifications "would" turn the screen on
+                // just checking hasActiveClearableNotifications is obviusly not
+                // enough here - so for now dont even try to do it
+                mAmbientCustomImage.update();
+                mAmbientCustomImage.setVisibility(View.VISIBLE);
+            } else {
+                // screen on!
+                mAmbientCustomImage.setVisibility(View.GONE);
+                mAmbientCustomImage.update();
+            }
+        }
     }
 
     private void updatePulseLightState(boolean dozing) {
@@ -3307,6 +3369,13 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                 Settings.System.AMBIENT_LIGHT_PULSE_FOR_ALL, 0, UserHandle.USER_CURRENT) == 1;
         int repeats = Settings.System.getIntForUser(resolver,
                 Settings.System.NOTIFICATION_PULSE_REPEATS, 0, UserHandle.USER_CURRENT);
+        boolean ambientText = Settings.System.getIntForUser(resolver,
+                Settings.System.AMBIENT_TEXT, 0, UserHandle.USER_CURRENT) != 0;
+        boolean ambientTextAnimated = Settings.System.getIntForUser(resolver,
+                Settings.System.AMBIENT_TEXT_ANIMATION, 0, UserHandle.USER_CURRENT) != 0;
+        boolean ambientImage = Settings.System.getIntForUser(resolver,
+                Settings.System.AMBIENT_IMAGE, 0, UserHandle.USER_CURRENT) != 0;
+
         if (animatePulse) {
             mAnimateNextPositionUpdate = true;
         }
@@ -3382,6 +3451,42 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                     stopNotificationPulse();
                 }
             }
+        }
+        if (mAmbientText != null && ambientText) {
+           if (mPulsing) {
+               mAmbientText.animateText(ambientTextAnimated);
+               mAmbientText.update();
+               mAmbientText.setVisibility(View.VISIBLE);
+           } else {
+              if (mDozing) {
+                  mAmbientText.animateText(ambientTextAnimated);
+                  mAmbientText.update();
+                  mAmbientText.setVisibility(View.VISIBLE);
+              } else {
+                  mAmbientText.update();
+                  mAmbientText.setVisibility(View.GONE);
+              }
+           }
+        } else {
+            mAmbientText.update();
+            mAmbientText.setVisibility(View.GONE);
+        }
+        if (mAmbientCustomImage != null && ambientImage) {
+            if (mPulsing) {
+                mAmbientCustomImage.setVisibility(View.VISIBLE);
+                mAmbientCustomImage.update();
+            } else {
+                if (mDozing) {
+                    mAmbientCustomImage.update();
+                    mAmbientCustomImage.setVisibility(View.VISIBLE);
+                } else {
+                    mAmbientCustomImage.update();
+                    mAmbientCustomImage.setVisibility(View.GONE);
+                }
+            }
+        } else {
+            mAmbientCustomImage.setVisibility(View.GONE);
+            mAmbientCustomImage.update();
         }
         mNotificationStackScrollLayoutController.setPulsing(pulsing, animatePulse);
 
