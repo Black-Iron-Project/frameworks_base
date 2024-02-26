@@ -7051,18 +7051,6 @@ public final class Settings {
         public static final String AMBIENT_TEXT_TYPE_COLOR = "ambient_text_type_color";
 
         /**
-        * Ambient Customization
-        * @hide
-        */
-        public static final String AMBIENT_IMAGE = "ambient_image";
-
-        /**
-         * Ambient Custom Image
-         * @hide
-         */
-        public static final String AMBIENT_CUSTOM_IMAGE = "ambient_custom_image";
-
-        /**
          * @hide
          */
         public static final String WIFI_STANDARD_ICON = "wifi_standard_icon";

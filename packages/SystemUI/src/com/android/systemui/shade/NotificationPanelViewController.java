@@ -258,7 +258,6 @@ import kotlin.Unit;
 
 import com.android.internal.util.blackiron.BlackironUtils;
 import com.android.systemui.blackiron.AmbientText;
-import com.android.systemui.blackiron.AmbientCustomImage;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -564,7 +563,6 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
 
     // Ambient Customization
     private AmbientText mAmbientText;
-    private AmbientCustomImage mAmbientCustomImage;
 
     /** Alpha of the views which only show on the keyguard but not in shade / shade locked. */
     private float mKeyguardOnlyContentAlpha = 1.0f;
@@ -1166,7 +1164,6 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         mNotifIsland = mView.findViewById(R.id.notification_island);
         mNotifIsland.setScroller(mNotificationStackScroller);
         mAmbientText = (AmbientText) mView.findViewById(R.id.text_container);
-        mAmbientCustomImage = (AmbientCustomImage) mView.findViewById(R.id.image_container);
         initBottomArea();
 
         mWakeUpCoordinator.setStackScroller(mNotificationStackScrollLayoutController);
@@ -3270,9 +3267,6 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         if (mAmbientText != null) {
             updateAmbientTextState(dozing);
         }
-        if (mAmbientCustomImage != null) {
-            updateAmbientCustomImageState(dozing);
-        }
     }
 
     private void updateAmbientTextState(boolean dozing) {
@@ -3295,28 +3289,6 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
             } else {
                 // screen on!
                 mAmbientText.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    private void updateAmbientCustomImageState(boolean dozing) {
-        boolean mAmbientCustomImageEnable = Settings.System.getIntForUser(
-                mView.getContext().getContentResolver(), Settings.System.AMBIENT_IMAGE,
-                0, UserHandle.USER_CURRENT) != 0;
-
-        if (mAmbientCustomImageEnable) {
-            if (dozing) {
-                // TODO on screen off should we restart pulse?
-                // if that should work we need to decide at this point
-                // if the current notifications "would" turn the screen on
-                // just checking hasActiveClearableNotifications is obviusly not
-                // enough here - so for now dont even try to do it
-                mAmbientCustomImage.update();
-                mAmbientCustomImage.setVisibility(View.VISIBLE);
-            } else {
-                // screen on!
-                mAmbientCustomImage.setVisibility(View.GONE);
-                mAmbientCustomImage.update();
             }
         }
     }
@@ -3374,8 +3346,6 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                 Settings.System.AMBIENT_TEXT, 0, UserHandle.USER_CURRENT) != 0;
         boolean ambientTextAnimated = Settings.System.getIntForUser(resolver,
                 Settings.System.AMBIENT_TEXT_ANIMATION, 0, UserHandle.USER_CURRENT) != 0;
-        boolean ambientImage = Settings.System.getIntForUser(resolver,
-                Settings.System.AMBIENT_IMAGE, 0, UserHandle.USER_CURRENT) != 0;
 
         if (animatePulse) {
             mAnimateNextPositionUpdate = true;
@@ -3471,23 +3441,6 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         } else {
             mAmbientText.update();
             mAmbientText.setVisibility(View.GONE);
-        }
-        if (mAmbientCustomImage != null && ambientImage) {
-            if (mPulsing) {
-                mAmbientCustomImage.setVisibility(View.VISIBLE);
-                mAmbientCustomImage.update();
-            } else {
-                if (mDozing) {
-                    mAmbientCustomImage.update();
-                    mAmbientCustomImage.setVisibility(View.VISIBLE);
-                } else {
-                    mAmbientCustomImage.update();
-                    mAmbientCustomImage.setVisibility(View.GONE);
-                }
-            }
-        } else {
-            mAmbientCustomImage.setVisibility(View.GONE);
-            mAmbientCustomImage.update();
         }
         mNotificationStackScrollLayoutController.setPulsing(pulsing, animatePulse);
 
