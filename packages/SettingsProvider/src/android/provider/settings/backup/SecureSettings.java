@@ -262,5 +262,6 @@ public class SecureSettings {
         Settings.Secure.TETHERING_ALLOW_VPN_UPSTREAMS,
         Settings.Secure.STATUS_BAR_CLOCK,
         Settings.Secure.QUICK_SETTINGS_TILES_VIBRATE
+        Settings.Secure.CLOCK_LS
     };
 }
