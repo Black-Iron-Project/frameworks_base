@@ -25,6 +25,7 @@ import com.android.systemui.qs.tiles.UsbTetherTile
 import com.android.systemui.qs.tiles.VPNTetheringTile
 
 import com.android.systemui.qs.tiles.VpnTile
+import com.android.systemui.qs.tiles.WeatherTile
 import com.android.systemui.qs.tiles.WifiTile
 
 import dagger.Binds
@@ -141,6 +142,12 @@ interface BlackironModule {
     @IntoMap
     @StringKey(VpnTile.TILE_SPEC)
     fun bindVpnTile(vpnTile: VpnTile): QSTileImpl<*>
+
+    /** Inject WeatherTile into tileMap in QSModule */
+    @Binds
+    @IntoMap
+    @StringKey(WeatherTile.TILE_SPEC)
+    fun bindWeatherTile(weatherTile: WeatherTile): QSTileImpl<*>
 
     /** Inject WifiTile into tileMap in QSModule */
     @Binds
