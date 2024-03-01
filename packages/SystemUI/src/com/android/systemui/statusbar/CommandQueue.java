@@ -176,11 +176,12 @@ public class CommandQueue extends IStatusBar.Stub implements
     private static final int MSG_CONFIRM_IMMERSIVE_PROMPT = 77 << MSG_SHIFT;
     private static final int MSG_IMMERSIVE_CHANGED = 78 << MSG_SHIFT;
     private static final int MSG_SET_QS_TILES = 79 << MSG_SHIFT;
-    private static final int MSG_SET_BLOCKED_GESTURAL_NAVIGATION = 79 << MSG_SHIFT;
-    private static final int MSG_SCREEN_PINNING_STATE_CHANGED      = 80 << MSG_SHIFT;
-    private static final int MSG_LEFT_IN_LANDSCAPE_STATE_CHANGED   = 81 << MSG_SHIFT;
-    private static final int MSG_KILL_FOREGROUND_APP = 101 << MSG_SHIFT;
-    private static final int MSG_TOGGLE_SETTINGS_PANEL = 102 << MSG_SHIFT;
+    private static final int MSG_TOGGLE_CAMERA_FLASH = 80 << MSG_SHIFT;
+    private static final int MSG_SET_BLOCKED_GESTURAL_NAVIGATION = 81 << MSG_SHIFT;
+    private static final int MSG_SCREEN_PINNING_STATE_CHANGED      = 82 << MSG_SHIFT;
+    private static final int MSG_LEFT_IN_LANDSCAPE_STATE_CHANGED   = 83 << MSG_SHIFT;
+    private static final int MSG_KILL_FOREGROUND_APP = 84 << MSG_SHIFT;
+    private static final int MSG_TOGGLE_SETTINGS_PANEL = 85 << MSG_SHIFT;
 
     public static final int FLAG_EXCLUDE_NONE = 0;
     public static final int FLAG_EXCLUDE_SEARCH_PANEL = 1 << 0;
@@ -519,6 +520,11 @@ public class CommandQueue extends IStatusBar.Stub implements
          * @see IStatusBar#immersiveModeChanged
          */
         default void immersiveModeChanged(int rootDisplayAreaId, boolean isImmersiveMode) {}
+        
+        /**
+         * @see toggleCameraFlash
+         */
+        default void toggleCameraFlash() { }
 
         default void setBlockedGesturalNavigation(boolean blocked) {}
 
@@ -1413,6 +1419,13 @@ public class CommandQueue extends IStatusBar.Stub implements
         mHandler.obtainMessage(MSG_GO_TO_FULLSCREEN_FROM_SPLIT).sendToTarget();
     }
 
+    public void toggleCameraFlash() {
+        synchronized (mLock) {
+            mHandler.removeMessages(MSG_TOGGLE_CAMERA_FLASH);
+            mHandler.sendEmptyMessage(MSG_TOGGLE_CAMERA_FLASH);
+        }
+    }
+
     @Override
     public void setBlockedGesturalNavigation(boolean blocked) {
         synchronized (mLock) {
@@ -1937,6 +1950,11 @@ public class CommandQueue extends IStatusBar.Stub implements
                     boolean isImmersiveMode = args.argi2 != 0;
                     for (int i = 0; i < mCallbacks.size(); i++) {
                         mCallbacks.get(i).immersiveModeChanged(rootDisplayAreaId, isImmersiveMode);
+                    }
+                    break;
+                case MSG_TOGGLE_CAMERA_FLASH:
+                    for (int i = 0; i < mCallbacks.size(); i++) {
+                        mCallbacks.get(i).toggleCameraFlash();
                     }
                     break;
                 case MSG_SET_BLOCKED_GESTURAL_NAVIGATION:
