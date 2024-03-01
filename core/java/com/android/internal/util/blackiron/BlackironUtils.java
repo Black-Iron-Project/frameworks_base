@@ -21,19 +21,35 @@ import static android.content.Context.VIBRATOR_SERVICE;
 import static android.view.DisplayCutout.BOUNDS_POSITION_LEFT;
 import static android.view.DisplayCutout.BOUNDS_POSITION_RIGHT;
 
-import android.Manifest;
+import android.app.ActivityThread;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
+import android.Manifest;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.IActivityManager;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.database.ContentObserver;
+import android.hardware.Sensor;
+import android.hardware.SensorPrivacyManager;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.telephony.SubscriptionManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.hardware.input.InputManager;
 import android.net.ConnectivityManager;
@@ -47,8 +63,12 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemProperties;
 import android.os.SystemClock;
+import android.os.UserHandle;
 import android.os.Vibrator;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.view.IWindowManager;
+import android.view.WindowManagerGlobal;
 import android.text.format.Time;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -67,8 +87,15 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.R;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import android.widget.Toast;
+
+import com.android.internal.notification.SystemNotificationChannels;
+import com.android.internal.util.ArrayUtils;
+
+import java.util.ArrayList;
 
 /**
  * Some custom utilities
