@@ -1150,6 +1150,16 @@ public class StatusBarManagerService extends IStatusBarService.Stub implements D
         return mTracingEnabled;
     }
 
+    public void toggleCameraFlash() {
+        if (mBar != null) {
+            try {
+                mBar.toggleCameraFlash();
+            } catch (RemoteException ex) {
+                Slog.e(TAG, "Unable to toggle camera flash:", ex);
+            }
+        }
+    }
+
     @Override
     public void setBlockedGesturalNavigation(boolean blocked) {
         if (mBar != null) {
