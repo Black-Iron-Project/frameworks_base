@@ -38,6 +38,9 @@ class BackPanel(context: Context, private val latencyTracker: LatencyTracker) : 
 
     // True if the panel is currently on the left of the screen
     var isLeftPanel = false
+    
+    // draw circle when performing long edge swipe
+    var drawCircle = false
 
     /** Used to track back arrow latency from [android.view.MotionEvent.ACTION_DOWN] to [onDraw] */
     private var trackingBackArrowLatency = false
@@ -295,15 +298,22 @@ class BackPanel(context: Context, private val latencyTracker: LatencyTracker) : 
     }
 
     private fun calculateArrowPath(dx: Float, dy: Float): Path {
-        arrowPath.reset()
-        arrowPath.moveTo(dx, -dy)
-        arrowPath.lineTo(0f, 0f)
-        arrowPath.lineTo(dx, dy)
-        arrowPath.moveTo(dx, -dy)
+        // Draw circle when performing long edge swipe
         if (triggerLongSwipe) {
-            arrowPath.addPath(arrowPath, arrowPaint.strokeWidth * 2.0f * -1, 0.0f)
+            val centerX = dx / 2
+            val centerY = 0f
+            val radius = Math.min(Math.abs(dx), Math.abs(dy))
+            arrowPath.reset()
+            arrowPath.addCircle(centerX, centerY, radius, Path.Direction.CW)
+            return arrowPath
+        } else {
+            arrowPath.reset()
+            arrowPath.moveTo(dx, -dy)
+            arrowPath.lineTo(0f, 0f)
+            arrowPath.lineTo(dx, dy)
+            arrowPath.moveTo(dx, -dy)
+            return arrowPath
         }
-        return arrowPath
     }
 
     fun addAnimationEndListener(
