@@ -44,7 +44,7 @@ public class GlobalActionsPowerDialog {
         ViewGroup listView = (ViewGroup) LayoutInflater.from(context).inflate(
                 com.android.systemui.res.R.layout.global_actions_power_dialog_flow, null);
 
-        Flow flow = listView.findViewById(com.android.systemui.R.id.power_flow);
+        Flow flow = listView.findViewById(com.android.systemui.res.R.id.power_flow);
 
         for (int i = 0; i < adapter.getCount(); i++) {
             View action = adapter.getView(i, null, listView);
@@ -56,7 +56,7 @@ public class GlobalActionsPowerDialog {
         Resources res = context.getResources();
 
         Dialog dialog = new Dialog(context,
-                com.android.systemui.R.style.Theme_SystemUI_Dialog_GlobalActionsLite);
+                com.android.systemui.res.R.style.Theme_SystemUI_Dialog_GlobalActionsLite);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(listView);
 
@@ -77,7 +77,7 @@ public class GlobalActionsPowerDialog {
             window.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
             // Set blur behind radius
             int blurBehindRadius = context.getResources()
-                    .getDimensionPixelSize(com.android.systemui.R.dimen.max_window_blur_radius);
+                    .getDimensionPixelSize(com.android.systemui.res.R.dimen.max_window_blur_radius);
             window.getAttributes().setBlurBehindRadius(blurBehindRadius);
             window.setDimAmount(0.54f);
         } else {

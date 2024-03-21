@@ -37,7 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.settingslib.Utils;
 import com.android.settingslib.bluetooth.CachedBluetoothDevice;
-import com.android.systemui.R;
+import com.android.systemui.res.R;
 
 import java.util.List;
 

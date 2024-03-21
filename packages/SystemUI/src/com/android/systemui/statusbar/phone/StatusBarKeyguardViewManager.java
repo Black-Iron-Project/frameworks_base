@@ -97,7 +97,7 @@ import com.android.systemui.statusbar.phone.FaceUnlockImageView;
 import com.android.systemui.unfold.FoldAodAnimationController;
 import com.android.systemui.unfold.SysUIUnfoldComponent;
 import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
-import com.android.systemui.R;
+import com.android.systemui.res.R;
 
 import dagger.Lazy;
 

@@ -48,7 +48,7 @@ import android.widget.RelativeLayout;
 import androidx.palette.graphics.Palette;
 
 import com.android.settingslib.Utils;
-import com.android.systemui.R;
+import com.android.systemui.res.R;
 
 public class AmbientText extends FrameLayout {
    private static final boolean DEBUG = false;

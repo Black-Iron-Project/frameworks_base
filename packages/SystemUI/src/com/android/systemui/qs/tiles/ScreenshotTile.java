@@ -129,7 +129,7 @@ public class ScreenshotTile extends QSTileImpl<BooleanState> {
         state.contentDescription =  mContext.getString(
                 R.string.global_action_screenshot);
         state.secondaryLabel = mContext.getString(
-                com.android.systemui.R.string.screenshot_long_press);
+                com.android.systemui.res.R.string.screenshot_long_press);
         state.icon = ResourceIcon.get(R.drawable.ic_screenshot);
         state.value = true;
         state.state = Tile.STATE_INACTIVE;

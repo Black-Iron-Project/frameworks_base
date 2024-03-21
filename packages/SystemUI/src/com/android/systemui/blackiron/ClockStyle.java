@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextClock;
 import com.android.internal.util.blackiron.ThemeUtils;
 import com.android.systemui.Dependency;
-import com.android.systemui.R;
+import com.android.systemui.res.R;
 import com.android.systemui.tuner.TunerService;
 
 public class ClockStyle extends RelativeLayout implements TunerService.Tunable {

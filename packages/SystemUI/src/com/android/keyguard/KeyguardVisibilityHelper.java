@@ -40,7 +40,7 @@ import com.google.errorprone.annotations.CompileTimeConstant;
 import java.util.function.Consumer;
 import com.android.systemui.blackiron.AmbientText;
 
-import com.android.systemui.R;
+import com.android.systemui.res.R;
 
 /**
  * Helper class for updating visibility of keyguard views based on keyguard and status bar state.

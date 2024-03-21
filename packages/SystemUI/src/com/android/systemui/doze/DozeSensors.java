@@ -169,7 +169,7 @@ public class DozeSensors {
         mDozeLog = dozeLog;
         mProximitySensor = proximitySensor;
         mProximitySensor.setTag(TAG);
-        mSupportProximitySensor = resources.getBoolean(com.android.systemui.R.bool.doze_proximity_sensor_supported);
+        mSupportProximitySensor = resources.getBoolean(com.android.systemui.res.R.bool.doze_proximity_sensor_supported);
         mSelectivelyRegisterProxSensors = dozeParameters.getSelectivelyRegisterSensorsUsingProx() && mSupportProximitySensor;
         mListeningProxSensors = !mSelectivelyRegisterProxSensors;
         mSelectedUserInteractor = selectedUserInteractor;
