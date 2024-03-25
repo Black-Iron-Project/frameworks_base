@@ -97,7 +97,7 @@ import static com.android.server.wm.WindowManagerPolicyProto.ROTATION_MODE;
 import static com.android.server.wm.WindowManagerPolicyProto.SCREEN_ON_FULLY;
 import static com.android.server.wm.WindowManagerPolicyProto.WINDOW_MANAGER_DRAW_COMPLETE;
 
-import static com.android.internal.util.custom.hwkeys.DeviceKeysConstants.*;
+import static com.android.internal.util.blackiron.hwkeys.DeviceKeysConstants.*;
 
 import android.accessibilityservice.AccessibilityService;
 import android.annotation.NonNull;
@@ -226,6 +226,7 @@ import com.android.internal.policy.PhoneWindow;
 import com.android.internal.policy.TransitionAnimation;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.ScreenshotHelper;
+import com.android.internal.util.blackiron.ActionUtils;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.server.AccessibilityManagerInternal;
 import com.android.server.ExtconStateObserver;
@@ -267,7 +268,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.android.internal.util.custom.NavbarUtils;
+import com.android.internal.util.blackiron.NavbarUtils;
 
 /**
  * WindowManagerPolicy implementation for the Android phone UI.  This
@@ -2209,14 +2210,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case VOICE_SEARCH:
                 launchAssistLongPressAction();
               break;
+            case IN_APP_SEARCH:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH);
+                break;
             case LAUNCH_CAMERA:
                 launchCameraAction();
                 break;
             case SLEEP:
                 mPowerManager.goToSleep(SystemClock.uptimeMillis());
                 break;
-            case SCREENSHOT:
-                interceptScreenshotChord(SCREENSHOT_KEY_OTHER, 0 /*pressDelay*/);
+            case LAST_APP:
+                ActionUtils.switchToLastApp(mContext, mCurrentUserId);
+                break;
+            case KILL_APP:
+                ActionUtils.killForegroundApp(mContext, mCurrentUserId);
                 break;
             default:
                 break;
