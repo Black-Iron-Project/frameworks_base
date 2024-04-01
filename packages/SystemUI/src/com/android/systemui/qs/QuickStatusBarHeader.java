@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.ContentResolver;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -38,6 +40,8 @@ import android.widget.ImageView;
 import com.android.systemui.res.R;
 import com.android.systemui.blackiron.header.StatusBarHeaderMachine;
 import com.android.systemui.util.LargeScreenUtils;
+
+import com.android.internal.graphics.ColorUtils;
 
 import com.bosphere.fadingedgelayout.FadingEdgeLayout;
 
@@ -260,6 +264,8 @@ public class QuickStatusBarHeader extends FrameLayout
             TransitionDrawable transitionDrawable = new TransitionDrawable(arrayDrawable);
             transitionDrawable.setCrossFadeEnabled(true);
             mQsHeaderImageView.setImageDrawable(transitionDrawable);
+            int fadeFilter = ColorUtils.blendARGB(Color.TRANSPARENT, Color.BLACK, 40 / 100f);
+            mQsHeaderImageView.setColorFilter(fadeFilter, PorterDuff.Mode.SRC_ATOP);
             transitionDrawable.startTransition(1000);
         } else {
             mQsHeaderImageView.setImageDrawable(dw);
