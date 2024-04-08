@@ -266,6 +266,8 @@ import lineageos.providers.LineageSettings;
 import org.lineageos.internal.buttons.LineageButtons;
 import org.lineageos.internal.util.ActionUtils;
 
+import org.blackiron.server.ShakeGestureService;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -676,6 +678,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private SwipeToScreenshotListener mSwipeToScreenshot;
     private boolean haveEnableGesture = false;
+    private ShakeGestureService mShakeGestures;
 
     // Tracks user-customisable behavior for certain key events
     private Action mBackLongPressAction;
@@ -6959,6 +6962,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 interceptScreenshotChord(TAKE_SCREENSHOT_FULLSCREEN, SCREENSHOT_KEY_OTHER, 0 /*pressDelay*/);
             }
         });
+        
+        mShakeGestures = ShakeGestureService.getInstance(mContext);
+        mShakeGestures.setScreenshotCallback(new ShakeGestureService.ScreenshotCallback() {
+            @Override
+            public void onScreenshotTaken() {
+                interceptScreenshotChord(TAKE_SCREENSHOT_FULLSCREEN, SCREENSHOT_KEY_OTHER, 0 /*pressDelay*/);
+            }
+        });
+        mShakeGestures.onStart();
 
         mLineageHardware = LineageHardwareManager.getInstance(mContext);
 
