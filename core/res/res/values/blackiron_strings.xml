@@ -16,6 +16,11 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
+    <!-- Shake Gestures toast -->
+    <string name="shake_gesture_toast_dnd_mode">Shake Gestures: Switched to do not disturb mode</string>
+    <string name="shake_gesture_toast_vibrate_mode">Shake Gestures: Switched to vibrate ringer mode</string>
+    <string name="shake_gesture_toast_normal_mode">Shake Gestures: Switched to normal ringer mode</string>
+
     <!-- Pocket Lock -->
     <string name="pocket_lock_message_long_press">Press and hold power button to unlock</string>
     <string name="pocket_view_title">Pocket mode is on</string>
