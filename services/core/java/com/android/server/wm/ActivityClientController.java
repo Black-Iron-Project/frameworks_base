@@ -1075,6 +1075,8 @@ class ActivityClientController extends IActivityClientController.Stub {
                 if (rootTask.inFreeformWindowingMode()) {
                     rootTask.setWindowingMode(WINDOWING_MODE_FULLSCREEN);
                     rootTask.setBounds(null);
+                    rootTask.getRequestedOverrideConfiguration().windowConfiguration
+                        .setWindowingMode(WINDOWING_MODE_UNDEFINED);
                 } else if (!r.supportsFreeform()) {
                     throw new IllegalStateException(
                             "This activity is currently not freeform-enabled");
