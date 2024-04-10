@@ -46,6 +46,7 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.RemoteException;
+import android.os.UserHandle;
 import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.util.Pair;
