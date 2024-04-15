@@ -2,7 +2,7 @@
 * Copyright (C) 2013 SlimRoms Project
 * Copyright (C) 2015 TeamEos Project
 * Copyright (C) 2015-2016 The DirtyUnicorns Project
-* Copyright (C) 2019-2024 crDroid Android Project
+* Copyright (C) 2019-2024 BlackIron Project
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
