@@ -21,9 +21,11 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
+import android.os.UserHandle
 import android.provider.Settings
 import android.util.AttributeSet
 import android.util.Log
+import android.text.TextUtils
 import android.view.MotionEvent
 import android.view.Surface
 import android.widget.FrameLayout
@@ -92,8 +94,13 @@ class UdfpsView(
         val customUdfpsIcon = Settings.System.getInt(context.contentResolver,
             Settings.System.UDFPS_ICON, 0) != 0
 
+        val customFpIconEnabled = Settings.System.getInt(context.contentResolver,
+            Settings.System.OMNI_CUSTOM_FP_ICON_ENABLED, 0) == 1
+	val customIconURI = Settings.System.getStringForUser(context.contentResolver,
+	    Settings.System.OMNI_CUSTOM_FP_ICON, UserHandle.USER_CURRENT)
+
         // Updates sensor rect in relation to the overlay view
-        if (!customUdfpsIcon) {
+        if (!customUdfpsIcon && !customFpIconEnabled) {
             animationViewController?.onSensorRectUpdated(RectF(sensorRect))
         } else {
             val paddingX = animationViewController?.paddingX ?: 0
