@@ -28,6 +28,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.IntDef;
 import android.app.AlarmManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.provider.Settings;
 import android.os.Handler;
@@ -1534,8 +1535,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
 
     private void updateThemeColors() {
         if (mScrimBehind == null) return;
-        int background = Utils.getColorAttr(mScrimBehind.getContext(),
-                com.android.internal.R.attr.materialColorSurfaceDim).getDefaultColor();
+        int background = getBackgroundColor();
         int surfaceBackground = Utils.getColorAttr(mScrimBehind.getContext(),
                 com.android.internal.R.attr.colorSurfaceHeader).getDefaultColor();
         int accent = Utils.getColorAttr(mScrimBehind.getContext(),
@@ -1558,6 +1558,14 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
                 ColorUtils.calculateContrast(mBehindColors.getMainColor(), Color.WHITE) > 4.5);
 
         mNeedsDrawableColorUpdate = true;
+    }
+    
+    private int getBackgroundColor() {
+        final int darkColor = mScrimBehind.getContext().getResources().getColor(R.color.qs_surface_color_dark);
+        final int lightColor = mScrimBehind.getContext().getResources().getColor(R.color.qs_surface_color_light);
+        final Configuration config = mScrimBehind.getContext().getResources().getConfiguration();
+        return (config.uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES ? darkColor : lightColor;
     }
 
     private void onThemeChanged() {
