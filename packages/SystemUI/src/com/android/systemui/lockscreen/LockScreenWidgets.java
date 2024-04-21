@@ -31,10 +31,10 @@ import android.hardware.camera2.CameraManager;
 import android.media.AppVolume;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
-import android.media.MediaMetadataRetriever;
-import android.media.RemoteControlClient;
-import android.media.RemoteController;
 import android.media.session.MediaController;
+import android.media.session.MediaSession;
+import android.media.session.MediaSessionManager;
+import android.media.session.PlaybackState;
 import android.media.session.MediaSessionLegacyHelper;
 import android.os.Bundle;
 import android.os.Handler;
@@ -81,6 +81,7 @@ import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
 import com.android.systemui.statusbar.connectivity.WifiIndicators;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.util.settings.SystemSettings;
+import com.android.internal.util.android.VibrationUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -183,11 +184,10 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     private Handler mHandler = new Handler();
 
     private AudioManager mAudioManager;
-    private Metadata mMetadata = new Metadata();
-    private RemoteController mRemoteController;
-    private boolean mMediaActive = false;
-    private boolean mClientLost = true;
-    
+    private MediaController mController;
+    private MediaMetadata mMediaMetadata;
+    private String mLastTrackTitle = null;
+
     private boolean mDozing;
     
     private boolean mIsInflated = false;
@@ -196,6 +196,21 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     
     private int mAudioMode;
     private boolean mShowDisplayWidgets;
+    private Runnable mMediaUpdater;
+
+
+    private final MediaController.Callback mMediaCallback = new MediaController.Callback() {
+        @Override
+        public void onPlaybackStateChanged(@NonNull PlaybackState state) {
+            updateMediaController();
+        }
+        @Override
+        public void onMetadataChanged(MediaMetadata metadata) {
+            super.onMetadataChanged(metadata);
+            mMediaMetadata = metadata;
+            updateMediaController();
+        }
+    };
 
     final ConfigurationListener mConfigurationListener = new ConfigurationListener() {
         @Override
@@ -214,8 +229,6 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         mContext = context;
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-        mRemoteController = new RemoteController(mContext, mRCClientUpdateListener);
-        mAudioManager.registerRemoteController(mRemoteController);
         mDarkColor = mContext.getResources().getColor(R.color.lockscreen_widget_background_color_dark);
         mLightColor = mContext.getResources().getColor(R.color.lockscreen_widget_background_color_light);
         mDarkColorActive = mContext.getResources().getColor(R.color.lockscreen_widget_active_color_dark);
@@ -252,6 +265,14 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         
         IntentFilter ringerFilter = new IntentFilter(AudioManager.INTERNAL_RINGER_MODE_CHANGED_ACTION);
         mContext.registerReceiver(mRingerModeReceiver, ringerFilter);
+        mMediaUpdater = new Runnable() {
+            @Override
+            public void run() {
+                updateMediaController();
+                mHandler.postDelayed(this, 1000);
+            }
+        };
+        updateMediaController();
     }
 
     public void enableWeatherUpdates() {
@@ -372,54 +393,68 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         }
     };
 
-   private RemoteController.OnClientUpdateListener mRCClientUpdateListener =
-            new RemoteController.OnClientUpdateListener() {
-
-        @Override
-        public void onClientChange(boolean clearing) {
-            if (clearing) {
-                mMetadata.clear();
-                mMediaActive = false;
-                mClientLost = true;
+    private boolean isMediaControllerAvailable() {
+        final MediaController mediaController = getActiveLocalMediaController();
+        return mediaController != null && !TextUtils.isEmpty(mediaController.getPackageName());
+    }
+    
+    private MediaController getActiveLocalMediaController() {
+        MediaSessionManager mediaSessionManager =
+                mContext.getSystemService(MediaSessionManager.class);
+        MediaController localController = null;
+        final List<String> remoteMediaSessionLists = new ArrayList<>();
+        for (MediaController controller : mediaSessionManager.getActiveSessions(null)) {
+            final MediaController.PlaybackInfo pi = controller.getPlaybackInfo();
+            if (pi == null) {
+                continue;
             }
-            updateMediaState();
+            final PlaybackState playbackState = controller.getPlaybackState();
+            if (playbackState == null) {
+                continue;
+            }
+            if (playbackState.getState() != PlaybackState.STATE_PLAYING) {
+                continue;
+            }
+            if (pi.getPlaybackType() == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE) {
+                if (localController != null
+                        && TextUtils.equals(
+                                localController.getPackageName(), controller.getPackageName())) {
+                    localController = null;
+                }
+                if (!remoteMediaSessionLists.contains(controller.getPackageName())) {
+                    remoteMediaSessionLists.add(controller.getPackageName());
+                }
+                continue;
+            }
+            if (pi.getPlaybackType() == MediaController.PlaybackInfo.PLAYBACK_TYPE_LOCAL) {
+                if (localController == null
+                        && !remoteMediaSessionLists.contains(controller.getPackageName())) {
+                    localController = controller;
+                }
+            }
         }
+        return localController;
+    }
 
-        @Override
-        public void onClientPlaybackStateUpdate(int state, long stateChangeTimeMs,
-                long currentPosMs, float speed) {
-            mClientLost = false;
-            playbackStateUpdate(state);
+    private void updateMediaController() {
+        MediaController localController = getActiveLocalMediaController();
+        if (localController != null && !sameSessions(mController, localController)) {
+            if (mController != null) {
+                mController.unregisterCallback(mMediaCallback);
+                mController = null;
+            }
+            mController = localController;
+            mController.registerCallback(mMediaCallback);
         }
+        mMediaMetadata = isMediaControllerAvailable() ? mController.getMetadata() : null;
+        updateMediaState();
+    }
 
-        @Override
-        public void onClientPlaybackStateUpdate(int state) {
-            mClientLost = false;
-            updateMediaState();
-        }
-
-        @Override
-        public void onClientMetadataUpdate(RemoteController.MetadataEditor data) {
-            mMetadata.trackTitle = data.getString(MediaMetadataRetriever.METADATA_KEY_TITLE,
-                    mMetadata.trackTitle);
-            mClientLost = false;
-            updateMediaState();
-        }
-
-        @Override
-        public void onClientTransportControlUpdate(int transportControlFlags) {
-        }
-    };
-
-    class Metadata {
-        private String trackTitle;
-
-        public void clear() {
-            trackTitle = null;
-        }
-
-        public String getTrackTitle() {
-            return trackTitle;
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibility == View.VISIBLE) {
+            updateMediaController();
         }
     }
 
@@ -485,30 +520,11 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         }
     }
 
-    private void playbackStateUpdate(int state) {
-        if (mediaButton == null && mediaButtonFab == null) return;
-        boolean active;
-        switch (state) {
-            case RemoteControlClient.PLAYSTATE_PLAYING:
-                active = true;
-                break;
-            case RemoteControlClient.PLAYSTATE_ERROR:
-            case RemoteControlClient.PLAYSTATE_PAUSED:
-            default:
-                active = false;
-                break;
-        }
-        if (active != mMediaActive) {
-            mMediaActive = active;
-            updateMediaState();
-        }
-    }
-
     private void updateContainerVisibility() {
-        final boolean isMainWidgetsEmpty = TextUtils.isEmpty(mMainLockscreenWidgetsList) 
-        	|| mMainLockscreenWidgetsList == null;
-        final boolean isSecondaryWidgetsEmpty = TextUtils.isEmpty(mSecondaryLockscreenWidgetsList) 
-        	|| mSecondaryLockscreenWidgetsList == null;
+        final boolean isMainWidgetsEmpty = mMainLockscreenWidgetsList == null 
+            || TextUtils.isEmpty(mMainLockscreenWidgetsList);
+        final boolean isSecondaryWidgetsEmpty = mSecondaryLockscreenWidgetsList == null 
+            || TextUtils.isEmpty(mSecondaryLockscreenWidgetsList);
         final boolean isEmpty = isMainWidgetsEmpty && isSecondaryWidgetsEmpty;
         final boolean lockscreenWidgetsEnabled = Settings.System.getIntForUser(
                 mContext.getContentResolver(),
@@ -524,7 +540,9 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
             secondaryWidgetsContainer.setVisibility(isSecondaryWidgetsEmpty ? View.GONE : View.VISIBLE);
         }
         final View displayWidgets = findViewById(R.id.display_widgets);
-        displayWidgets.setVisibility(mShowDisplayWidgets ? View.VISIBLE : View.GONE);
+        if (displayWidgets != null) {
+            displayWidgets.setVisibility(mShowDisplayWidgets ? View.VISIBLE : View.GONE);
+        }
         final boolean shouldHideContainer = isEmpty || mDozing || !lockscreenWidgetsEnabled;
         setVisibility(shouldHideContainer ? View.GONE : View.VISIBLE);
     }
@@ -560,7 +578,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
             }
         }
         updateContainerVisibility();
-        updateMediaState();
+        updateMediaController();
         updateSoundEngineButtonState();
     }
 
@@ -596,6 +614,14 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
 
     private void setUpWidgetWiews(LaunchableImageView iv, LaunchableFAB efab, String type) {
         switch (type) {
+            case "none":
+                if (iv != null) {
+                    iv.setVisibility(View.GONE);
+                }
+                if (efab != null) {
+                    efab.setVisibility(View.GONE);
+                }
+                break;
             case "sound_engine":
                 if (iv != null) {
                     soundEngineButton = iv;
@@ -713,10 +739,12 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffX > 0) {
                         dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-                        updateMediaState();
+                        VibrationUtils.triggerVibration(mContext, 2);
+                        updateMediaController();
                     } else {
                         dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_NEXT);
-                        updateMediaState();
+                        VibrationUtils.triggerVibration(mContext, 2);
+                        updateMediaController();
                     }
                     return true;
                 }
@@ -771,10 +799,6 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         }
     }
     
-    private boolean isInfoExpired() {
-        return !mMediaActive || mClientLost;
-    }
-    
     public void updateMediaState() {
         updateMediaPlaybackState();
         mHandler.postDelayed(() -> {
@@ -783,13 +807,21 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     }
 
     private void toggleMediaPlaybackState() {
-        dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-        updateMediaState();
+        if (isMediaPlaying()) {
+            mHandler.removeCallbacks(mMediaUpdater);
+            dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PAUSE);
+            updateMediaController();
+        } else {
+            mMediaUpdater.run();
+            dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PLAY);
+        }
     }
     
     private void showMediaDialog(View view) {
+        updateMediaController();
         mHandler.post(() -> 
             mMediaOutputDialogFactory.create(getActiveVolumeApp(), true, view));
+        VibrationUtils.triggerVibration(mContext, 2);
     }
 
     private String getActiveVolumeApp() {
@@ -816,19 +848,27 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     }
 
     private void updateMediaPlaybackState() {;
-        int stateIcon = mMediaActive
-                ? R.drawable.ic_media_pause
-                : R.drawable.ic_media_play;
+        boolean isPlaying = isMediaPlaying();
+        int stateIcon = isPlaying ? R.drawable.ic_media_pause : R.drawable.ic_media_play;
         if (mediaButton != null) {
             mediaButton.setImageResource(stateIcon);
-            setButtonActiveState(mediaButton, null, mMediaActive);
+            setButtonActiveState(mediaButton, null, isPlaying);
         }
         if (mediaButtonFab != null) {
-            final boolean canShowTrackTitle = !isInfoExpired() || mMetadata.trackTitle != null;
-            mediaButtonFab.setIcon(mContext.getDrawable(mMediaActive ? R.drawable.ic_media_pause : R.drawable.ic_media_play));
-            mediaButtonFab.setText(canShowTrackTitle ? mMetadata.trackTitle : mContext.getResources().getString(R.string.controls_media_button_play));
-            setButtonActiveState(null, mediaButtonFab, mMediaActive);
+            String trackTitle = mMediaMetadata != null ? mMediaMetadata.getString(MediaMetadata.METADATA_KEY_TITLE) : "";
+            if (!TextUtils.isEmpty(trackTitle) && mLastTrackTitle != trackTitle) {
+                mLastTrackTitle = trackTitle;
+            }
+            final boolean canShowTrackTitle = isPlaying || !TextUtils.isEmpty(mLastTrackTitle);
+            mediaButtonFab.setIcon(mContext.getDrawable(isPlaying ? R.drawable.ic_media_pause : R.drawable.ic_media_play));
+            mediaButtonFab.setText(canShowTrackTitle ? mLastTrackTitle : mContext.getResources().getString(R.string.controls_media_button_play));
+            setButtonActiveState(null, mediaButtonFab, isPlaying);
         }
+    }
+    
+    private boolean isMediaPlaying() {
+        return isMediaControllerAvailable() 
+            && PlaybackState.STATE_PLAYING == getMediaControllerPlaybackState(mController);
     }
 
     private void launchAppIfAvailable(Intent launchIntent, @StringRes int appTypeResId) {
@@ -886,7 +926,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         mDataController.setMobileDataEnabled(!isMobileDataEnabled());
         updateMobileDataState(!isMobileDataEnabled());
         mHandler.postDelayed(() -> {
-            updateWiFiButtonState(isMobileDataEnabled());
+            updateMobileDataState(isMobileDataEnabled());
         }, 250);
     }
     
@@ -894,6 +934,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         mHandler.post(() -> mInternetDialogFactory.create(true,
                 mAccessPointController.canConfigMobileData(),
                 mAccessPointController.canConfigWifi(), view));
+        VibrationUtils.triggerVibration(mContext, 2);
     }
 
     private void toggleSoundMode() {
@@ -1027,6 +1068,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
                 Settings.System.QS_BT_AUTO_ON, 0) == 1;
         mHandler.post(() -> 
             mBluetoothTileDialogViewModel.showDialog(mContext, view, isAutoOn));
+        VibrationUtils.triggerVibration(mContext, 2);
     }
     
     private void updateBtState() {
@@ -1096,5 +1138,25 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         public void setIsAirplaneMode(@NonNull IconState icon) {
             updateMobileDataState(!icon.visible && isMobileDataEnabled());
         }
+    }
+    
+    private boolean sameSessions(MediaController a, MediaController b) {
+        if (a == b) {
+            return true;
+        }
+        if (a == null) {
+            return false;
+        }
+        return a.controlsSameSession(b);
+    }
+    
+    private int getMediaControllerPlaybackState(MediaController controller) {
+        if (controller != null) {
+            final PlaybackState playbackState = controller.getPlaybackState();
+            if (playbackState != null) {
+                return playbackState.getState();
+            }
+        }
+        return PlaybackState.STATE_NONE;
     }
 }
