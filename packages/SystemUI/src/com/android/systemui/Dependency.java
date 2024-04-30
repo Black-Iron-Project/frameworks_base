@@ -69,6 +69,7 @@ import com.android.systemui.statusbar.policy.FlashlightController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.tuner.TunablePadding.TunablePaddingService;
 import com.android.systemui.tuner.TunerService;
+import com.android.systemui.util.settings.SystemSettings;
 
 import dagger.Lazy;
 
@@ -188,6 +189,7 @@ public class Dependency {
     @Inject Lazy<SystemUIDialogManager> mSystemUIDialogManagerLazy;
     @Inject Lazy<DialogLaunchAnimator> mDialogLaunchAnimatorLazy;
     @Inject Lazy<UserTracker> mUserTrackerLazy;
+    @Inject Lazy<SystemSettings> mSystemSettings;
 
     @Inject
     public Dependency() {
@@ -250,6 +252,7 @@ public class Dependency {
         mProviders.put(SystemUIDialogManager.class, mSystemUIDialogManagerLazy::get);
         mProviders.put(DialogLaunchAnimator.class, mDialogLaunchAnimatorLazy::get);
         mProviders.put(UserTracker.class, mUserTrackerLazy::get);
+        mProviders.put(SystemSettings.class, mSystemSettings::get);
 
         Dependency.setInstance(this);
     }
