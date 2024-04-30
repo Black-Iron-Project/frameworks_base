@@ -70,6 +70,7 @@ import com.android.systemui.statusbar.window.StatusBarWindowController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.tuner.TunablePadding.TunablePaddingService;
 import com.android.systemui.tuner.TunerService;
+import com.android.systemui.util.settings.SystemSettings;
 
 import dagger.Lazy;
 
@@ -190,6 +191,7 @@ public class Dependency {
     @Inject Lazy<DialogTransitionAnimator> mDialogTransitionAnimatorLazy;
     @Inject Lazy<UserTracker> mUserTrackerLazy;
     @Inject Lazy<StatusBarWindowController> mStatusBarWindowControllerLazy;
+    @Inject Lazy<SystemSettings> mSystemSettings;
 
     @Inject
     public Dependency() {
@@ -253,6 +255,7 @@ public class Dependency {
         mProviders.put(DialogTransitionAnimator.class, mDialogTransitionAnimatorLazy::get);
         mProviders.put(UserTracker.class, mUserTrackerLazy::get);
         mProviders.put(StatusBarWindowController.class, mStatusBarWindowControllerLazy::get);
+        mProviders.put(SystemSettings.class, mSystemSettings::get);
 
         Dependency.setInstance(this);
     }
