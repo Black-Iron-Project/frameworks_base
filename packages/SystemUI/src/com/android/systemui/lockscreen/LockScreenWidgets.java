@@ -51,6 +51,7 @@ import android.text.TextUtils;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -557,6 +558,18 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         if (efab == null) return;
         efab.setElevation(0);
         setButtonActiveState(null, efab, false);
+        ViewGroup.LayoutParams params = efab.getLayoutParams();
+        if (params instanceof LinearLayout.LayoutParams) {
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) params;
+            if (efab.getVisibility() == View.VISIBLE && mMainWidgetsList.size() == 1) {
+                layoutParams.width = getResources().getDimensionPixelSize(R.dimen.kg_widget_main_width);
+                layoutParams.height = getResources().getDimensionPixelSize(R.dimen.kg_widget_main_height);
+            } else {
+                layoutParams.width = 0;
+                layoutParams.weight = 1;
+            }
+            efab.setLayoutParams(layoutParams);
+        }
     }
 
     private void updateWidgetsResources(LaunchableImageView iv) {
