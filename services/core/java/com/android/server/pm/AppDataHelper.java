@@ -534,11 +534,13 @@ public class AppDataHelper {
         } else {
             storageFlags = StorageManager.FLAG_STORAGE_DE | StorageManager.FLAG_STORAGE_CE;
         }
+        final List<String> deferPackages;
         synchronized (mPm.mInstallLock) {
-            List<String> deferPackages = reconcileAppsDataLI(StorageManager.UUID_PRIVATE_INTERNAL,
+            deferPackages = reconcileAppsDataLI(StorageManager.UUID_PRIVATE_INTERNAL,
                     UserHandle.USER_SYSTEM, storageFlags, true /* migrateAppData */,
                     true /* onlyCoreApps */);
         }
+        final List<String> deferPackagesCopy = new ArrayList<>(deferPackages);
         Future<?> prepareAppDataFuture = SystemServerInitThreadPool.submit(() -> {
             TimingsTraceLog traceLog = new TimingsTraceLog("SystemServerTimingAsync",
                     Trace.TRACE_TAG_PACKAGE_MANAGER);
@@ -552,12 +554,12 @@ public class AppDataHelper {
             traceLog.traceEnd();
 
             traceLog.traceBegin("AppDataPrepare");
-            if (deferPackages == null || deferPackages.isEmpty()) {
+            if (deferPackagesCopy == null || deferPackagesCopy.isEmpty()) {
                 return;
             }
             int count = 0;
             final Installer.Batch batch = new Installer.Batch();
-            for (String pkgName : deferPackages) {
+            for (String pkgName : deferPackagesCopy) {
                 final Computer snapshot = mPm.snapshotComputer();
                 final PackageStateInternal packageStateInternal = snapshot.getPackageStateInternal(
                         pkgName);
