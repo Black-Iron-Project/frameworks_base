@@ -11,6 +11,11 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
+    <include layout="@layout/keyguard_display_widgets"
+        android:id="@+id/display_widgets"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
         android:id="@+id/main_widgets_container"
         android:orientation="horizontal"
