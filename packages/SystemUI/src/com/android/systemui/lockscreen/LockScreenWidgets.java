@@ -90,6 +90,9 @@ import com.android.internal.util.blackiron.OmniJawsClient;
 
 public class LockScreenWidgets extends LinearLayout implements TunerService.Tunable, OmniJawsClient.OmniJawsObserver {
 
+    private static final String LOCKSCREEN_DISPLAY_WIDGETS =
+            "system:lockscreen_display_widgets";
+
     private static final String LOCKSCREEN_WIDGETS =
             "system:lockscreen_widgets";
 
@@ -192,6 +195,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     private boolean mIsLongPress = false;
     
     private int mAudioMode;
+    private boolean mShowDisplayWidgets;
 
     final ConfigurationListener mConfigurationListener = new ConfigurationListener() {
         @Override
@@ -217,7 +221,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         mDarkColorActive = mContext.getResources().getColor(R.color.lockscreen_widget_active_color_dark);
         mLightColorActive = mContext.getResources().getColor(R.color.lockscreen_widget_active_color_light);
 
-        Dependency.get(TunerService.class).addTunable(this, LOCKSCREEN_WIDGETS, LOCKSCREEN_WIDGETS_EXTRAS, SOUND_ENGINE_MODE);
+        Dependency.get(TunerService.class).addTunable(this, LOCKSCREEN_DISPLAY_WIDGETS, LOCKSCREEN_WIDGETS, LOCKSCREEN_WIDGETS_EXTRAS, SOUND_ENGINE_MODE);
         mSystemSettings = Dependency.get(SystemSettings.class);
         mAccessPointController = Dependency.get(AccessPointController.class);
         mActivityStarter = Dependency.get(ActivityStarter.class);
@@ -454,15 +458,19 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     @Override
     public void onTuningChanged(String key, String newValue) {
         switch (key) {
+            case LOCKSCREEN_DISPLAY_WIDGETS:
+                mShowDisplayWidgets = TunerService.parseIntegerSwitch(newValue, false);
+                updateWidgetViews();
+                break;
             case LOCKSCREEN_WIDGETS:
-                mMainLockscreenWidgetsList = (String) newValue;
+                mMainLockscreenWidgetsList = newValue;
                 if (mMainLockscreenWidgetsList != null) {
                     mMainWidgetsList = Arrays.asList(mMainLockscreenWidgetsList.split(","));
                 }
                 updateWidgetViews();
                 break;
             case LOCKSCREEN_WIDGETS_EXTRAS:
-                mSecondaryLockscreenWidgetsList = (String) newValue;
+                mSecondaryLockscreenWidgetsList = newValue;
                 if (mSecondaryLockscreenWidgetsList != null) {
                     mSecondaryWidgetsList = Arrays.asList(mSecondaryLockscreenWidgetsList.split(","));
                 }
@@ -515,6 +523,8 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         if (secondaryWidgetsContainer != null) {
             secondaryWidgetsContainer.setVisibility(isSecondaryWidgetsEmpty ? View.GONE : View.VISIBLE);
         }
+        final View displayWidgets = findViewById(R.id.display_widgets);
+        displayWidgets.setVisibility(mShowDisplayWidgets ? View.VISIBLE : View.GONE);
         final boolean shouldHideContainer = isEmpty || mDozing || !lockscreenWidgetsEnabled;
         setVisibility(shouldHideContainer ? View.GONE : View.VISIBLE);
     }
