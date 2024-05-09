@@ -12,10 +12,14 @@
 */
 package com.android.systemui.lockscreen;
 
+import android.annotation.NonNull;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -24,6 +28,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.hardware.camera2.CameraManager;
+import android.media.AppVolume;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.MediaMetadataRetriever;
@@ -44,36 +49,40 @@ import android.util.AttributeSet;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.widget.LinearLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.android.settingslib.net.DataUsageController;
 import com.android.settingslib.Utils;
 
 import com.android.systemui.res.R;
 import com.android.systemui.Dependency;
+import com.android.systemui.animation.view.LaunchableImageView;
+import com.android.systemui.animation.view.LaunchableFAB;
+import com.android.systemui.media.dialog.MediaOutputDialogFactory;
 import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
+import com.android.systemui.qs.tiles.dialog.bluetooth.BluetoothTileDialogViewModel;
+import com.android.systemui.qs.tiles.dialog.InternetDialogFactory;
+import com.android.systemui.statusbar.policy.BluetoothController;
+import com.android.systemui.statusbar.policy.BluetoothController.Callback;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 import com.android.systemui.statusbar.policy.FlashlightController;
+import com.android.systemui.statusbar.connectivity.AccessPointController;
+import com.android.systemui.statusbar.connectivity.IconState;
+import com.android.systemui.statusbar.connectivity.NetworkController;
+import com.android.systemui.statusbar.connectivity.SignalCallback;
+import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
+import com.android.systemui.statusbar.connectivity.WifiIndicators;
 import com.android.systemui.tuner.TunerService;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.FileNotFoundException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import com.android.internal.util.blackiron.OmniJawsClient;
 
@@ -97,17 +106,47 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
             R.id.kg_item_placeholder4
     };
 
+    public static final int BT_ACTIVE = R.drawable.qs_bluetooth_icon_on;
+    public static final int BT_INACTIVE = R.drawable.qs_bluetooth_icon_off;
+    public static final int DATA_ACTIVE = R.drawable.ic_signal_cellular_alt_24;
+    public static final int DATA_INACTIVE = R.drawable.ic_mobiledata_off_24;
+    public static final int RINGER_ACTIVE = R.drawable.ic_vibration_24;
+    public static final int RINGER_INACTIVE = R.drawable.ic_ring_volume_24;
+    public static final int TORCH_RES_ACTIVE = R.drawable.ic_flashlight_on;
+    public static final int TORCH_RES_INACTIVE = R.drawable.ic_flashlight_off;
+    public static final int WIFI_ACTIVE = R.drawable.ic_wifi_24;
+    public static final int WIFI_INACTIVE = R.drawable.ic_wifi_off_24;
+
+    public static final int BT_LABEL_INACTIVE = R.string.quick_settings_bluetooth_label;
+    public static final int DATA_LABEL_INACTIVE = R.string.quick_settings_data_label;
+    public static final int RINGER_LABEL_INACTIVE = R.string.quick_settings_ringer_label;
+    public static final int TORCH_LABEL_ACTIVE = R.string.torch_active;
+    public static final int TORCH_LABEL_INACTIVE = R.string.quick_settings_flashlight_label;
+    public static final int WIFI_LABEL_INACTIVE = R.string.quick_settings_wifi_label;
+
     private OmniJawsClient mWeatherClient;
     private OmniJawsClient.WeatherInfo mWeatherInfo;
 
-    private ActivityStarter mActivityStarter;
-    private ConfigurationController mConfigurationController;
-    private FlashlightController mFlashlightController;
-    private StatusBarStateController mStatusBarStateController;
+    private final AccessPointController mAccessPointController;
+    private final ActivityStarter mActivityStarter;
+    private final BluetoothController mBluetoothController;
+    private final BluetoothTileDialogViewModel mBluetoothTileDialogViewModel;
+    private final ConfigurationController mConfigurationController;
+    private final DataUsageController mDataController;
+    private final FlashlightController mFlashlightController;
+    private final InternetDialogFactory mInternetDialogFactory;
+    private final MediaOutputDialogFactory mMediaOutputDialogFactory;
+    private final NetworkController mNetworkController;
+    private final StatusBarStateController mStatusBarStateController;
+
+    protected final CellSignalCallback mCellSignalCallback = new CellSignalCallback();
+    protected final WifiSignalCallback mWifiSignalCallback = new WifiSignalCallback();
 
     private Context mContext;
-    private ImageView mWidget1, mWidget2, mWidget3, mWidget4, mediaButton, torchButton, weatherButton;
-    private ExtendedFloatingActionButton mediaButtonFab, torchButtonFab, weatherButtonFab;
+    private LaunchableImageView mWidget1, mWidget2, mWidget3, mWidget4, mediaButton, torchButton, weatherButton;
+    private LaunchableFAB mediaButtonFab, torchButtonFab, weatherButtonFab;
+    private LaunchableFAB wifiButtonFab, dataButtonFab, ringerButtonFab, btButtonFab;
+    private LaunchableImageView wifiButton, dataButton, ringerButton, btButton;
     private int mDarkColor, mDarkColorActive, mLightColor, mLightColorActive;
 
     private CameraManager mCameraManager;
@@ -116,8 +155,8 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
 
     private String mMainLockscreenWidgetsList;
     private String mSecondaryLockscreenWidgetsList;
-    private ExtendedFloatingActionButton[] mMainWidgetViews;
-    private ImageView[] mSecondaryWidgetViews;
+    private LaunchableFAB[] mMainWidgetViews;
+    private LaunchableImageView[] mSecondaryWidgetViews;
     private List<String> mMainWidgetsList = new ArrayList<>();
     private List<String> mSecondaryWidgetsList = new ArrayList<>();
     private String mWidgetImagePath;
@@ -134,6 +173,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     
     private boolean mIsInflated = false;
     private GestureDetector mGestureDetector;
+    private boolean mIsLongPress = false;
 
     final ConfigurationListener mConfigurationListener = new ConfigurationListener() {
         @Override
@@ -158,13 +198,37 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         mLightColor = mContext.getResources().getColor(R.color.lockscreen_widget_background_color_light);
         mDarkColorActive = mContext.getResources().getColor(R.color.lockscreen_widget_active_color_dark);
         mLightColorActive = mContext.getResources().getColor(R.color.lockscreen_widget_active_color_light);
+
+        Dependency.get(TunerService.class).addTunable(this, LOCKSCREEN_WIDGETS, LOCKSCREEN_WIDGETS_EXTRAS);
+        mAccessPointController = Dependency.get(AccessPointController.class);
+        mActivityStarter = Dependency.get(ActivityStarter.class);
+        mBluetoothTileDialogViewModel = Dependency.get(BluetoothTileDialogViewModel.class);
+        mConfigurationController = Dependency.get(ConfigurationController.class);
+        mFlashlightController = Dependency.get(FlashlightController.class);
+        mInternetDialogFactory = Dependency.get(InternetDialogFactory.class);
+        mMediaOutputDialogFactory = Dependency.get(MediaOutputDialogFactory.class);
+        mStatusBarStateController = Dependency.get(StatusBarStateController.class);
+        mBluetoothController = Dependency.get(BluetoothController.class);
+        mNetworkController = Dependency.get(NetworkController.class);
+        mDataController = mNetworkController.getMobileDataController();
+
+        mNetworkController.addCallback(mWifiSignalCallback);
+        mNetworkController.addCallback(mCellSignalCallback);
+        mBluetoothController.addCallback(mBtCallback);
+        mFlashlightController.addCallback(mFlashlightCallback);
+        mConfigurationController.addCallback(mConfigurationListener);
+        mStatusBarStateController.addCallback(mStatusBarStateListener);
+        mStatusBarStateListener.onDozingChanged(mStatusBarStateController.isDozing());
+        
         if (mWeatherClient == null) {
             mWeatherClient = new OmniJawsClient(context);
         }
         try {
             mCameraId = mCameraManager.getCameraIdList()[0];
         } catch (Exception e) {}
-        Dependency.get(TunerService.class).addTunable(this, LOCKSCREEN_WIDGETS, LOCKSCREEN_WIDGETS_EXTRAS);
+        
+        IntentFilter ringerFilter = new IntentFilter(AudioManager.INTERNAL_RINGER_MODE_CHANGED_ACTION);
+        mContext.registerReceiver(mRingerModeReceiver, ringerFilter);
     }
 
     public void enableWeatherUpdates() {
@@ -249,29 +313,6 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
             // Do nothing
         }
     }
-    
-    public void initDependencies(
-            ActivityStarter activityStarter,
-            ConfigurationController configurationController,
-            FlashlightController flashlightController,
-            StatusBarStateController statusBarStateController
-        ) {
-        mActivityStarter = activityStarter;
-        mConfigurationController = configurationController;
-        mFlashlightController = flashlightController;
-	    mStatusBarStateController = statusBarStateController;
-
-        if (mConfigurationController != null) {
-            mConfigurationController.addCallback(mConfigurationListener);
-        }
-        if (mFlashlightController != null) {
-            mFlashlightController.addCallback(mFlashlightCallback);
-        }
-	    if (mStatusBarStateController != null) {
-	        mStatusBarStateController.addCallback(mStatusBarStateListener);
-	        mStatusBarStateListener.onDozingChanged(mStatusBarStateController.isDozing());
-        }
-    }
 
     private final StatusBarStateController.StateListener mStatusBarStateListener =
             new StatusBarStateController.StateListener() {
@@ -294,7 +335,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         @Override
         public void onFlashlightChanged(boolean enabled) {
             isFlashOn = enabled;
-            updateFlashLightButtonState();
+            updateTorchButtonState();
         }
 
         @Override
@@ -304,7 +345,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         @Override
         public void onFlashlightAvailabilityChanged(boolean available) {
             isFlashOn = mFlashlightController.isEnabled() && available;
-            updateFlashLightButtonState();
+            updateTorchButtonState();
         }
     };
 
@@ -318,7 +359,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
                 mMediaActive = false;
                 mClientLost = true;
             }
-            updateMediaPlaybackState();
+            updateMediaState();
         }
 
         @Override
@@ -331,7 +372,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         @Override
         public void onClientPlaybackStateUpdate(int state) {
             mClientLost = false;
-            updateMediaPlaybackState();
+            updateMediaState();
         }
 
         @Override
@@ -339,7 +380,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
             mMetadata.trackTitle = data.getString(MediaMetadataRetriever.METADATA_KEY_TITLE,
                     mMetadata.trackTitle);
             mClientLost = false;
-            updateMediaPlaybackState();
+            updateMediaState();
         }
 
         @Override
@@ -368,12 +409,6 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mConfigurationController != null) {
-            mConfigurationController.removeCallback(mConfigurationListener);
-        }
-        if (mFlashlightController != null) {
-            mFlashlightController.removeCallback(mFlashlightCallback);
-        }
         if (mMainLockscreenWidgetsList != null 
             && !mMainLockscreenWidgetsList.contains("weather") 
         	&& mSecondaryLockscreenWidgetsList != null 
@@ -385,11 +420,11 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mMainWidgetViews = new ExtendedFloatingActionButton[MAIN_WIDGETS_VIEW_IDS.length];
+        mMainWidgetViews = new LaunchableFAB[MAIN_WIDGETS_VIEW_IDS.length];
         for (int i = 0; i < mMainWidgetViews.length; i++) {
             mMainWidgetViews[i] = findViewById(MAIN_WIDGETS_VIEW_IDS[i]);
         }
-        mSecondaryWidgetViews = new ImageView[WIDGETS_VIEW_IDS.length];
+        mSecondaryWidgetViews = new LaunchableImageView[WIDGETS_VIEW_IDS.length];
         for (int i = 0; i < mSecondaryWidgetViews.length; i++) {
             mSecondaryWidgetViews[i] = findViewById(WIDGETS_VIEW_IDS[i]);
         }
@@ -434,7 +469,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         }
         if (active != mMediaActive) {
             mMediaActive = active;
-            updateMediaPlaybackState();
+            updateMediaState();
         }
     }
 
@@ -492,16 +527,16 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
             }
         }
         updateContainerVisibility();
-        updateMediaPlaybackState();
+        updateMediaState();
     }
 
-    private void updateMainWidgetResources(ExtendedFloatingActionButton efab, boolean active) {
+    private void updateMainWidgetResources(LaunchableFAB efab, boolean active) {
         if (efab == null) return;
         efab.setElevation(0);
         setButtonActiveState(null, efab, false);
     }
 
-    private void updateWidgetsResources(ImageView iv) {
+    private void updateWidgetsResources(LaunchableImageView iv) {
         if (iv == null) return;
         iv.setBackgroundResource(R.drawable.lockscreen_widget_background_circle);
         setButtonActiveState(iv, null, false);
@@ -513,8 +548,50 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
                 == Configuration.UI_MODE_NIGHT_YES;
     }
 
-    private void setUpWidgetWiews(ImageView iv, ExtendedFloatingActionButton efab, String type) {
+    private void setUpWidgetWiews(LaunchableImageView iv, LaunchableFAB efab, String type) {
         switch (type) {
+            case "wifi":
+                if (iv != null) {
+                    wifiButton = iv;
+                    wifiButton.setOnLongClickListener(v -> { showInternetDialog(v); return true; });
+                }
+                if (efab != null) {
+                    wifiButtonFab = efab;
+                    wifiButtonFab.setOnLongClickListener(v -> { showInternetDialog(v); return true; });
+                }
+                setUpWidgetResources(iv, efab, v -> toggleWiFi(), WIFI_INACTIVE, R.string.quick_settings_wifi_label);
+                break;
+            case "data":
+                if (iv != null) {
+                    dataButton = iv;
+                    dataButton.setOnLongClickListener(v -> { showInternetDialog(v); return true; });
+                }
+                if (efab != null) {
+                    dataButtonFab = efab;
+                    dataButtonFab.setOnLongClickListener(v -> { showInternetDialog(v); return true; });
+                }
+                setUpWidgetResources(iv, efab, v -> toggleMobileData(), DATA_INACTIVE, DATA_LABEL_INACTIVE);
+                break;
+            case "ringer":
+                if (iv != null) {
+                    ringerButton = iv;
+                }
+                if (efab != null) {
+                    ringerButtonFab = efab;
+                }
+                setUpWidgetResources(iv, efab, v -> toggleRingerMode(), RINGER_INACTIVE, RINGER_LABEL_INACTIVE);
+                break;
+            case "bt":
+                if (iv != null) {
+                    btButton = iv;
+                    btButton.setOnLongClickListener(v -> { showBluetoothDialog(v); return true; });
+                }
+                if (efab != null) {
+                    btButtonFab = efab;
+                    btButtonFab.setOnLongClickListener(v -> { showBluetoothDialog(v); return true; });
+                }
+                setUpWidgetResources(iv, efab, v -> toggleBluetoothState(), BT_INACTIVE, BT_LABEL_INACTIVE);
+                break;
             case "torch":
                 if (iv != null) {
                     torchButton = iv;
@@ -522,7 +599,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
                 if (efab != null) {
                     torchButtonFab = efab;
                 }
-                setUpWidgetResources(iv, efab, v -> toggleFlashlight(), R.drawable.ic_flashlight_off, R.string.quick_settings_flashlight_label);
+                setUpWidgetResources(iv, efab, v -> toggleFlashlight(), TORCH_RES_INACTIVE, TORCH_LABEL_INACTIVE);
                 break;
             case "timer":
                 setUpWidgetResources(iv, efab, v -> launchTimer(), R.drawable.ic_alarm, R.string.clock_timer);
@@ -533,6 +610,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
             case "media":
                 if (iv != null) {
                     mediaButton = iv;
+                    mediaButton.setOnLongClickListener(v -> { showMediaDialog(v); return true; });
                 }
                 if (efab != null) {
                     mediaButtonFab = efab;
@@ -554,7 +632,8 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         }
     }
 
-    private void setUpWidgetResources(ImageView iv, ExtendedFloatingActionButton efab, View.OnClickListener cl, int drawableRes, int stringRes){
+    private void setUpWidgetResources(LaunchableImageView iv, LaunchableFAB efab, 
+        View.OnClickListener cl, int drawableRes, int stringRes){
         if (efab != null) {
             efab.setOnClickListener(cl);
             efab.setIcon(mContext.getDrawable(drawableRes));
@@ -569,7 +648,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         }
     }
 
-    private void attachSwipeGesture(ExtendedFloatingActionButton efab) {
+    private void attachSwipeGesture(LaunchableFAB efab) {
         final GestureDetector gestureDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
             private static final int SWIPE_THRESHOLD = 100;
             private static final int SWIPE_VELOCITY_THRESHOLD = 100;
@@ -579,26 +658,36 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffX > 0) {
                         dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-                        updateMediaPlaybackState();
+                        updateMediaState();
                     } else {
                         dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_NEXT);
-                        updateMediaPlaybackState();
+                        updateMediaState();
                     }
                     return true;
                 }
                 return false;
             }
+            
+            @Override
+            public void onLongPress(MotionEvent e) {
+                super.onLongPress(e);
+                mIsLongPress = true;
+                showMediaDialog(efab);
+                mHandler.postDelayed(() -> {
+                    mIsLongPress = false;
+                }, 2500);
+            }
         });
         efab.setOnTouchListener((v, event) -> {
             boolean isClick = gestureDetector.onTouchEvent(event);
-            if (event.getAction() == MotionEvent.ACTION_UP && !isClick) {
+            if (event.getAction() == MotionEvent.ACTION_UP && !isClick && !mIsLongPress) {
                 v.performClick();
             }
             return true;
         });
     }
 
-    private void setButtonActiveState(ImageView iv, ExtendedFloatingActionButton efab, boolean active) {
+    private void setButtonActiveState(LaunchableImageView iv, LaunchableFAB efab, boolean active) {
         int bgTint;
         int tintColor;
         if (active) {
@@ -630,10 +719,33 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     private boolean isInfoExpired() {
         return !mMediaActive || mClientLost;
     }
+    
+    public void updateMediaState() {
+        updateMediaPlaybackState();
+        mHandler.postDelayed(() -> {
+            updateMediaPlaybackState();
+        }, 250);
+    }
 
     private void toggleMediaPlaybackState() {
         dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-        updateMediaPlaybackState();
+        updateMediaState();
+    }
+    
+    private void showMediaDialog(View view) {
+        mHandler.post(() -> 
+            mMediaOutputDialogFactory.create(getActiveVolumeApp(), true, view));
+    }
+
+    private String getActiveVolumeApp() {
+        String mAppVolumeActivePackageName = "";
+        for (AppVolume av : mAudioManager.listAppVolumes()) {
+            if (av.isActive()) {
+                mAppVolumeActivePackageName = av.getPackageName();
+                break;
+            }
+        }
+        return mAppVolumeActivePackageName;
     }
 
     private void dispatchMediaKeyWithWakeLockToMediaSession(final int keycode) {
@@ -662,18 +774,6 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
             mediaButtonFab.setText(canShowTrackTitle ? mMetadata.trackTitle : mContext.getResources().getString(R.string.controls_media_button_play));
             setButtonActiveState(null, mediaButtonFab, mMediaActive);
         }
-        updateMetadata(!isInfoExpired());
-    }
-    
-    private void updateMetadata(boolean playing) {
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (playing) {
-                    updateMediaPlaybackState();
-                }
-            }
-        }, 1000);
     }
 
     private void launchAppIfAvailable(Intent launchIntent, @StringRes int appTypeResId) {
@@ -710,29 +810,208 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         try {
             mCameraManager.setTorchMode(mCameraId, !isFlashOn);
             isFlashOn = !isFlashOn;
-            updateFlashLightButtonState();
+            updateTorchButtonState();
         } catch (Exception e) {}
     }
 
-    private void updateFlashLightButtonState() {
+    private void toggleWiFi() {
+        final WifiCallbackInfo cbi = mWifiSignalCallback.mInfo;
+        mNetworkController.setWifiEnabled(!cbi.enabled);
+        updateWiFiButtonState(!cbi.enabled);
+        mHandler.postDelayed(() -> {
+            updateWiFiButtonState(cbi.enabled);
+        }, 250);
+    }
+
+    private boolean isMobileDataEnabled() {
+        return mDataController.isMobileDataEnabled();
+    }
+
+    private void toggleMobileData() {
+        mDataController.setMobileDataEnabled(!isMobileDataEnabled());
+        updateMobileDataState(!isMobileDataEnabled());
+        mHandler.postDelayed(() -> {
+            updateWiFiButtonState(isMobileDataEnabled());
+        }, 250);
+    }
+    
+    private void showInternetDialog(View view) {
+        mHandler.post(() -> mInternetDialogFactory.create(true,
+                mAccessPointController.canConfigMobileData(),
+                mAccessPointController.canConfigWifi(), view));
+    }
+
+    private void toggleRingerMode() {
+        if (mAudioManager != null) {
+            int mode = mAudioManager.getRingerMode();
+            if (mode == mAudioManager.RINGER_MODE_NORMAL) {
+                mAudioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+            } else {
+                mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            }
+            updateRingerButtonState();
+        }
+    }
+
+    private void updateTileButtonState(
+            LaunchableImageView iv, 
+            LaunchableFAB efab, 
+            boolean active, 
+            int activeResource, 
+            int inactiveResource,
+            String activeString,
+            String inactiveString) {
         post(new Runnable() {
             @Override
             public void run() {
-                if (torchButton != null) {
-                    torchButton.setImageResource(isFlashOn ? R.drawable.ic_flashlight_on : R.drawable.ic_flashlight_off);
-                    setButtonActiveState(torchButton, null, isFlashOn);
+                if (iv != null) {
+                    iv.setImageResource(active ? activeResource : inactiveResource);
+                    setButtonActiveState(iv, null, active);
                 }
-                if (torchButtonFab != null) {
-                    torchButtonFab.setIcon(mContext.getDrawable(isFlashOn ? R.drawable.ic_flashlight_on : R.drawable.ic_flashlight_off));
-                    setButtonActiveState(null, torchButtonFab, isFlashOn);
+                if (efab != null) {
+                    efab.setIcon(mContext.getDrawable(active ? activeResource : inactiveResource));
+                    efab.setText(active ? activeString : inactiveString);
+                    setButtonActiveState(null, efab, active);
                 }
             }
         });
+    }
+    
+    public void updateTorchButtonState() {
+        String activeString = mContext.getResources().getString(TORCH_LABEL_ACTIVE);
+        String inactiveString = mContext.getResources().getString(TORCH_LABEL_INACTIVE);
+        updateTileButtonState(torchButton, torchButtonFab, isFlashOn, 
+            TORCH_RES_ACTIVE, TORCH_RES_INACTIVE, activeString, inactiveString);
+    }
+
+    private BroadcastReceiver mRingerModeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateRingerButtonState();
+        }
+    };
+
+    private final BluetoothController.Callback mBtCallback = new BluetoothController.Callback() {
+        @Override
+        public void onBluetoothStateChange(boolean enabled) {
+            updateBtState();
+        }
+
+        @Override
+        public void onBluetoothDevicesChanged() {
+            updateBtState();
+        }
+    };
+
+    private void updateWiFiButtonState(boolean enabled) {
+        if (wifiButton == null && wifiButtonFab == null) return;
+        final WifiCallbackInfo cbi = mWifiSignalCallback.mInfo;
+        String inactiveString = mContext.getResources().getString(WIFI_LABEL_INACTIVE);
+        updateTileButtonState(wifiButton, wifiButtonFab, enabled, 
+            WIFI_ACTIVE, WIFI_INACTIVE, cbi.ssid != null ? removeDoubleQuotes(cbi.ssid) : inactiveString, inactiveString);
+    }
+
+    private void updateRingerButtonState() {
+        if (ringerButton == null && ringerButtonFab == null) return;
+        if (mAudioManager != null) {
+            boolean isVibrateActive = mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
+            String inactiveString = mContext.getResources().getString(RINGER_LABEL_INACTIVE);
+            updateTileButtonState(ringerButton, ringerButtonFab, isVibrateActive, 
+                RINGER_ACTIVE, RINGER_INACTIVE, inactiveString, inactiveString);
+        }
+    }
+
+    private void updateMobileDataState(boolean enabled) {
+        if (dataButton == null && dataButtonFab == null) return;
+        String networkName = mNetworkController == null ? "" : mNetworkController.getMobileDataNetworkName();
+        boolean hasNetwork = !TextUtils.isEmpty(networkName) && mNetworkController != null 
+            && mNetworkController.hasMobileDataFeature();
+        String inactiveString = mContext.getResources().getString(DATA_LABEL_INACTIVE);
+        updateTileButtonState(dataButton, dataButtonFab, enabled, 
+            DATA_ACTIVE, DATA_INACTIVE, hasNetwork && enabled ? networkName : inactiveString, inactiveString);
+    }
+    
+    private void toggleBluetoothState() {
+        mBluetoothController.setBluetoothEnabled(!isBluetoothEnabled());
+        updateBtState();
+        mHandler.postDelayed(() -> {
+            updateBtState();
+        }, 250);
+    }
+    
+    private void showBluetoothDialog(View view) {
+        boolean isAutoOn = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QS_BT_AUTO_ON, 0) == 1;
+        mHandler.post(() -> 
+            mBluetoothTileDialogViewModel.showDialog(mContext, view, isAutoOn));
+    }
+    
+    private void updateBtState() {
+        if (btButton == null && btButtonFab == null) return;
+        String deviceName = isBluetoothEnabled() ? mBluetoothController.getConnectedDeviceName() : "";
+        boolean isConnected = !TextUtils.isEmpty(deviceName);
+        String inactiveString = mContext.getResources().getString(BT_LABEL_INACTIVE);
+        updateTileButtonState(btButton, btButtonFab, isBluetoothEnabled(), 
+            BT_ACTIVE, BT_INACTIVE, isConnected ? deviceName : inactiveString, inactiveString);
+    }
+    
+    private boolean isBluetoothEnabled() {
+        final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
     }
 
     private void showNoDefaultAppFoundToast(@StringRes int appTypeResId) {
         final String appType = mContext.getString(appTypeResId);
         final String message = mContext.getString(R.string.no_default_app_found, appType);
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Nullable
+    private static String removeDoubleQuotes(String string) {
+        if (string == null) return null;
+        final int length = string.length();
+        if ((length > 1) && (string.charAt(0) == '"') && (string.charAt(length - 1) == '"')) {
+            return string.substring(1, length - 1);
+        }
+        return string;
+    }
+
+    protected static final class WifiCallbackInfo {
+        boolean enabled;
+        @Nullable
+        String ssid;
+    }
+
+    protected final class WifiSignalCallback implements SignalCallback {
+        final WifiCallbackInfo mInfo = new WifiCallbackInfo();
+        @Override
+        public void setWifiIndicators(@NonNull WifiIndicators indicators) {
+            if (indicators.qsIcon == null) {
+                updateWiFiButtonState(false);
+                return;
+            }
+            mInfo.enabled = indicators.enabled;
+            mInfo.ssid = indicators.description;
+            updateWiFiButtonState(mInfo.enabled);
+        }
+    }
+
+    private final class CellSignalCallback implements SignalCallback {
+        @Override
+        public void setMobileDataIndicators(@NonNull MobileDataIndicators indicators) {
+            if (indicators.qsIcon == null) {
+                updateMobileDataState(false);
+                return;
+            }
+            updateMobileDataState(isMobileDataEnabled());
+        }
+        @Override
+        public void setNoSims(boolean show, boolean simDetected) {
+            updateMobileDataState(simDetected && isMobileDataEnabled());
+        }
+        @Override
+        public void setIsAirplaneMode(@NonNull IconState icon) {
+            updateMobileDataState(!icon.visible && isMobileDataEnabled());
+        }
     }
 }
