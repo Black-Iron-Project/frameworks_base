@@ -16,63 +16,52 @@
 
 package org.blackiron.server;
 
-import android.app.ActivityManager;
-import android.app.NotificationManager;
 import android.content.Context;
-import android.hardware.SensorManager;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraManager;
+import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.media.session.MediaSessionLegacyHelper;
+import android.os.Handler;
 import android.os.PowerManager;
-import android.os.RemoteException;
-import android.os.ServiceManager;
 import android.os.SystemClock;
-import android.os.Vibrator;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 import com.android.internal.R;
-import com.android.internal.statusbar.IStatusBarService;
 import com.android.server.SystemService;
+
+import java.util.Arrays;
 
 public final class ShakeGestureService extends SystemService {
 
     private static final String TAG = "ShakeGestureService";
-    
+
     private static final String SHAKE_GESTURES_ENABLED = "shake_gestures_enabled";
     private static final String SHAKE_GESTURES_ACTION = "shake_gestures_action";
+    private static final int USER_ALL = UserHandle.USER_ALL;
 
     private final Context mContext;
     private final ShakeGestureUtils mShakeGestureUtils;
     private final AudioManager mAudioManager;
-    private final CameraManager mCameraManager;
     private final PowerManager mPowerManager;
-    private final Vibrator mVibrator;
-    private final NotificationManager mNotifManager;
-    private IStatusBarService mStatusBarService;
     private static ShakeGestureService instance;
-    private ScreenshotCallback mScreenshotCallback;
+    private ShakeGesturesCallbacks mShakeCallbacks;
 
-    private String mCameraId;
-    private boolean isFlashOn = false;
-    final Object mServiceAcquireLock = new Object();
+    private final SettingsObserver mSettingsObserver;
+    private boolean mShakeServiceEnabled = false;
+    private int mShakeGestureAction = 0;
+
+    private PowerManager.WakeLock mWakeLock = null;
 
     private ShakeGestureService(Context context) {
         super(context);
         mContext = context;
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        mCameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
         mPowerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        mVibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-        mNotifManager = mContext.getSystemService(NotificationManager.class);
         mShakeGestureUtils = new ShakeGestureUtils(mContext);
-        try {
-            mCameraId = mCameraManager.getCameraIdList()[0];
-        } catch (Exception e) {}
+        mSettingsObserver = new SettingsObserver(new Handler());
+        updateSettings();
     }
 
     public static synchronized ShakeGestureService getInstance(Context context) {
@@ -82,72 +71,76 @@ public final class ShakeGestureService extends SystemService {
         return instance;
     }
 
-    public interface ScreenshotCallback {
+    public interface ShakeGesturesCallbacks {
+        void onClearAllNotifications();
+        void onMediaKeyDispatch();
         void onScreenshotTaken();
+        void onToggleRingerModes();
+        void onToggleTorch();
+        void onToggleVolumePanel();
+        void onKillApp();
     }
 
     @Override
     public void onStart() {
+        mSettingsObserver.observe();
         mShakeGestureUtils.registerListener(new ShakeGestureUtils.OnShakeListener() {
             @Override
             public void onShake() {
-                if (isShakeGestureEnabled()) {
-                    performShakeAction();
+                if (mShakeServiceEnabled) {
+                    doAction();
                 }
             }
         });
     }
 
-    IStatusBarService getStatusBarService() {
-        synchronized (mServiceAcquireLock) {
-            if (mStatusBarService == null) {
-                mStatusBarService = IStatusBarService.Stub.asInterface(
-                        ServiceManager.getService("statusbar"));
-            }
-            return mStatusBarService;
-        }
-    }
-
-    private boolean isShakeGestureEnabled() {
-        return Settings.System.getInt(mContext.getContentResolver(),
+    private void updateSettings() {
+        mShakeServiceEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 SHAKE_GESTURES_ENABLED, 0) == 1;
-    }
-
-    private void performShakeAction() {
-        int singleShakeAction = getShakeGestureAction();
-        doAction(singleShakeAction);
-    }
-
-    private int getShakeGestureAction() {
-        return Settings.System.getInt(mContext.getContentResolver(),
+        mShakeGestureAction = Settings.System.getInt(mContext.getContentResolver(),
                 SHAKE_GESTURES_ACTION, 0);
     }
 
+    private void doAction() {
+        int[] wakelockActions = {1, 4, 6};
+        boolean actionNeedsWakelock = Arrays.asList(wakelockActions).contains(mShakeGestureAction);
+        if (actionNeedsWakelock) {
+            setUsesWakelock();
+        }
+        try {
+            doAction(mShakeGestureAction);
+        } catch (Exception e) {
+        } finally {
+            releaseWakelock();
+        }
+    }
+
     private void doAction(int gestureAction) {
+        if (mShakeCallbacks == null) return;
         switch (gestureAction) {
             case 1:
-                toggleFlashlight();
+                mShakeCallbacks.onToggleTorch();
                 break;
             case 2:
-                dispatchMediaKeyWithWakeLockToMediaSession(
-                        mAudioManager.isMusicActive() ? KeyEvent.KEYCODE_MEDIA_NEXT : KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                mShakeCallbacks.onMediaKeyDispatch();
                 break;
             case 3:
-                mAudioManager.adjustVolume(AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+                mShakeCallbacks.onToggleVolumePanel();
                 break;
             case 4:
                 turnScreenOnOrOff();
                 break;
             case 5:
-                clearAllNotifications();
+                mShakeCallbacks.onClearAllNotifications();
                 break;
             case 6:
-                toggleRingerModes();
+                mShakeCallbacks.onToggleRingerModes();
                 break;
             case 7:
-                if (mScreenshotCallback != null) {
-                    mScreenshotCallback.onScreenshotTaken();
-                }
+                mShakeCallbacks.onScreenshotTaken();
+                break;
+            case 8:
+                mShakeCallbacks.onKillApp();
                 break;
             case 0:
             default:
@@ -155,88 +148,45 @@ public final class ShakeGestureService extends SystemService {
         }
     }
 
-    private void toggleFlashlight() {
-        PowerManager.WakeLock wakeLock = acquireWakelock();
-        try {
-            synchronized (this) {
-                mCameraManager.setTorchMode(mCameraId, !isFlashOn);
-                isFlashOn = !isFlashOn;
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Unable to access camera", e);
-        } finally {
-            releaseWakelock(wakeLock);
+    private void setUsesWakelock() {
+        if (mWakeLock == null) {
+            mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+            mWakeLock.acquire();
         }
-    }
-
-    private void dispatchMediaKeyWithWakeLockToMediaSession(final int keycode) {
-        final MediaSessionLegacyHelper helper = MediaSessionLegacyHelper.getHelper(mContext);
-        if (helper == null) {
-            return;
-        }
-        KeyEvent event = new KeyEvent(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), KeyEvent.ACTION_DOWN, keycode, 0);
-        helper.sendMediaButtonEvent(event, true);
-        event = KeyEvent.changeAction(event, KeyEvent.ACTION_UP);
-        helper.sendMediaButtonEvent(event, true);
     }
 
     private void turnScreenOnOrOff() {
         if (mPowerManager.isInteractive()) {
             mPowerManager.goToSleep(SystemClock.uptimeMillis());
         } else {
-            PowerManager.WakeLock wakeLock = acquireWakelock();
-            try {
-                mPowerManager.wakeUp(SystemClock.uptimeMillis());
-            } finally {
-                releaseWakelock(wakeLock);
-            }
-        }
-    }
-    
-    private PowerManager.WakeLock acquireWakelock() {
-        PowerManager.WakeLock wakeLock = mPowerManager.newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK, TAG);
-        wakeLock.acquire();
-        return mPowerManager.isInteractive() ? null : wakeLock;
-    }
-    
-    private void releaseWakelock(PowerManager.WakeLock wakeLock) {
-        if (wakeLock != null && wakeLock.isHeld()) {
-            wakeLock.release();
+            mPowerManager.wakeUp(SystemClock.uptimeMillis());
         }
     }
 
-    private void clearAllNotifications() {
-        IStatusBarService statusBarService = getStatusBarService();
-        if (statusBarService != null) {
-            try {
-                statusBarService.onClearAllNotifications(ActivityManager.getCurrentUser());
-            } catch (RemoteException e) {}
+    private void releaseWakelock() {
+        if (mWakeLock != null && mWakeLock.isHeld()) {
+            mWakeLock.release();
+            mWakeLock = null;
         }
     }
-    
-    private void toggleRingerModes() {
-        switch (mAudioManager.getRingerMode()) {
-            case AudioManager.RINGER_MODE_NORMAL:
-                if (mVibrator.hasVibrator()) {
-                    mAudioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-                    Toast.makeText(mContext, mContext.getString(R.string.shake_gesture_toast_vibrate_mode), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case AudioManager.RINGER_MODE_VIBRATE:
-                mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                mNotifManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY);
-                Toast.makeText(mContext, mContext.getString(R.string.shake_gesture_toast_dnd_mode), Toast.LENGTH_SHORT).show();
-                break;
-            case AudioManager.RINGER_MODE_SILENT:
-                mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                Toast.makeText(mContext, mContext.getString(R.string.shake_gesture_toast_normal_mode), Toast.LENGTH_SHORT).show();
-                break;
-        }
+
+    public void setShakeCallbacks(ShakeGesturesCallbacks callback) {
+        mShakeCallbacks = callback;
     }
-    
-    public void setScreenshotCallback(ScreenshotCallback callback) {
-        mScreenshotCallback = callback;
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+        void observe() {
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(SHAKE_GESTURES_ENABLED), false, this, USER_ALL);
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(SHAKE_GESTURES_ACTION), false, this, USER_ALL);
+        }
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
     }
 }
