@@ -45,6 +45,7 @@ android_library {
         "androidx.annotation_annotation",
         "SystemUIShaderLib",
         "animationlib",
+        "com.google.android.material_material",
     ],
 
     manifest: "AndroidManifest.xml",
