@@ -29,9 +29,9 @@ import com.android.internal.util.android.VibrationUtils;
 import java.util.ArrayList;
 
 public class ShakeGestureUtils implements SensorEventListener {
-    
+
     private static final String TAG = "ShakeGestureUtils";
-    
+
     private static final String SHAKE_GESTURES_SHAKE_INTENSITY = "shake_gestures_intensity";
 
     private Context mContext;
