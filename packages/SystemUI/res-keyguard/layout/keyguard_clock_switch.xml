@@ -40,12 +40,6 @@
         android:layout_height="match_parent"
         android:clipChildren="false"
         android:visibility="gone" />
-        
-    <include 
-        android:id="@+id/clock_ls"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/keyguard_clock_style" />
 
     <!-- Not quite optimal but needed to translate these items as a group. The
          NotificationIconContainer has its own logic for translation. -->
@@ -55,11 +49,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/clock_ls">
+        android:layout_below="@id/lockscreen_clock_view">
 
       <include layout="@layout/keyguard_slice_view"
                android:id="@+id/keyguard_slice_view"
-               android:paddingStart="@dimen/clock_padding_start"
                android:layout_width="match_parent"
                android:layout_height="wrap_content" />
 
