@@ -1439,7 +1439,7 @@ public class AudioService extends IAudioService.Stub
      */
     private void onInitStreamsAndVolumes() {
         synchronized (mSettingsLock) {
-            mCameraSoundForced = readCameraSoundForced();
+            mCameraSoundForced = false;
             sendMsg(mAudioHandler,
                     MSG_SET_FORCE_USE,
                     SENDMSG_QUEUE,
@@ -10925,33 +10925,6 @@ public class AudioService extends IAudioService.Stub
     }
 
     //==========================================================================================
-
-    // camera sound is forced if any of the resources corresponding to one active SIM
-    // demands it.
-    private boolean readCameraSoundForced() {
-        if (SystemProperties.getBoolean("audio.camerasound.force", false)
-                || mContext.getResources().getBoolean(
-                        com.android.internal.R.bool.config_camera_sound_forced)) {
-            return true;
-        }
-
-        SubscriptionManager subscriptionManager = mContext.getSystemService(
-                SubscriptionManager.class);
-        if (subscriptionManager == null) {
-            Log.e(TAG, "readCameraSoundForced cannot create SubscriptionManager!");
-            return false;
-        }
-        int[] subscriptionIds = subscriptionManager.getActiveSubscriptionIdList(false);
-        for (int subId : subscriptionIds) {
-            if (SubscriptionManager.getResourcesForSubId(mContext, subId).getBoolean(
-                    com.android.internal.R.bool.config_camera_sound_forced)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    //==========================================================================================
     private final Object mMuteAwaitConnectionLock = new Object();
 
     /**
@@ -11193,7 +11166,7 @@ public class AudioService extends IAudioService.Stub
             Configuration config = mContext.getResources().getConfiguration();
             mSoundDoseHelper.configureSafeMedia(/*forced*/false, TAG);
 
-            boolean cameraSoundForced = readCameraSoundForced();
+            boolean cameraSoundForced = false;
             synchronized (mSettingsLock) {
                 final boolean cameraSoundForcedChanged = (cameraSoundForced != mCameraSoundForced);
                 mCameraSoundForced = cameraSoundForced;
