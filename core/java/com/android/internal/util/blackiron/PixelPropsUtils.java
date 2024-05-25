@@ -438,8 +438,7 @@ public class PixelPropsUtils {
 
     private static boolean isCallerSafetyNet() {
         return Arrays.stream(Thread.currentThread().getStackTrace())
-                        .anyMatch(elem -> elem.getClassName().toLowerCase()
-                            .contains("droidguard"));
+                .anyMatch(elem -> elem.getClassName().toLowerCase().contains("droidguard"));
     }
 
     public static void onEngineGetCertificateChain() {
