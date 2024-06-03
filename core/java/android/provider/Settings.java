@@ -6487,6 +6487,12 @@ public final class Settings {
         public static final String LOCKSCREEN_BATTERY_INFO = "lockscreen_battery_info";
 
         /**
+         * Stores the array name of the values currently used for SpoofBuildGms
+         * @hide
+         */
+        public static final String PPU_SPOOF_BUILD_GMS_ARRAY = "ppu_spoof_build_gms_array";
+
+        /**
          * Whether to enable the ripple animation on fingerprint unlock
          * @hide
          */
