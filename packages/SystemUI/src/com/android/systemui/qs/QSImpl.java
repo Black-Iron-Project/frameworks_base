@@ -76,6 +76,8 @@ import com.android.systemui.util.SystemUIBoostFramework;
 
 import dalvik.annotation.optimization.NeverCompile;
 
+import com.android.systemui.util.MediaArtUtils;
+
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -224,6 +226,7 @@ public class QSImpl implements QS, CommandQueue.Callbacks, StatusBarStateControl
      */
     public void onComponentCreated(QSComponent qsComponent, @Nullable Bundle savedInstanceState) {
         mRootView = qsComponent.getRootView();
+        MediaArtUtils.getInstance(mRootView.getContext()).setQSImpl(this);
 
         mQSPanelController = qsComponent.getQSPanelController();
         mQuickQSPanelController = qsComponent.getQuickQSPanelController();
@@ -784,6 +787,11 @@ public class QSImpl implements QS, CommandQueue.Callbacks, StatusBarStateControl
             sbf.animationBoostOff(SystemUIBoostFramework.REQUEST_ANIMATION_BOOST_TYPE_SPEED_UP_QS_EXPANSION_ANIMATION);
         } else {
             sbf.animationBoostOn(SystemUIBoostFramework.REQUEST_ANIMATION_BOOST_TYPE_SPEED_UP_QS_EXPANSION_ANIMATION);
+        }
+        if (!fullyCollapsed) {
+            MediaArtUtils.getInstance(mRootView.getContext()).hideMediaArt();
+        } else {
+            MediaArtUtils.getInstance(mRootView.getContext()).updateMediaArtVisibility();   
         }
     }
 
