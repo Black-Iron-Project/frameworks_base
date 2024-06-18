@@ -942,6 +942,7 @@ public class ApplicationPackageManager extends PackageManager {
     }
 
     @Override
+    public int checkPermission(String permName, String pkgName) {
         int res = PermissionManager.checkPackageNamePermission(permName, pkgName,
                 mContext.getDeviceId(), getUserId());
         if (res != PERMISSION_GRANTED) {

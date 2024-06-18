@@ -2025,6 +2025,7 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
     }
 
     @Override
+    public void setFocusedRootTask(int taskId) {
         if (!PixelPropsUtils.shouldBypassTaskPermission(mContext)) {
             enforceTaskPermission("setFocusedRootTask()");
         }
