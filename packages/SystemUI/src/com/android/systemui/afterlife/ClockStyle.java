@@ -75,7 +75,7 @@ public class ClockStyle extends RelativeLayout implements TunerService.Tunable {
             || mClockStyle == 17 
             || mClockStyle == 18 
             || mClockStyle == 19;
-        mThemeUtils.setOverlayEnabled(
+/**        mThemeUtils.setOverlayEnabled(
                 "android.theme.customization.smartspace",
                 enable ? "com.android.systemui.hide.smartspace" : "com.android.systemui",
                 "com.android.systemui");
@@ -84,7 +84,7 @@ public class ClockStyle extends RelativeLayout implements TunerService.Tunable {
                 enable && isCenterClock
                         ? "com.android.systemui.smartspace_offset.smartspace"
                         : "com.android.systemui",
-                "com.android.systemui");
+                "com.android.systemui"); **/
     }
 
     @Override
