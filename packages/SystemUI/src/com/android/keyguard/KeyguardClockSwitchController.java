@@ -413,6 +413,8 @@ public class KeyguardClockSwitchController extends ViewController<KeyguardClockS
             LOCKSCREEN_WEATHER_ENABLED, 
             LOCKSCREEN_WIDGETS_ENABLED);
 
+        updateCustomClock();
+
         updateViews();
     }
 
