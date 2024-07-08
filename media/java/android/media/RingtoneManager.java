@@ -49,6 +49,7 @@ import android.provider.MediaStore.MediaColumns;
 import android.provider.Settings;
 import android.provider.Settings.System;
 import android.telephony.SubscriptionManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.internal.database.SortCursor;
