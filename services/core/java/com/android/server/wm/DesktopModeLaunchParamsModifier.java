@@ -44,11 +44,6 @@ public class DesktopModeLaunchParamsModifier implements LaunchParamsModifier {
                     .getInt("persist.wm.debug.desktop_mode_initial_bounds_scale", 75) / 100f;
 
     private StringBuilder mLogBuilder;
-    private static final int OFFSET_X_DP = 100;
-    private static final int OFFSET_Y_DP = 100;
-
-    private int mLastOffsetX = 0;
-    private int mLastOffsetY = 0;
 
     @Override
     public int onCalculate(@Nullable Task task, @Nullable ActivityInfo.WindowLayout layout,
@@ -111,20 +106,6 @@ public class DesktopModeLaunchParamsModifier implements LaunchParamsModifier {
         }
 
         calculateAndCentreInitialBounds(task, outParams);
-
-        // Stagger the window position 
-        outParams.mBounds.offset(mLastOffsetX, mLastOffsetY);
-        
-        mLastOffsetX += (int) (OFFSET_X_DP * density + 0.5f);
-        mLastOffsetY += (int) (OFFSET_Y_DP * density + 0.5f);
-
-        Rect windowBounds = task.getWindowConfiguration().getBounds();
-        if (outParams.mBounds.right > windowBounds.right) {
-            mLastOffsetX = 0;
-        }
-        if (outParams.mBounds.bottom > windowBounds.bottom) {
-            mLastOffsetY = 0;
-        }
 
         appendLog("setting desktop mode task bounds to %s", outParams.mBounds);
 
