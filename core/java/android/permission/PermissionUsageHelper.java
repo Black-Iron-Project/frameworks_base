@@ -298,7 +298,7 @@ public class PermissionUsageHelper implements AppOpsManager.OnOpActiveChangedLis
         List<String> ops = new ArrayList<>();
         if (shouldShowCameraIndicator()) {
             ops.addAll(CAMERA_OPS);
-            if (!isMicMuted) {
+            if (includeMicrophoneUsage) {
                 ops.addAll(MIC_OPS);
             }
         }
