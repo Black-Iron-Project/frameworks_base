@@ -67,7 +67,7 @@ import com.android.systemui.media.dialog.MediaOutputDialogFactory;
 import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.qs.tiles.dialog.bluetooth.BluetoothTileDialogViewModel;
-import com.android.systemui.qs.tiles.dialog.InternetDialogFactory;
+import com.android.systemui.qs.tiles.dialog.InternetDialogManager;
 import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.BluetoothController.Callback;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -153,7 +153,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     private final ConfigurationController mConfigurationController;
     private final DataUsageController mDataController;
     private final FlashlightController mFlashlightController;
-    private final InternetDialogFactory mInternetDialogFactory;
+    private final InternetDialogManager mInternetDialogManager;
     private final MediaOutputDialogFactory mMediaOutputDialogFactory;
     private final NetworkController mNetworkController;
     private final StatusBarStateController mStatusBarStateController;
@@ -241,7 +241,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
         mBluetoothTileDialogViewModel = Dependency.get(BluetoothTileDialogViewModel.class);
         mConfigurationController = Dependency.get(ConfigurationController.class);
         mFlashlightController = Dependency.get(FlashlightController.class);
-        mInternetDialogFactory = Dependency.get(InternetDialogFactory.class);
+        mInternetDialogManager = Dependency.get(InternetDialogManager.class);
         mMediaOutputDialogFactory = Dependency.get(MediaOutputDialogFactory.class);
         mStatusBarStateController = Dependency.get(StatusBarStateController.class);
         mBluetoothController = Dependency.get(BluetoothController.class);
@@ -931,7 +931,7 @@ public class LockScreenWidgets extends LinearLayout implements TunerService.Tuna
     }
     
     private void showInternetDialog(View view) {
-        mHandler.post(() -> mInternetDialogFactory.create(true,
+        post(() -> mInternetDialogManager.create(true,
                 mAccessPointController.canConfigMobileData(),
                 mAccessPointController.canConfigWifi(), view));
         VibrationUtils.triggerVibration(mContext, 2);
