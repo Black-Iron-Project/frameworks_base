@@ -45,10 +45,12 @@ import android.hardware.fingerprint.FingerprintSensorPropertiesInternal;
 import android.hardware.fingerprint.IUdfpsOverlayController;
 import android.hardware.fingerprint.IUdfpsOverlayControllerCallback;
 import android.hardware.input.InputManager;
+import android.hardware.power.Boost;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.PowerManagerInternal;
 import android.os.Trace;
 import android.os.UserHandle;
 import android.os.VibrationAttributes;
@@ -70,6 +72,7 @@ import androidx.annotation.OptIn;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.logging.InstanceId;
 import com.android.internal.util.LatencyTracker;
+import com.android.server.LocalServices;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.systemui.Dumpable;
 import com.android.systemui.animation.ActivityTransitionAnimator;
@@ -147,6 +150,8 @@ public class UdfpsController implements DozeReceiver, Dumpable {
     private static final long AOD_SEND_FINGER_UP_DELAY_MILLIS = 1000;
 
     private static final long MIN_UNCHANGED_INTERACTION_LOG_INTERVAL = 50;
+    
+    private final PowerManagerInternal mLocalPowerManager;
 
     private final Context mContext;
     private final Execution mExecution;
@@ -850,6 +855,7 @@ public class UdfpsController implements DozeReceiver, Dumpable {
 
         updateUdfpsAnimation();
         mConfigurationController.addCallback(mConfigurationListener);
+        mLocalPowerManager = LocalServices.getService(PowerManagerInternal.class);
     }
     
     private void updateUdfpsAnimation() {
@@ -1290,6 +1296,10 @@ public class UdfpsController implements DozeReceiver, Dumpable {
         }
         if (mUdfpsAnimation != null) {
             mUdfpsAnimation.show();
+        }
+        // Send display update power boost to improve redraw performance for the ripple animation.
+        if (mLocalPowerManager != null) {
+            mLocalPowerManager.setPowerBoost(Boost.DISPLAY_UPDATE_IMMINENT, 200);
         }
     }
 
