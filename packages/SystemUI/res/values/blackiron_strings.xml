@@ -5,6 +5,9 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
+    <!-- QS Widgets -->
+    <string name="no_media_playing">Nothing Playing</string>
+
     <!-- Statusbar Icons -->
     <string name="status_bar_nfc">NFC</string>
     <string name="status_bar_data_saver">Data saver</string>
