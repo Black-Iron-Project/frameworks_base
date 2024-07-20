@@ -61,6 +61,7 @@ import com.android.systemui.statusbar.phone.NotificationIconContainer;
 import com.android.systemui.util.ViewController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 import com.android.systemui.util.settings.SecureSettings;
+import com.android.systemui.util.settings.SystemSettings;
 
 import kotlinx.coroutines.DisposableHandle;
 
@@ -82,6 +83,7 @@ public class KeyguardClockSwitchController extends ViewController<KeyguardClockS
     private final KeyguardSliceViewController mKeyguardSliceViewController;
     private final LockscreenSmartspaceController mSmartspaceController;
     private final SecureSettings mSecureSettings;
+    private final SystemSettings mSystemSettings;
     private final DumpManager mDumpManager;
     private final ClockEventController mClockEventController;
     private final LogBuffer mLogBuffer;
@@ -150,6 +152,7 @@ public class KeyguardClockSwitchController extends ViewController<KeyguardClockS
             NotificationIconContainerAlwaysOnDisplayViewBinder nicViewBinder,
             KeyguardUnlockAnimationController keyguardUnlockAnimationController,
             SecureSettings secureSettings,
+            SystemSettings systemSettings,
             @Main DelayableExecutor uiExecutor,
             @Background Executor bgExecutor,
             DumpManager dumpManager,
@@ -165,6 +168,7 @@ public class KeyguardClockSwitchController extends ViewController<KeyguardClockS
         mSmartspaceController = smartspaceController;
         mNicViewBinder = nicViewBinder;
         mSecureSettings = secureSettings;
+        mSystemSettings = systemSettings;
         mUiExecutor = uiExecutor;
         mBgExecutor = bgExecutor;
         mKeyguardUnlockAnimationController = keyguardUnlockAnimationController;

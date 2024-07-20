@@ -193,4 +193,7 @@
     <string name="quick_settings_ringer_label">Ringer mode</string>
     <string name="torch_active">Torch Active</string>
     <string name="google_wallet">Google Wallet</string>
+
+    <!-- QS Widgets -->
+    <string name="no_media_playing">Nothing Playing</string>
 </resources>
