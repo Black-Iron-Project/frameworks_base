@@ -39,6 +39,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.systemui.Dumpable;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.colorextraction.SysuiColorExtractor;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.media.controls.domain.pipeline.MediaDataManager;
 import com.android.systemui.media.controls.shared.model.MediaData;
@@ -117,6 +118,8 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
     private boolean mIslandEnabled;
     private boolean mIslandNowPlayingEnabled;
 
+    private final SysuiColorExtractor mColorExtractor;
+
     @VisibleForTesting
     final MediaController.Callback mMediaListener = new MediaController.Callback() {
 
@@ -179,6 +182,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
             MediaDataManager mediaDataManager,
             DumpManager dumpManager,
             @Background Executor backgroundExecutor,
+            SysuiColorExtractor colorExtractor,
             @Main Handler handler,
             StatusBarStateController statusBarStateController,
             TunerService tunerService) {
@@ -190,6 +194,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
         mNotifCollection = notifCollection;
         mBackgroundExecutor = backgroundExecutor;
         mHandler = handler;
+        mColorExtractor = colorExtractor;
         mStatusBarStateController = statusBarStateController;
 
         setupNotifPipeline();
@@ -344,6 +349,10 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
             .orElse(null);
     }
 
+    public int getMediaBgColor() {
+        return mColorExtractor.getMediaBackgroundColor();
+    }
+
     public void addCallback(MediaListener callback) {
         mMediaListeners.add(callback);
         mBackgroundExecutor.execute(() -> updateMediaMetaData(callback));
@@ -354,9 +363,12 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
         mHandler.post(() -> {
             callback.onPrimaryMetadataOrStateChanged(mMediaMetadata, playbackState);
         });
+        callback.setMediaNotificationColor(mColorExtractor.getMediaBackgroundColor());
     }
 
     public void removeCallback(MediaListener callback) {
+        mColorExtractor.setMediaBackgroundColor(0);
+        callback.setMediaNotificationColor(0);
         mMediaListeners.remove(callback);
     }
 
@@ -470,6 +482,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
         mHandler.post(() -> {
             for (int i = 0; i < callbacks.size(); i++) {
                 callbacks.get(i).onPrimaryMetadataOrStateChanged(mMediaMetadata, state);
+                callbacks.get(i).setMediaNotificationColor(mColorExtractor.getMediaBackgroundColor());
             }
         });
     }
@@ -497,7 +510,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
                 && state != PlaybackState.STATE_NONE;
     }
 
-    private boolean sameSessions(MediaController a, MediaController b) {
+    public boolean sameSessions(MediaController a, MediaController b) {
         if (a == b) {
             return true;
         }
@@ -507,7 +520,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
         return a.controlsSameSession(b);
     }
 
-    private int getMediaControllerPlaybackState(MediaController controller) {
+    public int getMediaControllerPlaybackState(MediaController controller) {
         if (controller != null) {
             final PlaybackState playbackState = controller.getPlaybackState();
             if (playbackState != null) {
@@ -538,5 +551,7 @@ public class NotificationMediaManager implements Dumpable, TunerService.Tunable 
          */
         default void onPrimaryMetadataOrStateChanged(MediaMetadata metadata,
                 @PlaybackState.State int state) {}
+
+        default void setMediaNotificationColor(int color) {};
     }
 }
