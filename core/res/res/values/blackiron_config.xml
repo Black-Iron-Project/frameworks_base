@@ -104,4 +104,7 @@
 
     <!-- Mock Oplus LinearmotorVibratorService -->
     <bool name="config_mockOplusLinearmotorVibratorService">false</bool>
+
+    <!-- PowerOffAlarmService -->
+    <bool name="config_powerOffAlarmEnabled">false</bool>
 </resources>
