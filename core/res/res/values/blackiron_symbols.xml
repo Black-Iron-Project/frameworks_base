@@ -94,4 +94,13 @@
     <java-symbol type="string" name="shake_gesture_toast_dnd_mode" />
     <java-symbol type="string" name="shake_gesture_toast_vibrate_mode" />
     <java-symbol type="string" name="shake_gesture_toast_normal_mode" />
+
+    <!-- Pocket mode -->
+    <java-symbol type="layout" name="pocket_mode_layout" />
+    <java-symbol type="drawable" name="prevent_mode_img" />
+    <java-symbol type="id" name="pocket_mode_phone_image" />
+    <java-symbol type="id" name="pocket_mode_active_message" />
+    <java-symbol type="id" name="pocket_mode_hint_message" />
+    <java-symbol type="string" name="pocket_mode_active" />
+    <java-symbol type="string" name="pocket_mode_hint" />
 </resources>
