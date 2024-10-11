@@ -24,4 +24,7 @@
     <!-- Cycle through ringer modes -->
     <string name="volume_dialog_ringer_guidance_normal">Calls and notifications will ring</string>
 
+    <!-- Pocket Mode -->
+    <string name="pocket_mode_active">Pocket Mode is active</string>
+    <string name="pocket_mode_hint">Long press anywhere to disable pocket mode.</string>
 </resources>
