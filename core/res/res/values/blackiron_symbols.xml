@@ -146,4 +146,9 @@
 
     <!-- USB -->
     <java-symbol type="string" name="config_usbFunctionActivity" />
+
+    <!-- Custom clocks -->
+    <java-symbol type="dimen" format="float" name="presentation_clock_text_size" />
+    <java-symbol type="dimen" format="float" name="large_clock_text_size" />
+    <java-symbol type="dimen" format="float" name="small_clock_text_size" />
 </resources>
