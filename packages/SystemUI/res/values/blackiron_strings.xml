@@ -171,4 +171,7 @@
 
     <!-- Toast for timer chips long press -->
     <string name="chip_longpress_hint">Long press to directly stop</string>
+
+    <!-- System Theme Re-evaluation Toast -->
+    <string name="reevaluating_system_theme">Re-evaluating system theme.. Please wait for a few seconds</string>
 </resources>
