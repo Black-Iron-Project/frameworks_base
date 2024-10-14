@@ -83,4 +83,8 @@
     <dimen name="lyric_text_padding_top">0dp</dimen>
     <dimen name="lyric_icon_margin_bottom">0dp</dimen>
 
+    <!-- Lockscreen Clock/AOD -->  
+    <dimen name="custom_aod_image_size">180dp</dimen>
+    <dimen name="custom_clock_frame_margin_top">0dp</dimen>
+    <dimen name="keyguard_status_area_margin_top">0dp</dimen>
 </resources>
