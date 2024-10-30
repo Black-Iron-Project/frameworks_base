@@ -46,16 +46,16 @@ public class PropsHooksUtils {
     private static final Map<String, Object> propsToChangePixelXL;
     private static final Map<String, Object> propsToChangePixel5a;
             
-    private static final Map<String, String> DEFAULT_VALUES = Map.of(
-        "BRAND", "google",
-        "MANUFACTURER", "Google",
-        "DEVICE", "husky",
-        "FINGERPRINT", "google/husky_beta/husky:15/AP31.240617.015/12207491:user/release-keys",
-        "MODEL", "Pixel 8 Pro",
-        "PRODUCT", "husky_beta",
-        "DEVICE_INITIAL_SDK_INT", "21",
-        "SECURITY_PATCH", "2024-08-05",
-        "ID", "AP31.240617.015"
+    private static final Map<String, String> GMS_SPOOF_VALUES = Map.of(
+        "BRAND", SystemProperties.get(PROP_HOOKS + "BRAND"),
+        "MANUFACTURER", SystemProperties.get(PROP_HOOKS + "MANUFACTURER"),
+        "DEVICE", SystemProperties.get(PROP_HOOKS + "DEVICE"),
+        "FINGERPRINT", SystemProperties.get(PROP_HOOKS + "FINGERPRINT"),
+        "MODEL", SystemProperties.get(PROP_HOOKS + "MODEL"),
+        "PRODUCT", SystemProperties.get(PROP_HOOKS + "PRODUCT"),
+        "DEVICE_INITIAL_SDK_INT", SystemProperties.get(PROP_HOOKS + "DEVICE_INITIAL_SDK_INT"),
+        "SECURITY_PATCH", SystemProperties.get(PROP_HOOKS + "SECURITY_PATCH"),
+        "ID", SystemProperties.get(PROP_HOOKS + "ID")
     );
 
     static {
@@ -249,11 +249,7 @@ public class PropsHooksUtils {
         }
     }
     private static void spoofBuildGms() {
-        for (Map.Entry<String, String> entry : DEFAULT_VALUES.entrySet()) {
-            String propKey = PROP_HOOKS + entry.getKey();
-            String value = SystemProperties.get(propKey);
-            setPropValue(entry.getKey(), value != null && !value.isEmpty() ? value : entry.getValue());
-        }
+        GMS_SPOOF_VALUES.forEach((key, value) -> setPropValue(key, value));
     }
 
     private static boolean isCallerSafetyNet() {
