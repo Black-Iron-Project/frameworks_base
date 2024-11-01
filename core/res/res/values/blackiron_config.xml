@@ -123,4 +123,7 @@
 
     <!-- Mock Oplus LinearmotorVibratorService -->
     <bool name="config_mockOplusLinearmotorVibratorService">false</bool>
+
+    <!-- Album art max bitmap size -->
+    <integer name="config_maxBitmapSizePx">480</integer>
 </resources>
