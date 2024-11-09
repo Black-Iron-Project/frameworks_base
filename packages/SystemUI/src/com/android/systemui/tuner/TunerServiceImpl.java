@@ -40,6 +40,7 @@ import androidx.annotation.WorkerThread;
 import com.android.internal.util.ArrayUtils;
 import com.android.systemui.DejankUtils;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.demomode.DemoModeController;
 import com.android.systemui.qs.QSHost;
@@ -106,6 +107,7 @@ public class TunerServiceImpl extends TunerService {
     private UserTracker.Callback mCurrentUserTracker;
     private UserTracker mUserTracker;
     private final ComponentName mTunerComponent;
+    private final Handler mBgHandler;
 
     /**
      */
@@ -113,6 +115,7 @@ public class TunerServiceImpl extends TunerService {
     public TunerServiceImpl(
             Context context,
             @Main Handler mainHandler,
+            @Background Handler bgHandler,
             LeakDetector leakDetector,
             DemoModeController demoModeController,
             UserTracker userTracker,
@@ -125,6 +128,7 @@ public class TunerServiceImpl extends TunerService {
         mDemoModeController = demoModeController;
         mUserTracker = userTracker;
         mTunerComponent = new ComponentName(mContext, TunerActivity.class);
+        mBgHandler = bgHandler;
 
         for (UserInfo user : UserManager.get(mContext).getUsers()) {
             mCurrentUser = user.getUserHandle().getIdentifier();
@@ -346,8 +350,10 @@ public class TunerServiceImpl extends TunerService {
         synchronized (this) {
             if (!mListeningUris.containsKey(uri)) {
                 mListeningUris.put(uri, key);
-                mContentResolver.registerContentObserver(uri, false, mObserver,
-                        isLineageGlobal(key) ? UserHandle.USER_ALL : mCurrentUser);
+                mBgHandler.post(() -> {
+                    mContentResolver.registerContentObserver(uri, false, mObserver,
+                            isLineageGlobal(key) ? UserHandle.USER_ALL : mCurrentUser);
+                });
             }
         }
         // Send the first state.
@@ -372,8 +378,10 @@ public class TunerServiceImpl extends TunerService {
         mContentResolver.unregisterContentObserver(mObserver);
         for (Uri uri : mListeningUris.keySet()) {
             String key = mListeningUris.get(uri);
-            mContentResolver.registerContentObserver(uri, false, mObserver,
-                    isLineageGlobal(key) ? UserHandle.USER_ALL : mCurrentUser);
+            mBgHandler.post(() -> {
+                mContentResolver.registerContentObserver(uri, false, mObserver,
+                        isLineageGlobal(key) ? UserHandle.USER_ALL : mCurrentUser);
+            });
         }
     }
 
