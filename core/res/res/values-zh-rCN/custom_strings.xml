@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2023-2024 the risingOS Android Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="pocket_mode_active">口袋模式已开启</string>
+  <string name="pocket_mode_hint">长按任意区域关闭口袋模式。</string>
+   <!-- Settings Restart -->
+   <string name="settings_restart_title">需要重启设置</string>
+   <string name="settings_restart_message">要使所有更改生效，需要重新启动“设置”应用。立即重新启动“设置”应用吗？</string>
+    <!-- System Reboot -->
+    <string name="system_restart_title">需要重启系统</string>
+    <string name="system_restart_message">要使所有更改生效，需要重启系统。现在执行重新启动系统吗？</string>
+    <!-- SystemUI Restart -->
+    <string name="systemui_restart_title">需要重启用户界面</string>
+    <string name="systemui_restart_message">要使所有更改生效，需要重启用户界面。立即重新启动用户界面吗？</string>
+    <!-- Launcher Restart -->
+    <string name="launcher_restart_title">需要重启桌面</string>
+    <string name="launcher_restart_message">要使所有更改生效，需要重启桌面。立即重新启动桌面吗？</string>
+    <!-- App lock -->
+    <string name="unlock_application">解锁应用 <xliff:g id="label" example="Telegram">%1$s</xliff:g></string>
+    <!-- Immersive UI mode toast messages -->
+    <string name="immersive_ui_mode_notify_locked">再次滑动即可禁用手势锁定</string>
+</resources>
