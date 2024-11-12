@@ -48,6 +48,8 @@ import com.android.systemui.res.R;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.SystemUIDialog;
 import com.android.systemui.statusbar.phone.ui.StatusBarIconController;
+import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 import com.android.systemui.statusbar.policy.Clock;
 import com.android.systemui.util.leak.LeakDetector;
 
@@ -108,6 +110,19 @@ public class TunerServiceImpl extends TunerService {
     private UserTracker mUserTracker;
     private final ComponentName mTunerComponent;
     private final Handler mBgHandler;
+    private final Handler mMainHandler;
+    private final ConfigurationController mConfigurationController;
+
+    final ConfigurationListener mConfigurationListener = new ConfigurationListener() {
+        @Override
+        public void onUiModeChanged() {
+            reregisterAll();
+        }
+        @Override
+        public void onThemeChanged() {
+            reregisterAll();
+        }
+    };
 
     /**
      */
@@ -119,7 +134,8 @@ public class TunerServiceImpl extends TunerService {
             LeakDetector leakDetector,
             DemoModeController demoModeController,
             UserTracker userTracker,
-            Lazy<SystemUIDialog.Factory> systemUIDialogFactoryLazy) {
+            Lazy<SystemUIDialog.Factory> systemUIDialogFactoryLazy,
+            ConfigurationController configurationController) {
         super(context);
         mContext = context;
         mSystemUIDialogFactoryLazy = systemUIDialogFactoryLazy;
@@ -129,11 +145,13 @@ public class TunerServiceImpl extends TunerService {
         mUserTracker = userTracker;
         mTunerComponent = new ComponentName(mContext, TunerActivity.class);
         mBgHandler = bgHandler;
+        mMainHandler = mainHandler;
+        mConfigurationController = configurationController;
 
         for (UserInfo user : UserManager.get(mContext).getUsers()) {
             mCurrentUser = user.getUserHandle().getIdentifier();
             if (getValue(TUNER_VERSION, 0) != CURRENT_TUNER_VERSION) {
-                upgradeTuner(getValue(TUNER_VERSION, 0), CURRENT_TUNER_VERSION, mainHandler);
+                upgradeTuner(getValue(TUNER_VERSION, 0), CURRENT_TUNER_VERSION);
             }
         }
 
@@ -147,15 +165,28 @@ public class TunerServiceImpl extends TunerService {
             }
         };
         mUserTracker.addCallback(mCurrentUserTracker,
-                new HandlerExecutor(mainHandler));
+                new HandlerExecutor(mMainHandler));
+        mConfigurationController.addCallback(mConfigurationListener);
     }
 
     @Override
     public void destroy() {
         mUserTracker.removeCallback(mCurrentUserTracker);
+        mContentResolver.unregisterContentObserver(mObserver);
+        mConfigurationController.removeCallback(mConfigurationListener);
+        if (mBgHandler != null) {
+            mBgHandler.removeCallbacksAndMessages(null);
+        }
+        if (mMainHandler != null) {
+            mMainHandler.removeCallbacksAndMessages(null);
+        }
+        if (mTunables != null) {
+            mTunables.clear();
+        }
+        mTunableLookup.clear();
     }
 
-    private void upgradeTuner(int oldVersion, int newVersion, Handler mainHandler) {
+    private void upgradeTuner(int oldVersion, int newVersion) {
         if (oldVersion < 1) {
             String hideListStr = getValue(StatusBarIconController.ICON_HIDE_LIST);
             if (hideListStr != null) {
@@ -177,7 +208,7 @@ public class TunerServiceImpl extends TunerService {
         if (oldVersion < 4) {
             // Delay this so that we can wait for everything to be registered first.
             final int user = mCurrentUser;
-            mainHandler.postDelayed(
+            mMainHandler.postDelayed(
                     () -> clearAllFromUser(user), 5000);
         }
         setValue(TUNER_VERSION, newVersion);
@@ -472,7 +503,7 @@ public class TunerServiceImpl extends TunerService {
 
     private class Observer extends ContentObserver {
         public Observer() {
-            super(new Handler(Looper.getMainLooper()));
+            super(null);
         }
 
         @Override
@@ -481,7 +512,9 @@ public class TunerServiceImpl extends TunerService {
             for (Uri u : uris) {
                 String key = mListeningUris.get(u);
                 if (userId == mUserTracker.getUserId() || isLineageGlobal(key)) {
-                    reloadSetting(u);
+                    mMainHandler.post(() -> {
+                        reloadSetting(u);
+                    });
                 }
             }
         }
