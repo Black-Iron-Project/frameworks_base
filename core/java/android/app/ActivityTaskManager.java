@@ -201,7 +201,7 @@ public class ActivityTaskManager {
      */
     public static int getMaxRecentTasksStatic() {
         if (sMaxRecentTasks < 0) {
-            return sMaxRecentTasks = ActivityManager.isLowRamDeviceStatic() ? 36 : 48;
+            return sMaxRecentTasks = 36;
         }
         return sMaxRecentTasks;
     }
