@@ -39,11 +39,12 @@
             android:splitTrack="false"
         />
 
-        <ImageButton
+        <com.android.systemui.settings.brightness.BrightnessModeImageButton
             android:id="@+id/brightness_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:padding="10dp"
             android:layout_marginStart="20.0dip"
             android:background="@drawable/bg_qs_brightness_auto_on"
             android:src="@drawable/ic_qs_brightness_auto_off_new"
