@@ -48,8 +48,6 @@ import com.android.systemui.res.R;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.SystemUIDialog;
 import com.android.systemui.statusbar.phone.ui.StatusBarIconController;
-import com.android.systemui.statusbar.policy.ConfigurationController;
-import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 import com.android.systemui.statusbar.policy.Clock;
 import com.android.systemui.util.leak.LeakDetector;
 
@@ -111,18 +109,6 @@ public class TunerServiceImpl extends TunerService {
     private final ComponentName mTunerComponent;
     private final Handler mBgHandler;
     private final Handler mMainHandler;
-    private final ConfigurationController mConfigurationController;
-
-    final ConfigurationListener mConfigurationListener = new ConfigurationListener() {
-        @Override
-        public void onUiModeChanged() {
-            reregisterAll();
-        }
-        @Override
-        public void onThemeChanged() {
-            reregisterAll();
-        }
-    };
 
     /**
      */
@@ -134,8 +120,7 @@ public class TunerServiceImpl extends TunerService {
             LeakDetector leakDetector,
             DemoModeController demoModeController,
             UserTracker userTracker,
-            Lazy<SystemUIDialog.Factory> systemUIDialogFactoryLazy,
-            ConfigurationController configurationController) {
+            Lazy<SystemUIDialog.Factory> systemUIDialogFactoryLazy) {
         super(context);
         mContext = context;
         mSystemUIDialogFactoryLazy = systemUIDialogFactoryLazy;
@@ -146,7 +131,6 @@ public class TunerServiceImpl extends TunerService {
         mTunerComponent = new ComponentName(mContext, TunerActivity.class);
         mBgHandler = bgHandler;
         mMainHandler = mainHandler;
-        mConfigurationController = configurationController;
 
         for (UserInfo user : UserManager.get(mContext).getUsers()) {
             mCurrentUser = user.getUserHandle().getIdentifier();
@@ -166,14 +150,12 @@ public class TunerServiceImpl extends TunerService {
         };
         mUserTracker.addCallback(mCurrentUserTracker,
                 new HandlerExecutor(mMainHandler));
-        mConfigurationController.addCallback(mConfigurationListener);
     }
 
     @Override
     public void destroy() {
         mUserTracker.removeCallback(mCurrentUserTracker);
         mContentResolver.unregisterContentObserver(mObserver);
-        mConfigurationController.removeCallback(mConfigurationListener);
         if (mBgHandler != null) {
             mBgHandler.removeCallbacksAndMessages(null);
         }
