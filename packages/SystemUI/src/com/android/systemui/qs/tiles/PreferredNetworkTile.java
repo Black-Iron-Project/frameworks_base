@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import com.android.systemui.animation.Expandable;
 import android.service.quicksettings.Tile;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
@@ -90,7 +91,7 @@ public class PreferredNetworkTile extends QSTileImpl<State> {
     }
 
     @Override
-    public void handleClick(@Nullable View view) {
+    public void handleClick(@Nullable Expandable expandable) {
         final int mode = getPreferredNetworkMode();
         final int newMode = TelephonyManagerConstants.getTargetMode(mode);
         if (newMode == -1) return;
