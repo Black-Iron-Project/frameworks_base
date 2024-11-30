@@ -43,6 +43,7 @@ import com.android.systemui.qs.customize.QSCustomizerController;
 import com.android.systemui.qs.external.CustomTile;
 import com.android.systemui.qs.logging.QSLogger;
 import com.android.systemui.qs.tiles.FlashlightStrengthTile;
+import com.android.systemui.qs.tiles.VolumeControlTile;
 import com.android.systemui.qs.tileimpl.QSTileViewImpl;
 import com.android.systemui.qs.tileimpl.SliderQSTileViewImpl;
 import com.android.systemui.qs.tileimpl.SlideableQSTile;
@@ -401,7 +402,8 @@ public abstract class QSPanelControllerBase<T extends QSPanel> extends ViewContr
             getContext().getContentResolver(),
             Settings.System.QS_TILE_UI_STYLE, 0, UserHandle.USER_CURRENT
         ) != 0;
-        if (FlashlightStrengthTile.TILE_SPEC.equals(tile.getTileSpec())
+        if ((FlashlightStrengthTile.TILE_SPEC.equals(tile.getTileSpec())
+            || VolumeControlTile.TILE_SPEC.equals(tile.getTileSpec()))
             && !isA11Style) {
             SlideableQSTile slideableQSTile = (SlideableQSTile) tile;
             tileView = new SliderQSTileViewImpl(
