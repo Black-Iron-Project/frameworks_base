@@ -2239,9 +2239,11 @@ public class PackageManagerService implements PackageSender, TestUtilityService 
             }
 
             final VersionInfo ver = mSettings.getInternalVersion();
-            mIsUpgrade =
-                    !partitionsFingerprint.equals(ver.fingerprint);
+            final String displayVersion = TextUtils.emptyIfNull(SystemProperties.get("ro.rising.build.version", ""));
+            final String currentDisplayVersion = TextUtils.emptyIfNull(SystemProperties.get("persist.sys.rising.build.version", ""));
+            mIsUpgrade = !displayVersion.equals(currentDisplayVersion);
             if (mIsUpgrade) {
+                SystemProperties.set("persist.sys.rising.build.version", displayVersion);
                 PackageManagerServiceUtils.logCriticalInfo(Log.INFO,
                         "Upgrading from " + ver.fingerprint + " (" + ver.buildFingerprint + ") to "
                                 + PackagePartitions.FINGERPRINT
