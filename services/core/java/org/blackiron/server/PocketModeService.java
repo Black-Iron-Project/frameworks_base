@@ -193,6 +193,12 @@ public class PocketModeService extends SystemService {
             hideOverlay();
         }
     }
+    
+    public void disablePocketLock() {
+        vibrate(mDoubleClickEffect);
+        hideOverlay();
+        mIsOverlayUserUnlocked = true;
+    }
 
     private void showOverlay() {
         if (mDozing) return;
@@ -246,7 +252,8 @@ public class PocketModeService extends SystemService {
                 mSensorManager.registerListener(mPocketModeListener, mProximitySensor, POCKET_MODE_SENSOR_DELAY, mHandler);
             }
             if (mLightSensor != null) {
-                mSensorManager.registerListener(mPocketModeListener, mLightSensor, POCKET_MODE_SENSOR_DELAY, mHandler);
+                mSensorManager.registerListener(mPocketModeListener, mLightSensor, POCKET_MODE_SENSOR_DELAY, 
+                mHandler);
             }
         }
     }
@@ -397,9 +404,7 @@ public class PocketModeService extends SystemService {
         mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public void onLongPress(MotionEvent e) {
-                vibrate(mDoubleClickEffect);
-                hideOverlay();
-                mIsOverlayUserUnlocked = true;
+                disablePocketLock();
             }
 
             @Override
