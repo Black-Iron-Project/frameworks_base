@@ -145,6 +145,7 @@ public class PropImitationHooks {
 
     private static volatile String[] sCertifiedProps;
     private static volatile String sStockFp;
+    private static volatile String sNetflixModel;
 
     private static volatile String sProcessName;
     private static volatile boolean sIsGms, sIsFinsky, sIsPhotos;
@@ -166,6 +167,7 @@ public class PropImitationHooks {
 
         sCertifiedProps = res.getStringArray(R.array.config_certifiedBuildProperties);
         sStockFp = res.getString(R.string.config_stockFingerprint);
+        sNetflixModel = res.getString(R.string.config_netflixSpoofModel);
 
         sProcessName = processName;
         sIsGms = packageName.equals(PACKAGE_GMS) && processName.equals(PROCESS_GMS_UNSTABLE);
@@ -176,7 +178,7 @@ public class PropImitationHooks {
          * Set stock fingerprint for ARCore
          * Set Pixel 8 Pro for Google, ASI and GMS device configurator
          * Set Pixel XL for Google Photos
-         * Set Pixel 5a for Netflix
+         * Set custom model for Netflix
          */
 
         switch (processName) {
@@ -222,8 +224,10 @@ public class PropImitationHooks {
                 setProps(sPixelXLProps);
                 return;
             case PACKAGE_NETFLIX:
-                dlog("Spoofing Pixel 5a for Netflix");
-                setProps(sPixelFiveProps);
+                if (!sNetflixModel.isEmpty()) {
+                    dlog("Setting model to " + sNetflixModel + " for Netflix");
+                    setPropValue("MODEL", sNetflixModel);;
+                }
                 return;
         }
     }
