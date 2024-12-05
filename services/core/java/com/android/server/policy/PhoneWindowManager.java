@@ -1716,9 +1716,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case LONG_PRESS_POWER_HIDE_POCKET_LOCK:
                 mPowerKeyHandled = true;
                 if (mPocketModeService != null) {
-                    mPocketModeService.onInteractiveChanged(false);
+                    mPocketModeService.disablePocketLock();
                 }
-                performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, false, "Power - Long-Press - Hide Pocket Lock");
                 break;
         }
     }
