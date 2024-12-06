@@ -272,6 +272,8 @@ import lineageos.providers.LineageSettings;
 import org.lineageos.internal.buttons.LineageButtons;
 import org.lineageos.internal.util.ActionUtils;
 
+import org.blackiron.server.ShakeGestureService;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -689,6 +691,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mSwapCapacitiveKeys = false;
     ANBIHandler mANBIHandler;
     private boolean mANBIEnabled;
+
+    private ShakeGestureService mShakeGestures;
 
     // Tracks user-customisable behavior for certain key events
     private Action mBackLongPressAction;
@@ -7319,6 +7323,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, "Three Fingers Swipe");
             }
         });
+        
+        mShakeGestures = ShakeGestureService.getInstance(mContext);
+        mShakeGestures.setScreenshotCallback(new ShakeGestureService.ScreenshotCallback() {
+            @Override
+            public void onScreenshotTaken() {
+                interceptScreenshotChord(TAKE_SCREENSHOT_FULLSCREEN, SCREENSHOT_KEY_OTHER, 0 /*pressDelay*/);
+            }
+        });
+        mShakeGestures.onStart();
 
         // Ensure observe happens in systemReady() since we need
         // LineageHardwareService to be up and running

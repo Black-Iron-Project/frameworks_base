@@ -13,6 +13,11 @@
     <!-- Lock gesture -->
     <string name="gesture_locked_warning">Swipe again to unlock gestures</string>
 
+    <!-- Shake Gestures toast -->
+    <string name="shake_gesture_toast_dnd_mode">Shake Gestures: Switched to do not disturb mode</string>
+    <string name="shake_gesture_toast_vibrate_mode">Shake Gestures: Switched to vibrate ringer mode</string>
+    <string name="shake_gesture_toast_normal_mode">Shake Gestures: Switched to normal ringer mode</string>
+
     <!-- App lock -->
     <string name="unlock_application">Unlock <xliff:g id="label" example="Telegram">%1$s</xliff:g></string>
 
