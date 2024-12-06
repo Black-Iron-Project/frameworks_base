@@ -103,4 +103,9 @@
     <!-- Launcher restart dialog -->
     <java-symbol type="string" name="launcher_restart_title" />
     <java-symbol type="string" name="launcher_restart_message" />
+
+    <!-- Shake Gestures toast -->
+    <java-symbol type="string" name="shake_gesture_toast_dnd_mode" />
+    <java-symbol type="string" name="shake_gesture_toast_vibrate_mode" />
+    <java-symbol type="string" name="shake_gesture_toast_normal_mode" />
 </resources>
