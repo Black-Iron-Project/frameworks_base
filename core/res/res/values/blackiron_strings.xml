@@ -26,5 +26,5 @@
 
     <!-- Pocket Mode -->
     <string name="pocket_mode_active">Pocket Mode is active</string>
-    <string name="pocket_mode_hint">Long press the screen or the power button to disable Pocket mode.</string>
+    <string name="pocket_mode_hint">Long press the screen or the power\nbutton to disable Pocket mode.</string>
 </resources>
