@@ -133,6 +133,9 @@ constructor(
         internal val QS_SHOW_BATTERY_PERCENT =
             "system:" + Settings.System.QS_SHOW_BATTERY_PERCENT
 
+        internal val QS_HEADER_CLOCK_STYLE =
+            "system:" + "qs_header_clock_style"
+
         private fun Int.stateToString() =
             when (this) {
                 QQS_HEADER_CONSTRAINT -> "QQS Header"
@@ -150,6 +153,7 @@ constructor(
              context.contentResolver, Settings.System.STATUS_BAR_BATTERY_STYLE, 0, UserHandle.USER_CURRENT)
     private var qsBatteryStyle = Settings.System.getIntForUser(
              context.contentResolver, Settings.System.QS_BATTERY_STYLE, -1, UserHandle.USER_CURRENT)
+    private var qsClockStyle = 0
 
     private lateinit var iconManager: TintedIconManager
     private lateinit var carrierIconSlots: List<String>
@@ -307,6 +311,7 @@ constructor(
             override fun onDensityOrFontScaleChanged() {
                 clock.setTextAppearance(R.style.TextAppearance_QS_Status)
                 date.setTextAppearance(R.style.TextAppearance_QS_Status)
+                updateQsHeaderClockDateVisibility()
                 mShadeCarrierGroup.updateTextAppearance(R.style.TextAppearance_QS_Status_Carriers)
                 loadConstraints()
                 header.minHeight =
@@ -320,6 +325,7 @@ constructor(
             override fun onThemeChanged() {
                 clock.setTextAppearance(R.style.TextAppearance_QS_Status)
                 date.setTextAppearance(R.style.TextAppearance_QS_Status)
+                updateQsHeaderClockDateVisibility()
                 mShadeCarrierGroup.updateTextAppearance(R.style.TextAppearance_QS_Status_Carriers)
                 updateResources()
             }
@@ -338,6 +344,13 @@ constructor(
         }
         batteryIcon.setBatteryPercent(qsBatteryPercent)
         updateBatteryResources(true)
+    }
+    
+    fun updateQsHeaderClockDateVisibility() {
+        val color = if (qsClockStyle != 0) Color.TRANSPARENT else Color.WHITE
+        val colorStateList = ColorStateList.valueOf(color)
+        clock.setTextColor(colorStateList)
+        date.setTextColor(colorStateList)
     }
 
     override fun onInit() {
@@ -402,10 +415,12 @@ constructor(
         )
 
         updateQsBatteryStyle()
+        updateQsHeaderClockDateVisibility()
 
         tunerService.addTunable(this, QS_BATTERY_STYLE)
         tunerService.addTunable(this, STATUS_BAR_BATTERY_STYLE)
         tunerService.addTunable(this, QS_SHOW_BATTERY_PERCENT)
+        tunerService.addTunable(this, QS_HEADER_CLOCK_STYLE)
     }
 
     override fun onViewDetached() {
@@ -435,6 +450,11 @@ constructor(
             QS_SHOW_BATTERY_PERCENT -> {
                 qsBatteryPercent = TunerService.parseInteger(value, 2)
                 updateQsBatteryStyle()
+            }
+
+            QS_HEADER_CLOCK_STYLE -> {
+                qsClockStyle = TunerService.parseInteger(value, 0)
+                updateQsHeaderClockDateVisibility()
             }
 
             else -> return
