@@ -181,24 +181,27 @@ class SplashscreenWindowCreator extends AbsSplashWindowCreator {
             }
 
             if (record.mSuggestType != STARTING_WINDOW_TYPE_LEGACY_SPLASH_SCREEN) {
-                contentView.addOnAttachStateChangeListener(
-                        new View.OnAttachStateChangeListener() {
-                            @Override
-                            public void onViewAttachedToWindow(View v) {
-                                SplashScreenView view = (SplashScreenView) v;
-                                final int lightBarAppearance =
-                                        ContrastColorUtil.isColorLight(
-                                                view.getInitBackgroundColor())
-                                                ? LIGHT_BARS_MASK : 0;
-                                view.getWindowInsetsController()
-                                        .setSystemBarsAppearance(
-                                        lightBarAppearance, LIGHT_BARS_MASK);
-                            }
+                if (contentView != null) {
+                    contentView.addOnAttachStateChangeListener(
+                            new View.OnAttachStateChangeListener() {
+                                @Override
+                                public void onViewAttachedToWindow(View v) {
+                                    SplashScreenView view = (SplashScreenView) v;
+                                    final int lightBarAppearance =
+                                            ContrastColorUtil.isColorLight(view.getInitBackgroundColor())
+                                                    ? LIGHT_BARS_MASK : 0;
+                                    view.getWindowInsetsController()
+                                            .setSystemBarsAppearance(
+                                                    lightBarAppearance, LIGHT_BARS_MASK);
+                                }
 
-                            @Override
-                            public void onViewDetachedFromWindow(View v) {
-                            }
-                        });
+                                @Override
+                                public void onViewDetachedFromWindow(View v) {
+                                }
+                            });
+                } else {
+                    Slog.w(TAG, "SplashScreenView is null, cannot add listener.");
+                }
             }
 
             // Do not add this view if the token is mismatch.
@@ -212,6 +215,8 @@ class SplashscreenWindowCreator extends AbsSplashWindowCreator {
                                 + "at taskId: " + taskId, e);
                         contentView = null;
                     }
+                } else {
+                    Slog.w(TAG, "SplashScreenView was not created successfully.");
                 }
                 record.setSplashScreenView(contentView);
             }
@@ -470,3 +475,4 @@ class SplashscreenWindowCreator extends AbsSplashWindowCreator {
         }
     }
 }
+
