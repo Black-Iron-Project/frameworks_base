@@ -84,7 +84,7 @@ public class PropsHooksUtils {
         if (packageName == null || packageName.isEmpty()) {
             return;
         }
-        
+
         setGameProps(packageName);
 
         if (!SystemProperties.getBoolean(ENABLE_PROP_OPTIONS, true)) {
@@ -107,9 +107,12 @@ public class PropsHooksUtils {
             "com.google.android.apps.customization.pixel",
             "com.google.android.apps.emojiwallpaper",
             "com.google.android.apps.nexuslauncher",
+            "com.google.android.apps.pixel.agent",
+            "com.google.android.apps.pixel.creativeassistant",
             "com.google.android.apps.privacy.wildlife",
             "com.google.android.apps.wallpaper",
             "com.google.android.apps.wallpaper.pixel",
+            "com.google.android.as",
             "com.google.android.gms",
             "com.google.android.googlequicksearchbox",
             "com.google.android.inputmethod.latin",
@@ -134,19 +137,19 @@ public class PropsHooksUtils {
                 }
             }
         }
-        
+
         if (packageName.equals("com.snapchat.android")) {
             propsToChange.putAll(propsToChangePixelXL);
         }
-        
+
         if (packageName.equals("com.google.android.settings.intelligence")) {
-            setPropValue("FINGERPRINT", "eng.nobody." + 
+            setPropValue("FINGERPRINT", "eng.nobody." +
                 new java.text.SimpleDateFormat("yyyyMMdd.HHmmss").format(new java.util.Date()));
         }
 
         if (packageName.equals("com.google.android.gms")) {
             setPropValue("TIME", System.currentTimeMillis());
-            if (processName.toLowerCase().contains("unstable") 
+            if (processName.toLowerCase().contains("unstable")
                 && SystemProperties.getBoolean(SPOOF_PIXEL_GMS, true)) {
                 spoofBuildGms();
                 return;
@@ -172,7 +175,7 @@ public class PropsHooksUtils {
             }
         }
     }
-    
+
     public static void setGameProps(String packageName) {
         if (!SystemProperties.getBoolean(ENABLE_GAME_PROP_OPTIONS, false)) {
             return;
