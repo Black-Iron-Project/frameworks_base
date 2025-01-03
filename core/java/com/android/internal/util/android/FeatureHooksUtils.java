@@ -90,7 +90,7 @@ public class FeatureHooksUtils {
             "com.google.android.apps.pixel.creativeassistant"
     ));
 
-    public static boolean hasSystemFeature(String name, int version, boolean hasSystemFeature) {
+    public static boolean hasSystemFeature(String name, boolean hasSystemFeature) {
         if (SystemProperties.getBoolean(PropsHooksUtils.ENABLE_PROP_OPTIONS, true)) {
             String packageName = ActivityThread.currentPackageName();
             if (packageName != null) {
@@ -103,7 +103,7 @@ public class FeatureHooksUtils {
                     }
                 }
                 if (packageName.equals("com.google.android.apps.photos") && isGPhotosSpoofEnabled) {
-                    if (featuresPixel.contains(name)) return false;
+                    if (featuresPixel.contains(name) || featuresTensor.contains(name)) return false;
                     return containsAnyFeatureSet(name, featuresPixelOthers, featuresNexus);
                 }
                 if (packageName.equals("com.google.android.as")) {
@@ -117,7 +117,7 @@ public class FeatureHooksUtils {
                 if (!isTensorDevice && featuresTensor.contains(name)) {
                     return enableTensorFeaturesOnNonTensor;
                 }
-                if (containsAnyFeatureSet(name, featuresPixel, featuresPixelOthers)) {
+                if (containsAnyFeatureSet(name, featuresPixel, featuresPixelOthers, featuresNexus)) {
                     return true;
                 }
             }
