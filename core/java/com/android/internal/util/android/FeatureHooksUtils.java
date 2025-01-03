@@ -96,6 +96,7 @@ public class FeatureHooksUtils {
             if (packageName != null) {
                 boolean isGPhotosSpoofEnabled = SystemProperties.getBoolean(PropsHooksUtils.SPOOF_PIXEL_GPHOTOS, true);
                 boolean isTensorDevice = SystemProperties.get("ro.product.model").matches("Pixel [6-9][a-zA-Z ]*");
+                boolean enableTensorFeaturesOnNonTensor = SystemProperties.getBoolean("persist.sys.features.tensor", false);
                 if (pixelPackages.contains(packageName)) {
                     if (containsAnyFeatureSet(name, featuresPixel, featuresPixelOthers, featuresTensor, featuresNexus)) {
                         return true;
@@ -106,10 +107,15 @@ public class FeatureHooksUtils {
                     return containsAnyFeatureSet(name, featuresPixelOthers, featuresNexus);
                 }
                 if (packageName.equals("com.google.android.as")) {
-                    return isTensorDevice && featuresTensor.contains(name);
+                    if (isTensorDevice && featuresTensor.contains(name)) {
+                        return true;
+                    }
+                    if (!isTensorDevice && enableTensorFeaturesOnNonTensor && featuresTensor.contains(name)) {
+                        return true;
+                    }
                 }
                 if (!isTensorDevice && featuresTensor.contains(name)) {
-                    return false;
+                    return enableTensorFeaturesOnNonTensor;
                 }
                 if (containsAnyFeatureSet(name, featuresPixel, featuresPixelOthers)) {
                     return true;
