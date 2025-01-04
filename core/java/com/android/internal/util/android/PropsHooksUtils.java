@@ -58,6 +58,8 @@ public class PropsHooksUtils {
         propsToChangeMainline.put("MANUFACTURER", SystemProperties.get(PROP_HOOKS_MAINLINE + "MANUFACTURER"));
         propsToChangeMainline.put("DEVICE", SystemProperties.get(PROP_HOOKS_MAINLINE + "DEVICE"));
         propsToChangeMainline.put("PRODUCT", SystemProperties.get(PROP_HOOKS_MAINLINE + "PRODUCT"));
+        propsToChangeMainline.put("HARDWARE", SystemProperties.get(PROP_HOOKS_MAINLINE + "HARDWARE"));
+        propsToChangeMainline.put("ID", SystemProperties.get(PROP_HOOKS_MAINLINE + "ID"));
         propsToChangeMainline.put("MODEL", SystemProperties.get(PROP_HOOKS_MAINLINE + "MODEL"));
         propsToChangeMainline.put("FINGERPRINT", SystemProperties.get(PROP_HOOKS_MAINLINE + "FINGERPRINT"));
         propsToChangePixelXL = new HashMap<>();
@@ -65,6 +67,8 @@ public class PropsHooksUtils {
         propsToChangePixelXL.put("MANUFACTURER", "Google");
         propsToChangePixelXL.put("DEVICE", "marlin");
         propsToChangePixelXL.put("PRODUCT", "marlin");
+        propsToChangePixelXL.put("HARDWARE", "marlin");
+        propsToChangePixelXL.put("ID", "QP1A.191005.007.A3");
         propsToChangePixelXL.put("MODEL", "Pixel XL");
         propsToChangePixelXL.put("FINGERPRINT", "google/marlin/marlin:10/QP1A.191005.007.A3/5972272:user/release-keys");
         propsToChangePixel5a = new HashMap<>();
@@ -113,7 +117,6 @@ public class PropsHooksUtils {
             "com.google.android.apps.wallpaper",
             "com.google.android.apps.wallpaper.pixel",
             "com.google.android.as",
-            "com.google.android.gms",
             "com.google.android.googlequicksearchbox",
             "com.google.android.inputmethod.latin",
             "com.google.android.tts",
