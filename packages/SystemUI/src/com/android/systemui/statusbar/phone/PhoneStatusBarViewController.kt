@@ -226,6 +226,8 @@ private constructor(
         centralSurfaces.onBrightnessChanged(upOrCancel)
     }
 
+    fun getView() = mView
+
     private fun addDarkReceivers() {
         darkIconDispatcher.addDarkReceiver(battery)
     }
