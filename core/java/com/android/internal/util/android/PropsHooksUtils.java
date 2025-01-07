@@ -103,7 +103,6 @@ public class PropsHooksUtils {
         Map<String, Object> propsToChange = new HashMap<>();
 
         final String processName = Application.getProcessName();
-        boolean isExcludedProcess = processName != null && (processName.toLowerCase().contains("unstable"));
 
         String[] packagesToSpoofAsMainlineDevice = {
             "com.google.android.apps.aiwallpapers",
@@ -123,7 +122,7 @@ public class PropsHooksUtils {
             "com.google.android.wallpaper.effects"
         };
 
-        if (Arrays.asList(packagesToSpoofAsMainlineDevice).contains(packageName) && !isExcludedProcess) {
+        if (Arrays.asList(packagesToSpoofAsMainlineDevice).contains(packageName)) {
             if (SystemProperties.getBoolean(SPOOF_PIXEL_GOOGLE_APPS, true)) {
                 if (!isMainlineDevice) {
                     propsToChange.putAll(propsToChangeMainline);
@@ -136,7 +135,7 @@ public class PropsHooksUtils {
                 propsToChange.putAll(propsToChangePixelXL);
             } else {
                 if (!isMainlineDevice) {
-                    propsToChange.putAll(propsToChangePixel5a);
+                    propsToChange.putAll(propsToChangeMainline);
                 }
             }
         }
@@ -152,19 +151,12 @@ public class PropsHooksUtils {
 
         if (packageName.equals("com.google.android.gms")) {
             setPropValue("TIME", System.currentTimeMillis());
-            if (processName.toLowerCase().contains("unstable")
+            if (processName != null && processName.toLowerCase().contains("unstable")
                 && SystemProperties.getBoolean(SPOOF_PIXEL_GMS, true)) {
                 spoofBuildGms();
-                return;
             }
-            if (!isTensorDevice && (processName.contains("gservice")
-                    || processName.contains("learning")
-                    || processName.contains("persistent"))) {
-                propsToChange.putAll(propsToChangePixel5a);
-            } else {
-                if (!isMainlineDevice) {
-                    propsToChange.putAll(propsToChangeMainline);
-                }
+            if (!isMainlineDevice && (processName == null || !processName.toLowerCase().contains("unstable"))) {
+                propsToChange.putAll(propsToChangeMainline);
             }
         }
 
