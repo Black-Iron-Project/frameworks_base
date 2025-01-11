@@ -27,7 +27,9 @@ import android.util.Log;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class PropsHooksUtils {
 
@@ -41,10 +43,29 @@ public class PropsHooksUtils {
     public static final String ENABLE_PROP_OPTIONS = "persist.sys.pixelprops.all";
     public static final String ENABLE_GAME_PROP_OPTIONS = "persist.sys.gameprops.enabled";
     public static final String SPOOF_PIXEL_GOOGLE_APPS = "persist.sys.pixelprops.google";
+    public static final String SPOOF_EXTRA_PACKAGES = "persist.sys.spoof.extra";
 
     private static final Map<String, Object> propsToChangeMainline;
     private static final Map<String, Object> propsToChangePixelXL;
     private static final Map<String, Object> propsToChangePixel5a;
+
+    public static final String[] DEFAULT_PACKAGES_TO_SPOOF = {
+        "com.google.android.apps.aiwallpapers",
+        "com.google.android.apps.bard",
+        "com.google.android.apps.customization.pixel",
+        "com.google.android.apps.emojiwallpaper",
+        "com.google.android.apps.nexuslauncher",
+        "com.google.android.apps.pixel.agent",
+        "com.google.android.apps.pixel.creativeassistant",
+        "com.google.android.apps.privacy.wildlife",
+        "com.google.android.apps.wallpaper",
+        "com.google.android.apps.wallpaper.pixel",
+        "com.google.android.as",
+        "com.google.android.googlequicksearchbox",
+        "com.google.android.inputmethod.latin",
+        "com.google.android.tts",
+        "com.google.android.wallpaper.effects"
+    };
 
     private static final String[] GMS_SPOOF_KEYS = {
         "BRAND", "DEVICE", "DEVICE_INITIAL_SDK_INT", "FINGERPRINT", "ID",
@@ -55,6 +76,7 @@ public class PropsHooksUtils {
     static {
         propsToChangeMainline = new HashMap<>();
         propsToChangeMainline.put("BRAND", SystemProperties.get(PROP_HOOKS_MAINLINE + "BRAND"));
+        propsToChangeMainline.put("BOARD", SystemProperties.get(PROP_HOOKS_MAINLINE + "BOARD"));
         propsToChangeMainline.put("MANUFACTURER", SystemProperties.get(PROP_HOOKS_MAINLINE + "MANUFACTURER"));
         propsToChangeMainline.put("DEVICE", SystemProperties.get(PROP_HOOKS_MAINLINE + "DEVICE"));
         propsToChangeMainline.put("PRODUCT", SystemProperties.get(PROP_HOOKS_MAINLINE + "PRODUCT"));
@@ -104,29 +126,10 @@ public class PropsHooksUtils {
 
         final String processName = Application.getProcessName();
 
-        String[] packagesToSpoofAsMainlineDevice = {
-            "com.google.android.apps.aiwallpapers",
-            "com.google.android.apps.bard",
-            "com.google.android.apps.customization.pixel",
-            "com.google.android.apps.emojiwallpaper",
-            "com.google.android.apps.nexuslauncher",
-            "com.google.android.apps.pixel.agent",
-            "com.google.android.apps.pixel.creativeassistant",
-            "com.google.android.apps.privacy.wildlife",
-            "com.google.android.apps.wallpaper",
-            "com.google.android.apps.wallpaper.pixel",
-            "com.google.android.as",
-            "com.google.android.googlequicksearchbox",
-            "com.google.android.inputmethod.latin",
-            "com.google.android.tts",
-            "com.google.android.wallpaper.effects"
-        };
-
-        if (Arrays.asList(packagesToSpoofAsMainlineDevice).contains(packageName)) {
+        Set<String> packagesToSpoof = getPackagesToSpoof();
+        if (packagesToSpoof.contains(packageName)) {
             if (SystemProperties.getBoolean(SPOOF_PIXEL_GOOGLE_APPS, true)) {
-                if (!isMainlineDevice) {
-                    propsToChange.putAll(propsToChangeMainline);
-                }
+                propsToChange.putAll(propsToChangeMainline);
             }
         }
 
@@ -196,6 +199,40 @@ public class PropsHooksUtils {
                 if (DEBUG) Log.d(TAG, "Defining " + key + " prop for: " + packageName);
                 setPropValue(key, value);
             }
+        }
+    }
+
+    public static Set<String> getPackagesToSpoof() {
+        Set<String> packages = new HashSet<>(Arrays.asList(DEFAULT_PACKAGES_TO_SPOOF));
+        String extraPackages = SystemProperties.get(SPOOF_EXTRA_PACKAGES, "");
+        if (!extraPackages.isEmpty()) {
+            packages.addAll(Arrays.asList(extraPackages.split(",")));
+        }
+        if (DEBUG) {
+            Log.d(TAG, "Packages to spoof: " + packages);
+        }
+        return packages;
+    }
+
+    public static void addExtraPackage(String packageName) {
+        String extraPackages = SystemProperties.get(SPOOF_EXTRA_PACKAGES, "");
+        Set<String> packages = new HashSet<>();
+        if (!extraPackages.isEmpty()) {
+            packages.addAll(Arrays.asList(extraPackages.split(",")));
+        }
+        if (packages.add(packageName)) {
+            SystemProperties.set(SPOOF_EXTRA_PACKAGES, String.join(",", packages));
+        }
+    }
+
+    public static void removeExtraPackage(String packageName) {
+        String extraPackages = SystemProperties.get(SPOOF_EXTRA_PACKAGES, "");
+        Set<String> packages = new HashSet<>();
+        if (!extraPackages.isEmpty()) {
+            packages.addAll(Arrays.asList(extraPackages.split(",")));
+        }
+        if (packages.remove(packageName)) {
+            SystemProperties.set(SPOOF_EXTRA_PACKAGES, String.join(",", packages));
         }
     }
 
