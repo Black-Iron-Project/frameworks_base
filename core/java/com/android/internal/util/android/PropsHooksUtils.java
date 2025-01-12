@@ -136,9 +136,11 @@ public class PropsHooksUtils {
         if (packageName.equals("com.google.android.apps.photos")) {
             if (SystemProperties.getBoolean(SPOOF_PIXEL_GPHOTOS, true)) {
                 propsToChange.putAll(propsToChangePixelXL);
-            } else {
-                if (!isMainlineDevice) {
+            } else if (!isMainlineDevice) {
+                if (isTensorDevice) {
                     propsToChange.putAll(propsToChangeMainline);
+                } else {
+                    propsToChange.putAll(propsToChangePixel5a);
                 }
             }
         }
@@ -154,12 +156,19 @@ public class PropsHooksUtils {
 
         if (packageName.equals("com.google.android.gms")) {
             setPropValue("TIME", System.currentTimeMillis());
-            if (processName != null && processName.toLowerCase().contains("unstable")
+            if (processName != null && !processName.isEmpty() && processName.toLowerCase().contains("unstable")
                 && SystemProperties.getBoolean(SPOOF_PIXEL_GMS, true)) {
                 spoofBuildGms();
             }
-            if (!isMainlineDevice && (processName == null || !processName.toLowerCase().contains("unstable"))) {
-                propsToChange.putAll(propsToChangeMainline);
+            if (!isTensorDevice && processName != null && !processName.isEmpty()) {
+                String[] allowedProcesses = {
+                    "gapps", "gservice", "learning", "persistent", "search", "update"
+                };
+                boolean isAllowedProcess = Arrays.stream(allowedProcesses)
+                                                 .anyMatch(processName.toLowerCase()::contains);
+                if (isAllowedProcess) {
+                    propsToChange.putAll(propsToChangePixel5a);
+                }
             }
         }
 
