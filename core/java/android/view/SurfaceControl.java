@@ -1994,7 +1994,7 @@ public final class SurfaceControl implements Parcelable {
         public static final String TAG = "RefreshRateRange";
 
         // The tolerance within which we consider something approximately equals.
-        public static final float FLOAT_TOLERANCE = 0.01f;
+        public static final float FLOAT_TOLERANCE = 0.05f;
 
         /**
          * The lowest desired refresh rate.
