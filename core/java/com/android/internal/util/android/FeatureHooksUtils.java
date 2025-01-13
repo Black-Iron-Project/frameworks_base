@@ -59,7 +59,9 @@ public class FeatureHooksUtils {
             "android.software.game_service",
             "com.google.android.feature.EXCHANGE_6_2",
             "com.google.android.apps.dialer.call_recording_audio",
-            "com.google.android.apps.dialer.SUPPORTED"
+            "com.google.android.apps.dialer.SUPPORTED",
+            "com.google.android.feature.CONTEXTUAL_SEARCH",
+            "com.google.android.feature.D2D_CABLE_MIGRATION_FEATURE"
     ));
 
     private static final Set<String> featuresTensor = new HashSet<>(Set.of(
