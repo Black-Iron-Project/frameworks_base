@@ -90,7 +90,7 @@ public class NotificationInlineImageResolver implements ImageResolver {
     }
 
     private boolean isLowRam() {
-        return ActivityManager.isLowRamDeviceStatic();
+        return true;
     }
 
     /**
