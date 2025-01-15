@@ -1350,7 +1350,7 @@ public class HardwareRenderer {
             initDisplayInfo();
 
             nSetIsHighEndGfx(ActivityManager.isHighEndGfx());
-            nSetIsLowRam(ActivityManager.isLowRamDeviceStatic());
+            nSetIsLowRam(true);
             // Defensively clear out the context in case we were passed a context that can leak
             // if we live longer than it, e.g. an activity context.
             mContext = null;
