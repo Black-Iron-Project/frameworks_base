@@ -101,21 +101,16 @@
 
     <!-- Build properties from a GMS certified device against current platform SPL level -->
     <string-array name="config_certifiedBuildProperties" translatable="false">
-        <item>PRODUCT:tokay_beta</item>
-        <item>DEVICE:tokay</item>
+        <item>PRODUCT:komodo_beta</item>
+        <item>DEVICE:komodo</item>
         <item>MANUFACTURER:Google</item>
         <item>BRAND:google</item>
-        <item>MODEL:Pixel 9</item>
-        <item>FINGERPRINT:google/tokay_beta/tokay:15/BP11.241121.010/12780007:user/release-keys</item>
-        <item>VERSION.SECURITY_PATCH:2024-12-05</item>
+        <item>MODEL:Pixel 9 Pro XL</item>
+        <item>FINGERPRINT:google/komodo_beta/komodo:15/AP41.240726.010/12266677:user/release-keys</item>
+        <item>VERSION.SECURITY_PATCH:2024-08-05</item>
     </string-array>
-
     <!-- Build fingerprint from stock ROM -->
     <string name="config_stockFingerprint" translatable="false"></string>
-
-    <!-- Device model (Build.MODEL) to spoof for netflix, if not empty -->
-    <string name="config_netflixSpoofModel" translatable="false"></string>
-
     <!-- Paths to the libraries that contain device specific key handlers -->
     <string-array name="config_deviceKeyHandlerLibs" translatable="false">
     </string-array>
