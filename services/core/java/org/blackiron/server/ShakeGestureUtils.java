@@ -24,8 +24,6 @@ import android.hardware.SensorManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 
-import com.android.internal.util.android.VibrationUtils;
-
 import java.util.ArrayList;
 
 public class ShakeGestureUtils implements SensorEventListener {
@@ -123,7 +121,6 @@ public class ShakeGestureUtils implements SensorEventListener {
             listener.onShake();
         }
         mLastShakeTime = SystemClock.elapsedRealtime();
-        VibrationUtils.triggerVibration(mContext, 3);
     }
 
     @Override
