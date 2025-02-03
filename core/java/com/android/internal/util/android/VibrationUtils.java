@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.internal.util.android;
 
 import android.content.Context;
@@ -21,36 +20,31 @@ import android.os.AsyncTask;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 public class VibrationUtils {
 
-    public static void triggerVibration(Context context, int intensity) {
-        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        if (vibrator == null || intensity == 0) {
-            return;
-        }
+    private static final Executor executor = Executors.newSingleThreadExecutor();
+    private static final VibrationEffect[] effects = {
+            null,
+            VibrationEffect.createPredefined(VibrationEffect.EFFECT_TEXTURE_TICK),
+            VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK),
+            VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK),
+            VibrationEffect.createPredefined(VibrationEffect.EFFECT_DOUBLE_CLICK),
+            VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK)
+    };
 
-        VibrationEffect effect = createVibrationEffect(intensity);
-        if (effect == null) {
-            return;
-        }
-
-        AsyncTask.execute(() -> vibrator.vibrate(effect));
-    }
-
-    private static VibrationEffect createVibrationEffect(int intensity) {
-        switch (intensity) {
-            case 1:
-                return VibrationEffect.createPredefined(VibrationEffect.EFFECT_TEXTURE_TICK);
-            case 2:
-                return VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK);
-            case 3:
-                return VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK);
-            case 4:
-                return VibrationEffect.createPredefined(VibrationEffect.EFFECT_DOUBLE_CLICK);
-            case 5:
-                return VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK);
-            default:
-                return null;
-        }
+    public static void triggerVibration(final Context context, final int intensity) {
+        executor.execute(() -> {
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            if (vibrator == null || intensity < 1 
+                || intensity >= effects.length 
+                || effects[intensity] == null) {
+                return;
+            }
+            vibrator.cancel();
+            vibrator.vibrate(effects[intensity]);
+        });
     }
 }
