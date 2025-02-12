@@ -659,7 +659,7 @@ class AppErrors {
                 return;
             }
 
-            // Add paste content for Pasty option
+            // Add paste content for stagbin option
             data.paste = "time: " + timeMillis + "\n" +
             "msg: " + longMsg + "\n" +
             "stacktrace: " + stackTrace;
