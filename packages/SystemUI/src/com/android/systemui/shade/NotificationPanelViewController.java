@@ -285,6 +285,8 @@ public final class NotificationPanelViewController implements
             "system:" + Settings.System.ISLAND_NOTIFICATION;
     private static final String HEADS_UP_NOTIFICATIONS_ENABLED =
             "global:" + Settings.Global.HEADS_UP_NOTIFICATIONS_ENABLED;
+    private static final String QS_HAPTICS_INTENSITY =
+            "system:" + "qs_haptics_intensity";
     private static final Rect M_DUMMY_DIRTY_RECT = new Rect(0, 0, 1, 1);
     private static final Rect EMPTY_RECT = new Rect();
     //TODO(b/394977231) delete this temporary workaround used only by tests
@@ -605,6 +607,7 @@ public final class NotificationPanelViewController implements
     private final KeyguardInteractor mKeyguardInteractor;
     private final PowerInteractor mPowerInteractor;
     private final CoroutineDispatcher mMainDispatcher;
+    private int mQsHapticsIntensity = 0;
     private final SplitShadeStateController mSplitShadeStateController;
     private IslandView mNotifIsland;
     private NotificationStackScrollLayout mNotificationStackScroller;
@@ -2999,7 +3002,7 @@ public final class NotificationPanelViewController implements
     private void maybeVibrateOnOpening(boolean openingWithTouch) {
         if (mVibrateOnOpening && mBarState != KEYGUARD && mBarState != SHADE_LOCKED) {
             if (!openingWithTouch || !mHasVibratedOnOpen) {
-                performHapticFeedback(HapticFeedbackConstants.GESTURE_START);
+                com.android.internal.util.blackiron.VibrationUtils.triggerVibration(mView.getContext(), mQsHapticsIntensity);
                 mHasVibratedOnOpen = true;
                 mShadeLog.v("Vibrating on opening, mHasVibratedOnOpen=true");
             }
@@ -3825,6 +3828,7 @@ public final class NotificationPanelViewController implements
             mTunerService.addTunable(this, STATUS_BAR_CUSTOM_HEADER_SHADOW);
             mTunerService.addTunable(this, ISLAND_NOTIFICATION);
             mTunerService.addTunable(this, HEADS_UP_NOTIFICATIONS_ENABLED);
+            mTunerService.addTunable(this, QS_HAPTICS_INTENSITY);
             // Theme might have changed between inflating this view and attaching it to the
             // window, so
             // force a call to onThemeChanged
@@ -3880,6 +3884,9 @@ public final class NotificationPanelViewController implements
                     break;
                 case HEADS_UP_NOTIFICATIONS_ENABLED:
                     mUseHeadsUp = TunerService.parseIntegerSwitch(newValue, true);
+                    break;
+                case QS_HAPTICS_INTENSITY:
+                    mQsHapticsIntensity = TunerService.parseInteger(newValue, 0);
                     break;
                 default:
                     break;
