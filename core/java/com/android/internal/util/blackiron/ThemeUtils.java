@@ -54,15 +54,12 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ThemeUtils {
-
     public static final String TAG = "ThemeUtils";
-
     public static final String FONT_KEY = "android.theme.customization.font";
     public static final String ICON_SHAPE_KEY= "android.theme.customization.adaptive_icon_shape";
-
     public static final Comparator<OverlayInfo> OVERLAY_INFO_COMPARATOR =
             Comparator.comparingInt(a -> a.priority);
-
+    private static ThemeUtils sInstance;
     private Context mContext;
     private IOverlayManager mOverlayManager;
     private PackageManager pm;
@@ -75,13 +72,19 @@ public class ThemeUtils {
         pm = context.getPackageManager();
     }
 
+    public static ThemeUtils getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new ThemeUtils(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
     public void setOverlayEnabled(String category, String packageName, String target) {
         final String currentPackageName = getOverlayInfos(category, target).stream()
                 .filter(info -> info.isEnabled())
                 .map(info -> info.packageName)
                 .findFirst()
                 .orElse(null);
-
         try {
             if (target.equals(packageName)) {
                 mOverlayManager.setEnabled(currentPackageName, false, USER_SYSTEM);
@@ -89,9 +92,7 @@ public class ThemeUtils {
                 mOverlayManager.setEnabledExclusiveInCategory(packageName,
                         USER_SYSTEM);
             }
-
             writeSettings(category, packageName, target.equals(packageName));
-
         } catch (RemoteException e) {
         }
     }
