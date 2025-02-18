@@ -100,4 +100,7 @@
 
     <!-- Face unlock icon -->
     <dimen name="face_unlock_icon_margin_top">6dp</dimen>
+
+    <!-- Weather -->  
+    <dimen name="weather_image_max_size">24dp</dimen>
 </resources>
