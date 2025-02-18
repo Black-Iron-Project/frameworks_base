@@ -62,6 +62,11 @@
             android:layout_height="wrap_content"
             android:visibility="gone" />
 
+      <include layout="@layout/keyguard_weather"
+               android:id="@+id/keyguard_weather"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content" />
+
       <com.android.systemui.statusbar.phone.NotificationIconContainer
           android:id="@+id/left_aligned_notification_icon_container"
           android:layout_width="match_parent"
