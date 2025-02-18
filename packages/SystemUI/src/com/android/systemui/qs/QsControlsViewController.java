@@ -55,7 +55,7 @@ import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.BluetoothController.Callback;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
-import com.android.internal.util.android.VibrationUtils;
+import com.android.internal.util.blackiron.VibrationUtils;
 
 import java.util.Arrays;
 import java.util.List;
