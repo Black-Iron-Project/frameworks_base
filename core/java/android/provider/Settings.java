@@ -6870,6 +6870,11 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String ONGOING_ACTION_CHIP = "ongoing_action_chip";
+
+        /**
+         * @hide
+         */
         public static final String QS_TILE_LABEL_SIZE = "qs_tile_label_size";
 
         /**
