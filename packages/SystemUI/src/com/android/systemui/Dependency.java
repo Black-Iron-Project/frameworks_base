@@ -58,6 +58,7 @@ import com.android.systemui.tuner.TunerService;
 
 import com.android.systemui.qs.QSImpl;
 import com.android.systemui.statusbar.phone.ScrimController;
+import com.android.systemui.plugins.ActivityStarter;
 
 import dagger.Lazy;
 
@@ -156,6 +157,7 @@ public class Dependency {
     @Inject Lazy<StatusBarWindowController> mStatusBarWindowControllerLazy;
     @Inject Lazy<QSImpl> mQSImpl;
     @Inject Lazy<ScrimController> mScrimController;
+    @Inject Lazy<ActivityStarter> mActivityStarter;
 
     @Inject
     public Dependency() {
@@ -203,6 +205,7 @@ public class Dependency {
         mProviders.put(StatusBarWindowController.class, mStatusBarWindowControllerLazy::get);
         mProviders.put(QSImpl.class, mQSImpl::get);
         mProviders.put(ScrimController.class, mScrimController::get);
+        mProviders.put(ActivityStarter.class, mActivityStarter::get);
 
         Dependency.setInstance(this);
     }
