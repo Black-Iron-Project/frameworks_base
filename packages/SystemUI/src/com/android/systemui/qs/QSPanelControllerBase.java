@@ -25,7 +25,6 @@ import android.content.ComponentName;
 import android.content.res.Configuration;
 import android.content.res.Configuration.Orientation;
 import android.metrics.LogMaker;
-import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -42,10 +41,7 @@ import com.android.systemui.plugins.qs.QSTileView;
 import com.android.systemui.qs.customize.QSCustomizerController;
 import com.android.systemui.qs.external.CustomTile;
 import com.android.systemui.qs.logging.QSLogger;
-import com.android.systemui.qs.tiles.FlashlightStrengthTile;
 import com.android.systemui.qs.tileimpl.QSTileViewImpl;
-import com.android.systemui.qs.tileimpl.SliderQSTileViewImpl;
-import com.android.systemui.qs.tileimpl.TouchableQSTile;
 import com.android.systemui.scene.shared.flag.SceneContainerFlag;
 import com.android.systemui.statusbar.policy.SplitShadeStateController;
 import com.android.systemui.tuner.TunerService;
@@ -377,24 +373,8 @@ public abstract class QSPanelControllerBase<T extends QSPanel> extends ViewContr
         } else {
             longPressEffect = null;
         }
-        final QSTileViewImpl tileView;
-        final boolean isA11Style = Settings.System.getIntForUser(
-            getContext().getContentResolver(),
-            Settings.System.QS_TILE_UI_STYLE, 0, UserHandle.USER_CURRENT
-        ) != 0;
-        if (FlashlightStrengthTile.TILE_SPEC.equals(tile.getTileSpec())
-            && !isA11Style) {
-            TouchableQSTile touchableTile = (TouchableQSTile) tile;
-            tileView = new SliderQSTileViewImpl(
-                    getContext(),
-                    collapsedView,
-                    touchableTile.getTouchListener(),
-                    touchableTile.getSettingsSystemKey(),
-                    touchableTile.getSettingsDefaultValue());
-        } else {
-            tileView = new QSTileViewImpl(
-                    getContext(), collapsedView, longPressEffect);
-        }
+        final QSTileViewImpl tileView = new QSTileViewImpl(
+                getContext(), collapsedView, longPressEffect);
         final TileRecord r = new TileRecord(tile, tileView);
         // TODO(b/250618218): Remove the QSLogger in QSTileViewImpl once we know the root cause of
         // b/250618218.
