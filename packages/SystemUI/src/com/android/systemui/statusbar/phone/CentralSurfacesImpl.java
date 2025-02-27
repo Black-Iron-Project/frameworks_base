@@ -328,6 +328,7 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces,
                     boolean occluded = mKeyguardStateController.isOccluded();
                     mStatusBarHideIconsForBouncerManager.setIsOccludedAndTriggerUpdate(occluded);
                     mScrimController.setKeyguardOccluded(occluded);
+		    Log.d(TAG, "occluded=" + occluded);
                 }
             };
 
@@ -1342,10 +1343,10 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces,
                         mPhoneStatusBarViewController.setBrightnessControlEnabled(mBrightnessControl);
                         mBurnInProtectionController.setPhoneStatusBarView(mPhoneStatusBarViewController.getPhoneStatusBarView());
                         mOnGoingActionProgressController =
-                             new OnGoingActionProgressController(
-                                     mContext,
-                                     statusBarViewController.getOngoingActionProgressGroup(),
-                                     mNotificationListener);
+                            new OnGoingActionProgressController(
+                                    mContext,
+                                    statusBarViewController.getOngoingActionProgressGroup(),
+                                    mNotificationListener, mKeyguardStateController);
                     });
         }
         if (!StatusBarRootModernization.isEnabled() && !StatusBarConnectedDisplays.isEnabled()) {
