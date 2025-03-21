@@ -6875,6 +6875,11 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String SHOW_MEDIA_PROGRESS = "show_media_progress";
+
+        /**
+         * @hide
+         */
         public static final String QS_TILE_LABEL_SIZE = "qs_tile_label_size";
 
         /**
