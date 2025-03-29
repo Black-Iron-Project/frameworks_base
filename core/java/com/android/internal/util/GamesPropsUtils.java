@@ -106,8 +106,9 @@ public class GamesPropsUtils {
                 "com.riotgames.league.teamfighttacticsvn"
         });
 
-        propsToChange.put("ROG8", createROG8Props());
-        packagesToChange.put("ROG8", new String[]{
+        propsToChange.put("S24U", createS24UProps());
+        packagesToChange.put("S24U", new String[]{
+                "com.blizzard.diablo.immortal",
                 "com.pubg.imobile",
                 "com.pubg.krmobile",
                 "com.rekoo.pubgm",
@@ -208,11 +209,11 @@ public class GamesPropsUtils {
         return props;
     }
 
-    private static Map<String, Object> createROG8Props() {
+    private static Map<String, Object> createS24UProps() {
         Map<String, Object> props = new HashMap<>();
-        props.put("BRAND", "asus");
-        props.put("MANUFACTURER", "asus");
-        props.put("MODEL", "ASUS_AI2401_A");
+        props.put("BRAND", "samsung");
+        props.put("MANUFACTURER", "samsung");
+        props.put("MODEL", "SM-S928B");
         return props;
     }
 
