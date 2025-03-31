@@ -68,7 +68,7 @@ import androidx.transition.TransitionManager
 import com.android.systemui.res.R
 import com.android.systemui.shared.system.TaskStackChangeListener
 import com.android.systemui.shared.system.TaskStackChangeListeners
-import com.android.systemui.statusbar.policy.HeadsUpManager
+import com.android.systemui.statusbar.notification.headsup.HeadsUpManager
 import com.android.systemui.statusbar.notification.stack.NotificationStackScrollLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
