@@ -13,16 +13,16 @@
     </style>
 
     <!-- Pixel navbar -->
-     <style name="DotStyle">
-         <item name="android:layout_width">wrap_content</item>
-         <item name="android:layout_height">wrap_content</item>
-         <item name="android:layout_centerHorizontal">true</item>
-         <item name="android:layout_centerVertical">true</item>
-         <item name="android:alpha">@null</item>
-     </style>
+    <style name="DotStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:alpha">@null</item>
+    </style>
 
     <!-- Tri-state UI -->
-     <style name="qs_theme" parent="Theme.SystemUI.QuickSettings">
-         <item name="android:windowIsFloating">true</item>
-     </style>
+    <style name="qs_theme" parent="Theme.SystemUI.QuickSettings">
+        <item name="android:windowIsFloating">true</item>
+    </style>
 </resources>
