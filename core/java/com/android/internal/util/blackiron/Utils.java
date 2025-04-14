@@ -42,6 +42,8 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.os.UserHandle;
@@ -54,6 +56,7 @@ import android.widget.Toast;
 import com.android.internal.R;
 
 import com.android.internal.notification.SystemNotificationChannels;
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.ArrayUtils;
 
 import java.util.ArrayList;
@@ -131,6 +134,15 @@ public class Utils {
         }
         return needsNav;
     }
+
+    public static void restartSystemUI() {
+         final IStatusBarService mBarService = IStatusBarService.Stub.asInterface(
+                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
+         try {
+             mBarService.restartSystemUI();
+         } catch (RemoteException e) {
+         }
+     }
 
         public static class SleepModeController {
         private final Resources mResources;
