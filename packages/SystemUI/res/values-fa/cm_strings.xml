@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">هشدار باتری</string>
     <string name="screenshot_delete_label">حذف</string>
     <string name="screenshot_delete_description">حذف عکس صفحه</string>
+    <string name="screen_pinning_description_no_navbar">تا زمانی که پین ​​را بردارید، آن را در معرض دید قرار می‌دهد. برای برداشتن پین، بازگشت را لمس کرده و نگه دارید.</string>
+    <string name="screen_pinning_toast_no_navbar">برای خروج این صفحه از حالت سنجاق، دکمه بازگشت را نگه دارید</string>
 </resources>

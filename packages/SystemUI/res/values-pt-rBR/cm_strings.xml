@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">Alerta de bateria</string>
     <string name="screenshot_delete_label">Excluir</string>
     <string name="screenshot_delete_description">Excluir captura de tela</string>
+    <string name="screen_pinning_description_no_navbar">Isto mantém a tela em visualização até ser desafixada. Toque e segure o botão Voltar para desafixar.</string>
+    <string name="screen_pinning_toast_no_navbar">Para liberar esta tela, toque no botão \"Voltar\" e mantenha-o pressionado</string>
 </resources>

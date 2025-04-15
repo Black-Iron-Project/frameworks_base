@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">Akkumulátor-figyelmeztetés</string>
     <string name="screenshot_delete_label">Törlés</string>
     <string name="screenshot_delete_description">A képernyőkép törlése</string>
+    <string name="screen_pinning_description_no_navbar">Ebben a nézetben tartja addig, amíg Ön fel nem oldja. A feloldáshoz érintse meg és tartsa lenyomva a Vissza gombot.</string>
+    <string name="screen_pinning_toast_no_navbar">A Képernyőrögzítés feloldásához érintse meg és tartsa nyomva a Vissza gombot</string>
 </resources>

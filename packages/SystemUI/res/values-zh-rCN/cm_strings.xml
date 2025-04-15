@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">电量警告</string>
     <string name="screenshot_delete_label">删除</string>
     <string name="screenshot_delete_description">删除屏幕截图</string>
+    <string name="screen_pinning_description_no_navbar">这会将其固定在此屏幕上，直至您取消固定为止。点击&amp;即可取消固定。</string>
+    <string name="screen_pinning_toast_no_navbar">要取消固定此屏幕，请点击&amp;按钮</string>
 </resources>

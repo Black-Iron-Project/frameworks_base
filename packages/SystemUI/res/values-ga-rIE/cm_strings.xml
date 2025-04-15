@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">Rabhadh ceallraí</string>
     <string name="screenshot_delete_label">Scrios</string>
     <string name="screenshot_delete_description">Scrios seat scáileáin</string>
+    <string name="screen_pinning_description_no_navbar">Coinníonn sé seo san amharc é go dtí go ndíphionn tú. Dteagmháil &amp; coinnigh siar go dtí unpin.</string>
+    <string name="screen_pinning_toast_no_navbar">Chun an scáileán seo a dhíphionnáil, déan teagmháil le &amp; coinnigh an cnaipe Ar Ais</string>
 </resources>

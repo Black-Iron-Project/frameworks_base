@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">Opozorilo baterije</string>
     <string name="screenshot_delete_label">Izbriši</string>
     <string name="screenshot_delete_description">Izbriši zaslonsko sliko</string>
+    <string name="screen_pinning_description_no_navbar">To ga ohrani prikazanega, dokler ga ne odpnete. Dotaknite se in pridržite gumb Nazaj, da ga odpnete.</string>
+    <string name="screen_pinning_toast_no_navbar">Da odpnete ta zaslon, se dotaknite in pridržite gumb Nazaj</string>
 </resources>

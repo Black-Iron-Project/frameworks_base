@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">Batareya xəbərdarlığı</string>
     <string name="screenshot_delete_label">Sil</string>
     <string name="screenshot_delete_description">Ekran şəklini sil</string>
+    <string name="screen_pinning_description_no_navbar">Siz sancağı götürənə qədər bu, baxış rejimində qalacaq. Sancağı götürmək üçün Geri düyməsinə basıb saxlayın.</string>
+    <string name="screen_pinning_toast_no_navbar">Bu ekranı çıxartmaq üçün Geri düyməsinə basıb saxlayın.</string>
 </resources>

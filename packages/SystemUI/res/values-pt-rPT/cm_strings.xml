@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">Aviso de bateria</string>
     <string name="screenshot_delete_label">Eliminar</string>
     <string name="screenshot_delete_description">Eliminar captura de ecrã</string>
+    <string name="screen_pinning_description_no_navbar">Manter esta vista visível até soltar. Toque prolongadamente no botão Anterior para soltar.</string>
+    <string name="screen_pinning_toast_no_navbar">Para soltar esta vista, toque prolongadamente no botão Anterior</string>
 </resources>

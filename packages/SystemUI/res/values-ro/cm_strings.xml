@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">Avertizare baterie</string>
     <string name="screenshot_delete_label">Șterge</string>
     <string name="screenshot_delete_description">Ștergeți captura de ecran</string>
+    <string name="screen_pinning_description_no_navbar">Aceasta ține în vedere până când anulați fixarea. Atingeți &amp; țineți apăsat tasta Înapoi pentru a anula fixarea.</string>
+    <string name="screen_pinning_toast_no_navbar">Pentru a anula fixarea acestui ecran, atingeți &amp; și țineți apăsat butonul Înapoi</string>
 </resources>

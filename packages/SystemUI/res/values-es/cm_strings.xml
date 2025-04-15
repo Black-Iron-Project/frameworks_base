@@ -33,7 +33,7 @@
     <string name="global_action_current_user">Actual</string>
     <string name="global_action_users">Usuarios</string>
     <string name="status_bar_icons_title">Iconos de la barra de estado</string>
-    <string name="drag_or_tap_to_add_tiles">Mantén pulsado &amp; arrastra o toca para añadir mosaicos</string>
+    <string name="drag_or_tap_to_add_tiles">Mantén pulsado y arrastra o toca para añadir mosaicos</string>
     <string name="quick_settings_ambient_display_label">Pantalla ambiente</string>
     <string name="accessibility_quick_settings_ambient_display_off">Pantalla ambiente desactivada.</string>
     <string name="accessibility_quick_settings_ambient_display_on">Pantalla ambiente activada.</string>

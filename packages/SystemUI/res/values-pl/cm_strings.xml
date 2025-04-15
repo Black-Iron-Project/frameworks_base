@@ -77,4 +77,6 @@
     <string name="battery_notification_channel_tv">Ostrzeżenie dotyczące baterii</string>
     <string name="screenshot_delete_label">Usuń</string>
     <string name="screenshot_delete_description">Usuń zrzut ekranu</string>
+    <string name="screen_pinning_description_no_navbar">Ekran będzie widoczny, dopóki go nie odepniesz. Przytrzymaj \"wstecz\", aby odpiąć.</string>
+    <string name="screen_pinning_toast_no_navbar">Aby odpiąć ten ekran, przytrzymaj przycisk \"wstecz\"</string>
 </resources>
