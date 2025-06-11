@@ -2411,6 +2411,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case RINGER_MODES:
                 toggleRingerModes();
                 break;
+            case PLAY_PAUSE_MUSIC:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                break;
             default:
                 break;
         }
