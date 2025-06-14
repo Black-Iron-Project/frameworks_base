@@ -912,6 +912,7 @@ public final class NotificationPanelViewController implements
         mStatusBarHeaderMachine = new StatusBarHeaderMachine(context);
         mStatusBarKeyguardViewManager.setNotificationPanelViewController(this);
         dumpManager.registerDumpable(this);
+        mStatusBarKeyguardViewManager.setNotificationPanelViewController(this);
     }
 
     private void unlockAnimationFinished() {
