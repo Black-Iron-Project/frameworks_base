@@ -235,7 +235,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(AmbientDisplayTile.TILE_SPEC)
-        fun provideAmbientDisplayTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideAmbientDisplayConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(AmbientDisplayTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -250,7 +250,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(AODTile.TILE_SPEC)
-        fun provideAODTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideAODConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(AODTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -280,7 +280,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(CaffeineTile.TILE_SPEC)
-        fun provideCaffeineTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideCaffeineConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(CaffeineTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -288,7 +288,7 @@ interface LineageModule {
                     labelRes = R.string.quick_settings_caffeine_label
                 ),
                 instanceId = uiEventLogger.getNewInstanceId(),
-                category = TileCategory.UTILITIES
+                category = TileCategory.DISPLAY
             )
         }
 
@@ -370,7 +370,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(HeadsUpTile.TILE_SPEC)
-        fun provideHeadsUpTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideHeadsUpConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(HeadsUpTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -378,7 +378,7 @@ interface LineageModule {
                     labelRes = R.string.quick_settings_heads_up_label
                 ),
                 instanceId = uiEventLogger.getNewInstanceId(),
-                category = TileCategory.CONNECTIVITY
+                category = TileCategory.DISPLAY
             )
         }
 
@@ -415,7 +415,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(PowerShareTile.TILE_SPEC)
-        fun providePowerShareTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun providePowerShareConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(PowerShareTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -430,7 +430,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(ProfilesTile.TILE_SPEC)
-        fun provideProfilesTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideProfilesConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(ProfilesTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -438,14 +438,14 @@ interface LineageModule {
                     labelRes = R.string.quick_settings_profiles_label
                 ),
                 instanceId = uiEventLogger.getNewInstanceId(),
-                category = TileCategory.PRIVACY
+                category = TileCategory.UTILITIES
             )
         }
 
         @Provides
         @IntoMap
         @StringKey(ReadingModeTile.TILE_SPEC)
-        fun provideReadingModeTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideReadingModeConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(ReadingModeTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -453,7 +453,7 @@ interface LineageModule {
                     labelRes = R.string.quick_settings_reading_mode
                 ),
                 instanceId = uiEventLogger.getNewInstanceId(),
-                category = TileCategory.ACCESSIBILITY
+                category = TileCategory.DISPLAY
             )
         }
 
@@ -505,7 +505,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(SyncTile.TILE_SPEC)
-        fun provideSyncTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideSyncConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(SyncTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -520,7 +520,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(UsbTetherTile.TILE_SPEC)
-        fun provideUsbTetherTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideUsbTetherConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(UsbTetherTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
@@ -528,7 +528,7 @@ interface LineageModule {
                     labelRes = R.string.quick_settings_usb_tether_label
                 ),
                 instanceId = uiEventLogger.getNewInstanceId(),
-                category = TileCategory.ACCESSIBILITY
+                category = TileCategory.UTILITIES
             )
         }
 
@@ -550,7 +550,7 @@ interface LineageModule {
         @Provides
         @IntoMap
         @StringKey(VpnTile.TILE_SPEC)
-        fun provideVpnTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
+        fun provideVpnConfig(uiEventLogger: QsEventLogger): QSTileConfig {
             return QSTileConfig(
                 tileSpec = TileSpec.create(VpnTile.TILE_SPEC),
                 uiConfig = QSTileUIConfig.Resource(
