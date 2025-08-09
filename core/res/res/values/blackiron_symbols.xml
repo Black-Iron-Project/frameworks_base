@@ -5,9 +5,89 @@
 -->
 <resources>
 
-    <!-- The location of the devices physical tri state switch -->
-    <java-symbol type="integer" name="config_alertSliderLocation" />
+    <!-- Light / Regular style fonts -->
+    <java-symbol type="string" name="config_lightFontFamily" />
+    <java-symbol type="string" name="config_regularFontFamily" />
 
-    <!-- Whether key handler sends intent when changing slider position -->
-    <java-symbol type="string" name="config_alertSliderIntent" />
+    <!-- App error dialog -->
+    <java-symbol type="id" name="aerr_copy" />
+    <java-symbol type="string" name="url_copy_success" />
+    <java-symbol type="string" name="url_copy_failed" />
+
+    <!-- Whether device has dash charging support -->
+    <java-symbol type="bool" name="config_hasDashCharger" />
+
+    <!-- Whether device has warp charging support -->
+    <java-symbol type="bool" name="config_hasWarpCharger" />
+
+    <!-- Whether device has VOOC charging support -->
+    <java-symbol type="bool" name="config_hasVoocCharger" />
+
+    <!-- Whether device has turbo power charging support -->
+    <java-symbol type="bool" name="config_hasTurboPowerCharger" />
+
+    <!-- Path to fast charging status file to detect whether an oem fast charger is active -->
+    <java-symbol type="string" name="config_oemFastChargerStatusPath" />
+
+    <!-- Path to fast charging status file to detect whether an oem fast charger is active -->
+    <java-symbol type="string" name="config_oemFastChargerStatusPath2" />
+
+    <!-- Expected value from fast charging status file -->
+    <java-symbol type="string" name="config_oemFastChargerStatusValue" />
+
+    <!-- Whether devices suports in-display fingerprint when screen is off -->
+    <java-symbol type="bool" name="config_supportScreenOffUdfps" />
+
+    <!-- Default line spacing multiplier between hours and minutes of the keyguard clock-->
+    <java-symbol type="dimen" format="float" name="keyguard_clock_line_spacing_scale" />
+
+    <!-- Sensor block -->
+    <java-symbol type="array" name="config_blockPackagesSensorDrain" />
+
+    <!-- Whether device has physical tri state switch -->
+    <java-symbol type="bool" name="config_hasAlertSlider" />
+
+    <!-- Lock gesture -->
+    <java-symbol type="string" name="gesture_locked_warning" />
+
+    <!-- App lock -->
+    <java-symbol type="string" name="unlock_application" />
+    <java-symbol type="array" name="config_appLockAllowedSystemApps" />
+
+    <!-- Pocket Lock -->
+    <java-symbol type="layout" name="pocket_lock_view" />
+
+    <!-- Pocket bridge -->
+    <java-symbol type="string" name="config_pocketBridgeSysfsInpocket" />
+    <java-symbol type="bool" name="config_pocketModeSupported" />
+    <java-symbol type="bool" name="config_pocketUseLightSensor" />
+
+    <!-- Pocket Service -->
+    <java-symbol type="string" name="config_pocketJudgeVendorSensorName" />
+    <java-symbol type="dimen" name="config_pocketJudgeVendorSensorValue" />
+    <java-symbol type="string" name="config_pocketJudgeVendorProximitySensorName" />
+
+    <!-- Whether device supports sensor based doze customizations -->
+    <java-symbol type="bool" name="config_dozePulseTilt" />
+    <java-symbol type="bool" name="config_dozePulseProximity" />
+    <java-symbol type="bool" name="config_deviceHaveWakeUpProximity" />
+
+    <!-- Whether doze feature is enabled by default in settings -->
+    <java-symbol type="bool" name="config_doze_enabled_by_default" />
+
+    <!-- Whether the device supports Smart Pixels -->
+    <java-symbol type="bool" name="config_supportSmartPixels" />
+
+    <!-- Define device configs on boot -->
+    <java-symbol type="array" name="global_device_configs_override" />
+    <java-symbol type="array" name="device_configs_override" />
+
+    <!-- Whether to cancel fingerprint operation if not idle -->
+    <java-symbol type="bool" name="config_fpCancelIfNotIdle" />
+
+    <!-- Cycle through ringer modes -->
+    <java-symbol type="string" name="volume_dialog_ringer_guidance_normal" />
+
+    <!-- GameSpace -->
+    <java-symbol type="string" name="gamespace_new_game_added" />
 </resources>
