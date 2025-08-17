@@ -311,8 +311,9 @@ class IslandView : ExtendedFloatingActionButton {
             .firstOrNull() ?: getNotificationIcon(sbn, notification) ?: return
         val appLabel = getAppLabel(getActiveAppVolumePackage(), context)
         isNowPlaying = sbn.packageName == "com.android.systemui" &&
-                       islandTitle.toLowerCase(Locale.ENGLISH).equals(
-                           context.getString(R.string.now_playing_on, appLabel).toLowerCase(Locale.ENGLISH)
+                       islandTitle.equals(
+                           context.getString(R.string.now_playing_on, appLabel),
+                           ignoreCase = true
                        )
         val isSystem = sbn.packageName == "android" || sbn.packageName == "com.android.systemui"
         notifTitle = when {
