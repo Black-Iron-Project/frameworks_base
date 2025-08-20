@@ -91,7 +91,6 @@ public class BlackironSettingsConstants {
     public static final String[] LINEAGE_SECURE_SETTINGS_KEYS = {
         LineageSettings.Secure.QS_SHOW_AUTO_BRIGHTNESS,
         LineageSettings.Secure.QS_SHOW_BRIGHTNESS_SLIDER,
-        LineageSettings.Secure.QS_BRIGHTNESS_SLIDER_POSITION
     };
     
     public static final String[] LINEAGE_SYSTEM_SETTINGS_KEYS = {
