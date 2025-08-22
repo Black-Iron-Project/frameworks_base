@@ -143,6 +143,7 @@ import com.android.systemui.qs.panels.ui.compose.EditMode
 import com.android.systemui.qs.panels.ui.compose.QuickQuickSettings
 import com.android.systemui.qs.panels.ui.compose.TileGrid
 import com.android.systemui.qs.shared.ui.ElementKeys
+import com.android.systemui.qs.TileUtils
 import com.android.systemui.qs.ui.composable.QuickSettingsShade
 import com.android.systemui.qs.ui.composable.QuickSettingsShade.systemGestureExclusionInShade
 import com.android.systemui.qs.ui.composable.QuickSettingsTheme
@@ -731,6 +732,17 @@ constructor(
                         BrightnessSlider(viewModel, layoutState)
                     }
                 }
+                val CustomControls = @Composable {
+                    Element(ElementKeys.CustomControls, modifier = Modifier.fillMaxWidth()) {
+                        val context = LocalContext.current
+                        if (TileUtils.canShowQsWidgets(context)) {
+                            AndroidView(
+                                factory = { ctx -> LayoutInflater.from(ctx).inflate(R.layout.qs_controls_layout, null) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
                 val Tiles =
                     @Composable {
                         QuickQuickSettings(
@@ -774,6 +786,7 @@ constructor(
                                 .padding(horizontal = qsHorizontalMargin())
                     ) {
                         QuickQuickSettingsLayout (
+                            customControls = CustomControls,
                             brightness = BrightnessSlider,
                             tiles = Tiles,
                             media = Media,
@@ -872,6 +885,18 @@ constructor(
                                     )
                                 }
                             }
+
+                        val CustomControls = @Composable {
+                            Element(ElementKeys.CustomControls, modifier = Modifier.fillMaxWidth()) {
+                                val context = LocalContext.current
+                                if (TileUtils.canShowQsWidgets(context)) {
+                                    AndroidView(
+                                        factory = { ctx -> LayoutInflater.from(ctx).inflate(R.layout.qs_controls_layout, null) },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
                         Box(
                             modifier =
                                 Modifier.fillMaxWidth()
@@ -883,6 +908,7 @@ constructor(
                                     )
                         ) {
                             QuickSettingsLayout(
+                                customControls = CustomControls,
                                 brightness = BrightnessSlider,
                                 tiles = TileGrid,
                                 media = Media,
@@ -1336,6 +1362,7 @@ private fun MediaObject(
 @Composable
 @VisibleForTesting
 fun QuickQuickSettingsLayout(
+    customControls: @Composable () -> Unit,
     brightness: @Composable () -> Unit,
     tiles: @Composable () -> Unit,
     media: @Composable () -> Unit,
@@ -1344,6 +1371,8 @@ fun QuickQuickSettingsLayout(
     sliderAtTop: Boolean,
 ) {
     Column(verticalArrangement = spacedBy(dimensionResource(R.dimen.qs_tile_margin_vertical))) {
+        customControls()
+
         if (showSlider == 2 && sliderAtTop) {
             brightness()
         }
@@ -1370,6 +1399,7 @@ fun QuickQuickSettingsLayout(
 @Composable
 @VisibleForTesting
 fun QuickSettingsLayout(
+    customControls: @Composable () -> Unit,
     brightness: @Composable () -> Unit,
     tiles: @Composable () -> Unit,
     media: @Composable () -> Unit,
@@ -1381,6 +1411,8 @@ fun QuickSettingsLayout(
         verticalArrangement = spacedBy(dimensionResource(R.dimen.qs_tile_margin_vertical)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        customControls()
+
         if (showSlider != 0 && sliderAtTop) {
             brightness()
         }
