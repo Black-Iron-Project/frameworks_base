@@ -930,8 +930,7 @@ public class ApplicationPackageManager extends PackageManager {
             if (Arrays.asList(featuresNexus).contains(name)) return true;
         }
         if (name != null && Arrays.asList(featuresTensor).contains(name)
-                && !Arrays.asList(pTensorCodenames).contains(SystemProperties.get("ro.product.device"))
-                && (packageName == null || !packageName.equals("com.google.android.dialer"))) {
+                && !Arrays.asList(pTensorCodenames).contains(SystemProperties.get("ro.product.device"))) {
             return false;
         }
         if (Arrays.asList(featuresPixel).contains(name)) return true;
