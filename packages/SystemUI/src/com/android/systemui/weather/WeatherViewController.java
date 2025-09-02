@@ -25,7 +25,7 @@ import android.os.UserHandle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.internal.util.android.OmniJawsClient;
+import com.android.internal.util.blackiron.OmniJawsClient;
 import com.android.systemui.res.R;
 
 import java.util.HashMap;
