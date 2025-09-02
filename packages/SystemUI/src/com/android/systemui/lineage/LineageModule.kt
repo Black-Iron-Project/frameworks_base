@@ -564,21 +564,6 @@ interface LineageModule {
 
         @Provides
         @IntoMap
-        @StringKey(WeatherTile.TILE_SPEC)
-        fun provideWeatherTileConfig(uiEventLogger: QsEventLogger): QSTileConfig {
-            return QSTileConfig(
-                tileSpec = TileSpec.create(WeatherTile.TILE_SPEC),
-                uiConfig = QSTileUIConfig.Resource(
-                    iconRes = R.drawable.ic_qs_weather,
-                    labelRes = R.string.omnijaws_label_default
-                ),
-                instanceId = uiEventLogger.getNewInstanceId(),
-                category = TileCategory.UTILITIES
-            )
-        }
-
-        @Provides
-        @IntoMap
         @StringKey(WifiTile.TILE_SPEC)
         fun provideWifiTileConfig(uiEventLogger: QsEventLogger, context: Context): QSTileConfig {
             return QSTileConfig(

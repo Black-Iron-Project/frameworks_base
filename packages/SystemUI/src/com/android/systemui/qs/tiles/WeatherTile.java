@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2017 The OmniROM project
- * Copyright (C) 2022-2025 Blackiron project
+ * Copyright (C) 2022-2024 crDroid Android project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,10 +52,11 @@ import javax.inject.Inject;
 public class WeatherTile extends QSTileImpl<BooleanState> implements OmniJawsClient.OmniJawsObserver {
 
     public static final String TILE_SPEC = "weather";
-    private static final String SERVICE_PACKAGE = "org.omnirom.omnijaws";
 
     private static final String TAG = "WeatherTile";
-    private static final boolean DEBUG = false;    private Drawable mWeatherImage;
+    private static final boolean DEBUG = false;
+    private OmniJawsClient mWeatherClient;
+    private Drawable mWeatherImage;
     private OmniJawsClient.WeatherInfo mWeatherData;
     private boolean mEnabled;
     private final ActivityStarter mActivityStarter;
@@ -83,7 +84,8 @@ public class WeatherTile extends QSTileImpl<BooleanState> implements OmniJawsCli
     ) {
         super(host, uiEventLogger, backgroundLooper, mainHandler, falsingManager, metricsLogger,
                 statusBarStateController, activityStarter, qsLogger);
-        mEnabled = OmniJawsClient.get().isOmniJawsEnabled(mContext);
+        mWeatherClient = new OmniJawsClient(mContext);
+        mEnabled = mWeatherClient.isOmniJawsEnabled();
         mActivityStarter = activityStarter;
     }
 
@@ -99,14 +101,17 @@ public class WeatherTile extends QSTileImpl<BooleanState> implements OmniJawsCli
 
     @Override
     public void handleSetListening(boolean listening) {
+        if (mWeatherClient == null) {
+            return;
+        }
         if (DEBUG) Log.d(TAG, "setListening " + listening);
-        mEnabled = OmniJawsClient.get().isOmniJawsEnabled(mContext);
+        mEnabled = mWeatherClient.isOmniJawsEnabled();
 
         if (listening) {
-            OmniJawsClient.get().addObserver(mContext, this);
+            mWeatherClient.addObserver(this);
             queryAndUpdateWeather();
         } else {
-            OmniJawsClient.get().removeObserver(mContext, this);
+            mWeatherClient.removeObserver(this);
         }
     }
 
@@ -127,21 +132,21 @@ public class WeatherTile extends QSTileImpl<BooleanState> implements OmniJawsCli
 
     @Override
     protected void handleDestroy() {
-        OmniJawsClient.get().removeObserver(mContext, this);
+        // make sure we dont left one
+        mWeatherClient.removeObserver(this);
         super.handleDestroy();
     }
 
     @Override
     public boolean isAvailable() {
-        return OmniJawsClient.get().isOmniJawsServiceInstalled(mContext);
+        return mWeatherClient.isOmniJawsServiceInstalled();
     }
 
     @Override
     protected void handleClick(@Nullable Expandable expandable) {
         if (DEBUG) Log.d(TAG, "handleClick");
         if (!mState.value || mWeatherData == null) {
-            mActivityStarter.postStartActivityDismissingKeyguard(
-                OmniJawsClient.get().getSettingsIntent(mContext), 0);
+            mActivityStarter.postStartActivityDismissingKeyguard(mWeatherClient.getSettingsIntent(), 0);
         } else {
             PackageManager pm = mContext.getPackageManager();
             for (String app: ALTERNATIVE_WEATHER_APPS) {
@@ -158,21 +163,16 @@ public class WeatherTile extends QSTileImpl<BooleanState> implements OmniJawsCli
                 intent.setComponent(new ComponentName("com.google.android.googlequicksearchbox",
                         "com.google.android.apps.gsa.velour.DynamicActivityTrampoline"));
                 mActivityStarter.postStartActivityDismissingKeyguard(intent, 0);
-            } else {
-                final Intent weatherActivityIntent = new Intent();
-                weatherActivityIntent.setAction(Intent.ACTION_MAIN);
-                weatherActivityIntent.setClassName(SERVICE_PACKAGE, SERVICE_PACKAGE + ".WeatherActivity");
-                mActivityStarter.postStartActivityDismissingKeyguard(weatherActivityIntent, 0);
             }
         }
-        mEnabled = OmniJawsClient.get().isOmniJawsEnabled(mContext);
+        mEnabled = mWeatherClient.isOmniJawsEnabled();
         refreshState();
     }
 
     @Override
     public Intent getLongClickIntent() {
         if (DEBUG) Log.d(TAG, "getLongClickIntent");
-        return OmniJawsClient.get().getSettingsIntent(mContext);
+        return mWeatherClient.getSettingsIntent();
     }
 
     @Override
@@ -206,8 +206,8 @@ public class WeatherTile extends QSTileImpl<BooleanState> implements OmniJawsCli
         try {
             mWeatherData = null;
             if (mEnabled) {
-                OmniJawsClient.get().queryWeather(mContext);
-                mWeatherData = OmniJawsClient.get().getWeatherInfo();
+                mWeatherClient.queryWeather();
+                mWeatherData = mWeatherClient.getWeatherInfo();
                 mFormattedCondition = mWeatherData.condition;
                 if (mFormattedCondition.toLowerCase().contains("clouds")) {
                     mFormattedCondition = mContext.getResources().getString(R.string.weather_condition_clouds);
@@ -225,7 +225,7 @@ public class WeatherTile extends QSTileImpl<BooleanState> implements OmniJawsCli
                     mFormattedCondition = mContext.getResources().getString(R.string.weather_condition_mist);
                 }
                 if (mWeatherData != null) {
-                    mWeatherImage = OmniJawsClient.get().getWeatherConditionImage(mContext, mWeatherData.conditionCode);
+                    mWeatherImage = mWeatherClient.getWeatherConditionImage(mWeatherData.conditionCode);
                     mWeatherImage = mWeatherImage.mutate();
                 }
             }
