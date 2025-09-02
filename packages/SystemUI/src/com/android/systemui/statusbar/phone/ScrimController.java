@@ -559,6 +559,13 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
 
     private void handleBlurSupportedChanged(boolean isBlurSupported) {
         this.mIsBlurSupported = isBlurSupported;
+    }
+
+    private void updateScrimsAndDispatch() {
+        if (!mViewsAttached) {
+            Log.w(TAG, "Views not attached, skipping scrims update and dispatch");
+            return;
+        }
         if (Flags.bouncerUiRevamp()) {
             updateDefaultScrimAlphas();
             if (isBlurSupported) {
@@ -1220,6 +1227,10 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
 
     private void applyAndDispatchState() {
         applyState();
+        if (!mViewsAttached || mScrimBehind == null || mNotificationsScrim == null || mScrimInFront == null) {
+            Log.w(TAG, "Views not attached yet, skipping scrim update");
+            return;
+        }
         if (mUpdatePending) {
             return;
         }
@@ -1282,6 +1293,11 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
     }
 
     protected void scheduleUpdate() {
+        if (!mViewsAttached) {
+            Log.w(TAG, "Views not attached, skipping update schedule");
+            return;
+        }
+
         if (mUpdatePending || mScrimBehind == null) return;
 
         // Make sure that a frame gets scheduled.
@@ -1291,6 +1307,10 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
     }
 
     protected void updateScrims() {
+        if (!mViewsAttached || mScrimBehind == null || mNotificationsScrim == null || mScrimInFront == null) {
+            Log.w(TAG, "Views not attached yet, skipping scrim update");
+            return;
+        }
         // Make sure we have the right gradients and their opacities will satisfy GAR.
         if (mNeedsDrawableColorUpdate) {
             mNeedsDrawableColorUpdate = false;
@@ -1655,6 +1675,10 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
     }
 
     private void updateThemeColors() {
+        if (!mViewsAttached || mScrimBehind == null) {
+            Log.w(TAG, "Views not attached, deferring theme color update");
+            return;
+        }
         if (mScrimBehind == null) return;
         int background = mContext.getColor(
                 com.android.internal.R.color.materialColorSurfaceDim);
@@ -1675,6 +1699,10 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
     }
 
     private void onThemeChanged() {
+        if (!mViewsAttached) {
+            Log.w(TAG, "Views not attached, deferring theme change");
+            return;
+        }
         updateThemeColors();
         scheduleUpdate();
     }
