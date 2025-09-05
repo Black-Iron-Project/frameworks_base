@@ -151,4 +151,9 @@
     <dimen name="qs_controls_page_indicator_margin">2dp</dimen>
     <dimen name="qs_controls_translucent_alpha">0.275</dimen>
     <dimen name="qs_slider_swipe_threshold_dp">40dp</dimen>
+
+    <!-- Sb Chip -->
+    <dimen name="chip_corner_radius">28dp</dimen>
+    <dimen name="status_bar_clock_chip_tb_padding">0dp</dimen>
+    <dimen name="status_bar_clock_chip_lr_padding">8dp</dimen>
 </resources>
