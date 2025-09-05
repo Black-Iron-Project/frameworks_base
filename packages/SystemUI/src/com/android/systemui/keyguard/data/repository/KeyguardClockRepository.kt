@@ -135,8 +135,18 @@ constructor(
     override val currentClock: StateFlow<ClockController?> =
         currentClockId
             .map {
-                clockEventController.clock = clockRegistry.createCurrentClock()
-                clockEventController.clock
+                val clockStyle = secureSettings.getIntForUser(
+                    "clock_style",
+                    0,
+                    UserHandle.USER_CURRENT
+                )
+                if (clockStyle != 0) {
+             // Custom clock active → do not show the stock clock
+                    null
+                } else {
+                    clockEventController.clock = clockRegistry.createCurrentClock()
+                    clockEventController.clock
+                }
             }
             .stateIn(
                 scope = applicationScope,
