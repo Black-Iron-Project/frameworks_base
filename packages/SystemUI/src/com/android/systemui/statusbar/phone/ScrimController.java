@@ -564,7 +564,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
         }
         if (Flags.bouncerUiRevamp()) {
             updateDefaultScrimAlphas();
-            if (isBlurSupported) {
+            if (mIsBlurSupported) {
                 ScrimState.BOUNCER_SCRIMMED.setNotifBlurRadius(mBlurConfig.getMaxBlurRadiusPx());
             } else {
                 ScrimState.BOUNCER_SCRIMMED.setNotifBlurRadius(0f);
