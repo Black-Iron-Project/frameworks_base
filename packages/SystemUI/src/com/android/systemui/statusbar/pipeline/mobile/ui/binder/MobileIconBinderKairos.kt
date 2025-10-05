@@ -18,6 +18,7 @@ package com.android.systemui.statusbar.pipeline.mobile.ui.binder
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -86,7 +87,6 @@ object MobileIconBinderKairos {
         @JvmField var shouldIconBeVisible: Boolean = false
         @JvmField var isCollecting: Boolean = false
 
-        // TODO(b/238425913): We should log this visibility state.
         val visibility = MutableState(kairosNetwork, initialVisibilityState)
         val iconTint =
             MutableState(
@@ -124,26 +124,23 @@ object MobileIconBinderKairos {
     ) {
         viewModel.isVisible.observe { binding.shouldIconBeVisible = it }
 
-        val mobileGroupView = view.requireViewById<ViewGroup>(R.id.mobile_group)
-        val activityContainer = view.requireViewById<View>(R.id.inout_container)
-        val activityIn = view.requireViewById<ImageView>(R.id.mobile_in)
-        val activityOut = view.requireViewById<ImageView>(R.id.mobile_out)
-        val networkTypeView = view.requireViewById<ImageView>(R.id.mobile_type)
-        val networkTypeContainer = view.requireViewById<FrameLayout>(R.id.mobile_type_container)
-        val iconView = view.requireViewById<ImageView>(R.id.mobile_signal)
+        val mobileGroupView = view.findViewById<ViewGroup>(R.id.mobile_group)
+        val activityContainer = view.findViewById<View>(R.id.inout_container)
+        val activityIn = view.findViewById<ImageView>(R.id.mobile_in)
+        val activityOut = view.findViewById<ImageView>(R.id.mobile_out)
+        val networkTypeView = view.findViewById<ImageView>(R.id.mobile_type)
+        val networkTypeContainer = view.findViewById<FrameLayout>(R.id.mobile_type_container)
+        val iconView = view.findViewById<ImageView>(R.id.mobile_signal)
         val mobileDrawable = SignalDrawable(view.context)
-        val roamingView = view.requireViewById<ImageView>(R.id.mobile_roaming)
-        val roamingSpace = view.requireViewById<Space>(R.id.mobile_roaming_space)
-        val dotView = view.requireViewById<StatusBarIconView>(R.id.status_bar_dot)
+        val roamingView = view.findViewById<ImageView>(R.id.mobile_roaming)
+        val roamingSpace = view.findViewById<Space>(R.id.mobile_roaming_space)
+        val dotView = view.findViewById<StatusBarIconView>(R.id.status_bar_dot)
 
         effect {
             view.isVisible = viewModel.isVisible.sample()
-            iconView.isVisible = true
+            iconView?.isVisible = true
             launch {
                 view.repeatWhenAttachedToWindow {
-                    // isVisible controls the visibility state of the outer group, and thus it needs
-                    // to run in the CREATED lifecycle so it can continue to watch while invisible
-                    // See (b/291031862) for details
                     kairosNetwork.activateSpec {
                         viewModel.isVisible.observe { isVisible ->
                             viewModel.verboseLogger?.logBinderReceivedVisibility(
@@ -152,8 +149,6 @@ object MobileIconBinderKairos {
                                 isVisible,
                             )
                             view.isVisible = isVisible
-                            // [StatusIconContainer] can get out of sync sometimes. Make sure to
-                            // request another layout when this changes.
                             view.requestLayout()
                         }
                     }
@@ -165,15 +160,16 @@ object MobileIconBinderKairos {
                     binding.isCollecting = true
                     kairosNetwork.activateSpec {
                         binding.visibility.observe { state ->
-                            ModernStatusBarViewVisibilityHelper.setVisibilityState(
-                                state,
-                                mobileGroupView,
-                                dotView,
-                            )
-                            view.requestLayout()
+                            if (mobileGroupView != null && dotView != null) {
+                                ModernStatusBarViewVisibilityHelper.setVisibilityState(
+                                    state,
+                                    mobileGroupView,
+                                    dotView,
+                                )
+                                view.requestLayout()
+                            }
                         }
 
-                        // Set the icon for the triangle
                         viewModel.icon.observe { icon ->
                             viewModel.verboseLogger?.logBinderReceivedSignalIcon(
                                 view,
@@ -181,10 +177,10 @@ object MobileIconBinderKairos {
                                 icon,
                             )
                             if (icon is SignalIconModel.Cellular) {
-                                iconView.setImageDrawable(mobileDrawable)
+                                iconView?.setImageDrawable(mobileDrawable)
                                 mobileDrawable.level = icon.toSignalDrawableState()
                             } else if (icon is SignalIconModel.Satellite) {
-                                IconViewBinder.bind(icon.icon, iconView)
+                                iconView?.let { IconViewBinder.bind(icon.icon, it) }
                             }
                         }
 
@@ -192,89 +188,77 @@ object MobileIconBinderKairos {
                             MobileContentDescriptionViewBinder.bind(it, view)
                         }
 
-                        // Set the network type icon
                         viewModel.networkTypeIcon.observe { dataTypeId ->
                             viewModel.verboseLogger?.logBinderReceivedNetworkTypeIcon(
                                 view,
                                 viewModel.subscriptionId,
                                 dataTypeId,
                             )
-                            dataTypeId?.let { IconViewBinder.bind(dataTypeId, networkTypeView) }
-                            val prevVis = networkTypeContainer.visibility
-                            networkTypeContainer.visibility =
-                                if (dataTypeId != null) View.VISIBLE else View.GONE
-
-                            if (prevVis != networkTypeContainer.visibility) {
+                            dataTypeId?.let { IconViewBinder.bind(it, networkTypeView) }
+                            val prevVis = networkTypeContainer?.visibility ?: -1
+                            if (networkTypeContainer != null) {
+                                networkTypeContainer.visibility = if (dataTypeId != null) View.VISIBLE else View.GONE
+                            }
+                            if (prevVis != networkTypeContainer?.visibility) {
                                 view.requestLayout()
                             }
                         }
 
-                        // Set the network type background
                         viewModel.networkTypeBackground.observe { background ->
-                            networkTypeContainer.setBackgroundResource(background?.res ?: 0)
+                            if (networkTypeContainer != null) {
+                                networkTypeContainer.setBackgroundResource(background?.res ?: 0)
 
-                            // Tint will invert when this bit changes
-                            if (background?.res != null) {
-                                networkTypeContainer.backgroundTintList =
-                                    ColorStateList.valueOf(binding.iconTint.sample().tint)
-                                networkTypeView.imageTintList =
-                                    ColorStateList.valueOf(binding.iconTint.sample().contrast)
-                            } else {
-                                networkTypeView.imageTintList =
-                                    ColorStateList.valueOf(binding.iconTint.sample().tint)
+                                if (background?.res != null) {
+                                    val tint = ColorStateList.valueOf(binding.iconTint.sample().tint)
+                                    networkTypeContainer.backgroundTintList = tint
+                                    networkTypeView?.imageTintList = ColorStateList.valueOf(binding.iconTint.sample().contrast)
+                                } else {
+                                    networkTypeView?.imageTintList = ColorStateList.valueOf(binding.iconTint.sample().tint)
+                                }
                             }
                         }
 
-                        // Set the roaming indicator
                         viewModel.roaming.observe { isRoaming ->
-                            roamingView.isVisible = isRoaming
-                            roamingSpace.isVisible = isRoaming
+                            roamingView?.isVisible = isRoaming
+                            roamingSpace?.isVisible = isRoaming
                         }
 
                         if (Flags.statusBarStaticInoutIndicators()) {
-                            // Set the opacity of the activity indicators
                             viewModel.activityInVisible.observe { visible ->
-                                activityIn.imageAlpha =
-                                    (if (visible) StatusBarViewBinderConstants.ALPHA_ACTIVE
-                                    else StatusBarViewBinderConstants.ALPHA_INACTIVE)
+                                activityIn?.imageAlpha =
+                                    if (visible) StatusBarViewBinderConstants.ALPHA_ACTIVE else StatusBarViewBinderConstants.ALPHA_INACTIVE
                             }
                             viewModel.activityOutVisible.observe { visible ->
-                                activityOut.imageAlpha =
-                                    (if (visible) StatusBarViewBinderConstants.ALPHA_ACTIVE
-                                    else StatusBarViewBinderConstants.ALPHA_INACTIVE)
+                                activityOut?.imageAlpha =
+                                    if (visible) StatusBarViewBinderConstants.ALPHA_ACTIVE else StatusBarViewBinderConstants.ALPHA_INACTIVE
                             }
                         } else {
-                            // Set the activity indicators
-                            viewModel.activityInVisible.observe { activityIn.isVisible = it }
-                            viewModel.activityOutVisible.observe { activityOut.isVisible = it }
+                            viewModel.activityInVisible.observe { activityIn?.isVisible = it }
+                            viewModel.activityOutVisible.observe { activityOut?.isVisible = it }
                         }
 
-                        viewModel.activityContainerVisible.observe {
-                            activityContainer.isVisible = it
-                        }
+                        viewModel.activityContainerVisible.observe { activityContainer?.isVisible = it }
 
-                        // Set the tint
                         binding.iconTint.observe { colors ->
                             val tint = ColorStateList.valueOf(colors.tint)
                             val contrast = ColorStateList.valueOf(colors.contrast)
 
-                            iconView.imageTintList = tint
+                            iconView?.imageTintList = tint
 
-                            // If the bg is visible, tint it and use the contrast for the fg
                             if (viewModel.networkTypeBackground.sample() != null) {
-                                networkTypeContainer.backgroundTintList = tint
-                                networkTypeView.imageTintList = contrast
+                                networkTypeContainer?.backgroundTintList = tint
+                                networkTypeView?.imageTintList = contrast
                             } else {
-                                networkTypeView.imageTintList = tint
+                                networkTypeView?.imageTintList = tint
                             }
 
-                            roamingView.imageTintList = tint
-                            activityIn.imageTintList = tint
-                            activityOut.imageTintList = tint
-                            dotView.setDecorColor(colors.tint)
+                            roamingView?.imageTintList = tint
+                            activityIn?.imageTintList = tint
+                            activityOut?.imageTintList = tint
+                            dotView?.setDecorColor(colors.tint)
                         }
 
-                        binding.decorTint.observe { tint -> dotView.setDecorColor(tint) }
+                        binding.decorTint.observe { tint -> dotView?.setDecorColor(tint) }
                     }
 
                     try {
